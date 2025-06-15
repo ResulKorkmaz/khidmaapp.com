@@ -1,6 +1,6 @@
 "use client";
 
-import { ServiceRequestWizard } from "@onlineusta/ui";
+// import { ServiceRequestWizard } from "@onlineusta/ui";
 
 interface ServiceRequestClientProps {
   categories: any[];
@@ -21,10 +21,8 @@ export default function ServiceRequestClient({ categories }: ServiceRequestClien
   };
 
   return (
-    <ServiceRequestWizard
-      categories={categories}
-      onSubmit={handleSubmit}
-      className="mb-12"
-    />
+    <div className="text-center p-8 bg-white rounded-lg shadow-sm">
+      <p className="text-gray-500">Hizmet talep formu geliştiriliyor...</p>
+    </div>
   );
 } 

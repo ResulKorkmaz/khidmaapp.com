@@ -1,4 +1,6 @@
 // Açıklama: Çok adımlı hizmet talep formu - wizard pattern ile
+"use client";
+
 import { useState } from "react";
 import { Button } from "../Button/Button";
 import { cn } from "../../utils/cn";

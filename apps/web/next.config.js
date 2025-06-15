@@ -10,6 +10,9 @@ const nextConfig = {
         },
       },
     },
+    outputFileTracingIncludes: {
+      '/api/**/*': ['../../packages/**/*'],
+    },
   },
   images: {
     formats: ['image/avif', 'image/webp'],

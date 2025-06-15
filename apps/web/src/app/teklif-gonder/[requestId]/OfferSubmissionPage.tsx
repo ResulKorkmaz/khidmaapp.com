@@ -2,7 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { OfferForm, OfferFormData } from '@onlineusta/ui';
+// import { OfferForm, OfferFormData } from '@onlineusta/ui';
+
+interface OfferFormData {
+  price: number;
+  description: string;
+  estimatedDuration?: number;
+  availableFrom?: string;
+}
 
 interface ServiceRequest {
   id: string;
@@ -216,11 +223,14 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
               Teklifinizi Hazırlayın
             </h2>
             
-            <OfferForm
+            {/* <OfferForm
               serviceRequestId={requestId}
               onSubmit={handleOfferSubmit}
               loading={submitting}
-            />
+            /> */}
+            <div className="text-center p-8">
+              <p className="text-gray-500">Teklif formu geliştiriliyor...</p>
+            </div>
           </div>
         </div>
 

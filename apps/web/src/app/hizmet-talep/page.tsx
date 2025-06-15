@@ -1,7 +1,7 @@
 "use client";
 
 // Açıklama: Hizmet talep formu sayfası
-import { ServiceRequestWizard } from "@onlineusta/ui";
+// import { ServiceRequestWizard } from "@onlineusta/ui";
 
 // Mock data - real data would come from API
 const mockCategories = [
@@ -68,11 +68,14 @@ export default function ServiceRequestPage() {
           </p>
         </div>
         
-        <ServiceRequestWizard
+        {/* <ServiceRequestWizard
           categories={mockCategories}
           onSubmit={handleSubmit}
           className="mb-12"
-        />
+        /> */}
+        <div className="text-center p-8 bg-white rounded-lg shadow-sm">
+          <p className="text-gray-500">Hizmet talep formu geliştiriliyor...</p>
+        </div>
       </div>
     </div>
   );
