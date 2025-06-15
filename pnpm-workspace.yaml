@@ -1,0 +1,5 @@
+# Açıklama: PNPM workspace yapılandırması
+packages:
+  - 'apps/*'
+  - 'packages/*'
+  - 'services/*' 
