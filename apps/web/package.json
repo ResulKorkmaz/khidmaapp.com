@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "pnpm run build:deps && next build",
+    "build": "next build",
     "build:deps": "cd ../../packages/ui && pnpm run build",
+    "build:production": "pnpm run build:deps && next build",
     "dev": "next dev",
     "lint": "next lint",
     "lint:fix": "next lint --fix",

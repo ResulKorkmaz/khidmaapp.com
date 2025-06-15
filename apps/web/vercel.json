@@ -1,7 +1,8 @@
 {
-  "buildCommand": "cd ../.. && pnpm install --frozen-lockfile && pnpm run build --filter=@onlineusta/web",
-  "installCommand": "cd ../.. && pnpm install --frozen-lockfile",
+  "buildCommand": "cd ../.. && pnpm install && cd packages/ui && pnpm run build && cd ../.. && cd apps/web && pnpm run build",
+  "installCommand": "cd ../.. && pnpm install",
   "framework": "nextjs",
+
   "functions": {
     "app/api/**/*.ts": {
       "runtime": "nodejs20.x"

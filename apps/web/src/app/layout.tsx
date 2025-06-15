@@ -8,22 +8,14 @@ import CookieConsent from "../components/CookieConsent";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://online-usta-com-tr.vercel.app'),
   title: {
     default: "OnlineUsta - Profesyonel Hizmet Platformu",
-    template: "%s | OnlineUsta",
+    template: "%s | OnlineUsta"
   },
-  description:
-    "Türkiye'nin en güvenilir profesyonel hizmet platformu. Usta bul, teklif al, işini hallettir.",
-  keywords: [
-    "usta",
-    "hizmet",
-    "tamirci",
-    "elektrikçi",
-    "tesisatçı",
-    "boyacı",
-    "profesyonel hizmet",
-  ],
-  authors: [{ name: "OnlineUsta Team" }],
+  description: "Türkiye'nin en güvenilir profesyonel hizmet platformu. Ev temizliği, elektrik, tesisatçı ve daha fazlası için uzman hizmet sağlayıcıları bulun.",
+  keywords: ["hizmet", "usta", "profesyonel", "ev temizliği", "elektrik", "tesisatçı", "tadilat"],
+  authors: [{ name: "OnlineUsta" }],
   creator: "OnlineUsta",
   publisher: "OnlineUsta",
   formatDetection: {
@@ -34,26 +26,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://onlineusta.com.tr",
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://online-usta-com-tr.vercel.app',
     siteName: "OnlineUsta",
     title: "OnlineUsta - Profesyonel Hizmet Platformu",
-    description:
-      "Türkiye'nin en güvenilir profesyonel hizmet platformu. Usta bul, teklif al, işini hallettir.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "OnlineUsta",
-      },
-    ],
+    description: "Türkiye'nin en güvenilir profesyonel hizmet platformu",
   },
   twitter: {
     card: "summary_large_image",
     title: "OnlineUsta - Profesyonel Hizmet Platformu",
-    description:
-      "Türkiye'nin en güvenilir profesyonel hizmet platformu. Usta bul, teklif al, işini hallettir.",
-    images: ["/og-image.jpg"],
+    description: "Türkiye'nin en güvenilir profesyonel hizmet platformu",
   },
   robots: {
     index: true,
@@ -61,9 +42,9 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
 };
