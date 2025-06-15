@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 // import { OfferForm, OfferFormData } from '@onlineusta/ui';
 
 interface OfferFormData {
@@ -36,43 +36,45 @@ interface OfferSubmissionPageProps {
 
 export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
   const router = useRouter();
-  const [serviceRequest, setServiceRequest] = useState<ServiceRequest | null>(null);
+  const [serviceRequest, setServiceRequest] = useState<ServiceRequest | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchServiceRequest();
-  }, [requestId]);
-
-  const fetchServiceRequest = async () => {
+  const fetchServiceRequest = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch(`/api/service-requests/${requestId}`);
-      
+
       if (!response.ok) {
-        throw new Error('Hizmet talebi bulunamadı');
+        throw new Error("Hizmet talebi bulunamadı");
       }
 
       const data = await response.json();
       setServiceRequest(data.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu');
+      setError(err instanceof Error ? err.message : "Bir hata oluştu");
     } finally {
       setLoading(false);
     }
-  };
+  }, [requestId]);
+
+  useEffect(() => {
+    fetchServiceRequest();
+  }, [fetchServiceRequest]);
 
   const handleOfferSubmit = async (offerData: OfferFormData) => {
     try {
       setSubmitting(true);
       setError(null);
 
-      const response = await fetch('http://localhost:3001/api/v1/offers', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/api/v1/offers", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-user-id': 'temp-professional-id', // TODO: Get from auth
+          "Content-Type": "application/json",
+          "x-user-id": "temp-professional-id", // TODO: Get from auth
         },
         body: JSON.stringify({
           ...offerData,
@@ -82,17 +84,18 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Teklif gönderilemedi');
+        throw new Error(errorData.message || "Teklif gönderilemedi");
       }
 
       const result = await response.json();
-      
+
       // Success - redirect to offers page or show success message
-      alert('Teklifiniz başarıyla gönderildi!');
+      alert("Teklifiniz başarıyla gönderildi!");
       router.push(`/tekliflerim`);
-      
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Teklif gönderilirken hata oluştu');
+      setError(
+        err instanceof Error ? err.message : "Teklif gönderilirken hata oluştu",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -131,17 +134,17 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
   }
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
+    return new Intl.NumberFormat("tr-TR", {
+      style: "currency",
+      currency: "TRY",
     }).format(price);
   };
 
   const formatDate = (dateString: string) => {
-    return new Intl.DateTimeFormat('tr-TR', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
+    return new Intl.DateTimeFormat("tr-TR", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
     }).format(new Date(dateString));
   };
 
@@ -168,7 +171,7 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Hizmet Talebi Detayları
             </h2>
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold text-lg text-gray-900">
@@ -204,7 +207,8 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
               <div>
                 <h4 className="font-medium text-gray-700 mb-1">Müşteri</h4>
                 <p className="text-gray-600">
-                  {serviceRequest.customer.firstName} {serviceRequest.customer.lastName}
+                  {serviceRequest.customer.firstName}{" "}
+                  {serviceRequest.customer.lastName}
                 </p>
               </div>
 
@@ -222,7 +226,7 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
             <h2 className="text-xl font-semibold text-gray-900 mb-6">
               Teklifinizi Hazırlayın
             </h2>
-            
+
             {/* <OfferForm
               serviceRequestId={requestId}
               onSubmit={handleOfferSubmit}
@@ -236,7 +240,9 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
 
         {/* Tips */}
         <div className="mt-8 bg-blue-50 rounded-lg p-6">
-          <h3 className="font-semibold text-blue-900 mb-3">💡 Teklif Verme İpuçları</h3>
+          <h3 className="font-semibold text-blue-900 mb-3">
+            💡 Teklif Verme İpuçları
+          </h3>
           <ul className="text-blue-800 space-y-2 text-sm">
             <li>• Deneyiminizi ve uzmanlık alanlarınızı belirtin</li>
             <li>• Kullanacağınız malzemeler hakkında bilgi verin</li>
@@ -248,4 +254,4 @@ export function OfferSubmissionPage({ requestId }: OfferSubmissionPageProps) {
       </div>
     </div>
   );
-} 
+}
