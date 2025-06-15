@@ -1,11 +1,5 @@
 {
-  "buildCommand": "cd ../.. && pnpm install && cd packages/ui && pnpm run build && cd ../.. && cd apps/web && pnpm run build",
+  "buildCommand": "cd ../.. && pnpm install && cd packages/ui && pnpm run build && cd ../../apps/web && pnpm run build",
   "installCommand": "cd ../.. && pnpm install",
-  "framework": "nextjs",
-
-  "functions": {
-    "app/api/**/*.ts": {
-      "runtime": "nodejs20.x"
-    }
-  }
+    "framework": "nextjs"
 } 

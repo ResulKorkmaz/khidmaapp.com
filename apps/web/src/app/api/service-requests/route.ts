@@ -1,6 +1,6 @@
 // Açıklama: Service request API - CRUD operasyonları
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@onlineusta/database';
+// import { prisma } from '@onlineusta/database';
 import { z } from 'zod';
 
 // Validation schemas
@@ -25,6 +25,33 @@ const GetServiceRequestsSchema = z.object({
   status: z.enum(['DRAFT', 'PUBLISHED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED', 'EXPIRED']).optional(),
 });
 
+// Mock data for development
+const mockServiceRequest = {
+  id: 'req_001',
+  title: 'Ev Genel Temizliği',
+  description: '3+1 dairem için genel temizlik hizmeti',
+  budget: 500,
+  city: 'İstanbul',
+  district: 'Kadıköy',
+  status: 'PUBLISHED',
+  createdAt: new Date().toISOString(),
+  category: {
+    id: 1,
+    name: 'Ev Temizliği',
+    slug: 'ev-temizligi',
+  },
+  customer: {
+    id: 'user_001',
+    firstName: 'Ahmet',
+    lastName: 'Yılmaz',
+    avatar: null,
+    rating: 4.5,
+  },
+  _count: {
+    offers: 3,
+  },
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -32,31 +59,13 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const validatedData = CreateServiceRequestSchema.parse(body);
     
-    // TODO: Get user ID from session/auth
-    const customerId = 'temp-user-id'; // Replace with actual user ID
-    
-    // Create service request
-    const serviceRequest = await prisma.serviceRequest.create({
-      data: {
-        ...validatedData,
-        customerId,
-        preferredDate: validatedData.preferredDate 
-          ? new Date(validatedData.preferredDate) 
-          : undefined,
-        status: 'PUBLISHED',
-      },
-      include: {
-        category: true,
-        customer: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            avatar: true,
-          },
-        },
-      },
-    });
+    // Mock response - replace with actual database call
+    const serviceRequest = {
+      ...mockServiceRequest,
+      ...validatedData,
+      id: `req_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
 
     return NextResponse.json({
       success: true,
@@ -89,43 +98,34 @@ export async function GET(request: NextRequest) {
     // Validate query parameters
     const { page, limit, category, city, status } = GetServiceRequestsSchema.parse(params);
     
-    const offset = (page - 1) * limit;
-    
-    // Build where clause
-    const where: any = {};
-    if (category) where.category = { slug: category };
-    if (city) where.city = city;
-    if (status) where.status = status;
-    
-    // Get service requests with pagination
-    const [serviceRequests, total] = await Promise.all([
-      prisma.serviceRequest.findMany({
-        where,
-        include: {
-          category: true,
-          customer: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              avatar: true,
-              rating: true,
-            },
-          },
-          _count: {
-            select: {
-              offers: true,
-            },
-          },
+    // Mock response - replace with actual database call
+    const serviceRequests = [
+      mockServiceRequest,
+      {
+        ...mockServiceRequest,
+        id: 'req_002',
+        title: 'Elektrik Arızası Onarımı',
+        description: 'Sigortalar atıyor, elektrik kesiliyor',
+        budget: null,
+        city: 'Ankara',
+        district: 'Çankaya',
+        category: {
+          id: 2,
+          name: 'Elektrik',
+          slug: 'elektrik',
         },
-        orderBy: {
-          createdAt: 'desc',
+        customer: {
+          id: 'user_002',
+          firstName: 'Mehmet',
+          lastName: 'Kaya',
+          avatar: null,
+          rating: 4.8,
         },
-        skip: offset,
-        take: limit,
-      }),
-      prisma.serviceRequest.count({ where }),
-    ]);
+        _count: {
+          offers: 1,
+        },
+      },
+    ];
 
     return NextResponse.json({
       success: true,
@@ -133,8 +133,8 @@ export async function GET(request: NextRequest) {
       pagination: {
         page,
         limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        total: 2,
+        totalPages: 1,
       },
     });
 

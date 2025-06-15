@@ -35,9 +35,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@onlineusta/database':
-        specifier: workspace:*
-        version: link:../../packages/database
       '@onlineusta/ui':
         specifier: workspace:*
         version: link:../../packages/ui
