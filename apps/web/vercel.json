@@ -1,0 +1,6 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "cd ../.. && pnpm install && pnpm run build --filter=@onlineusta/web",
+  "outputDirectory": ".next",
+  "installCommand": "cd ../.. && pnpm install"
+}
