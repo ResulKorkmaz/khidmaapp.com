@@ -1,0 +1,15 @@
+{
+  "extends": "@onlineusta/typescript-config/base.json",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src/**/*", "prisma/schema.prisma"],
+  "exclude": ["node_modules", "dist"]
+}
