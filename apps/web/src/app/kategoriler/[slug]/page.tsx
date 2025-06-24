@@ -132,7 +132,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             <h1 className="text-4xl font-bold mb-4">{category.name}</h1>
             <p className="text-xl mb-8 opacity-90">{category.description}</p>
             <Link href="/hizmet-talep" className="inline-block bg-white text-green-600 font-bold py-4 px-8 rounded-xl hover:bg-gray-100 transition-colors duration-300 shadow-lg">
-              Hemen Teklif Al
+                Hemen Teklif Al
             </Link>
           </div>
         </div>
@@ -157,7 +157,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                   </h3>
                   <p className="text-gray-600 mb-4">{subcategory.description}</p>
                   <Link href={`/kategoriler/${subcategory.slug}`} className="inline-block border border-green-600 text-green-600 font-semibold py-2 px-4 rounded-lg hover:bg-green-600 hover:text-white transition-colors duration-300">
-                    Detayları Gör
+                      Detayları Gör
                   </Link>
                 </div>
               ))}
@@ -216,7 +216,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             Profesyonel hizmet sağlayıcılardan ücretsiz teklif alın
           </p>
           <Link href="/hizmet-talep" className="inline-block bg-white text-green-600 font-bold py-4 px-8 rounded-xl hover:bg-gray-100 transition-colors duration-300 shadow-lg">
-            Talep Oluştur
+              Talep Oluştur
           </Link>
         </div>
       </section>

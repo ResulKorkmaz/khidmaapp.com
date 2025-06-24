@@ -1,0 +1,535 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button, useCities, useDistricts, useToast, ToastContainer } from "@onlineusta/ui";
+import Link from "next/link";
+import Image from "next/image";
+import Navigation from "../../components/Navigation";
+import Footer from "../../components/Footer";
+import CreateWebPageModal from "../../components/CreateWebPageModal";
+
+// Service category interface
+interface ServiceCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  icon?: string;
+  color?: string;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  experience: string;
+  skills: string[];
+  minPrice: number | null;
+  maxPrice: number | null;
+  priceUnit: string;
+}
+
+interface User {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  city: string;
+  district: string;
+  phone?: string;
+  bio?: string;
+  experienceYears?: number;
+  rating?: number;
+  reviewCount?: number;
+  completedJobsCount?: number;
+  isVerified?: boolean;
+  categories?: Category[];
+  avatar?: string;
+  createdAt?: string;
+  lastActiveAt?: string;
+  membershipType?: 'STANDARD' | 'PROFESSIONAL' | 'PREMIUM';
+  publicPageUrl?: string;
+  companyName?: string;
+}
+
+interface Offer {
+  id: string;
+  serviceRequestId: string;
+  amount: number;
+  description: string;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'EXPIRED';
+  createdAt: string;
+  serviceRequest: {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    city: string;
+    district: string;
+    budget: number;
+    status: string;
+    createdAt: string;
+  };
+}
+
+interface Message {
+  id: string;
+  senderId: string;
+  senderName: string;
+  senderRole: 'CLIENT' | 'PROFESSIONAL';
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  conversationId: string;
+  serviceRequest?: {
+    id: string;
+    title: string;
+  };
+}
+
+interface Conversation {
+  id: string;
+  clientId: string;
+  clientName: string;
+  professionalId: string;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+  serviceRequest?: {
+    id: string;
+    title: string;
+  };
+  messages: Message[];
+}
+
+interface ServiceRequest {
+  id: string;
+  title: string;
+  description: string;
+  budget: number | null;
+  city: string;
+  district: string;
+  createdAt: string;
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+  user: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+export default function ProfilePage() {
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState("overview");
+  const [recentOffers, setRecentOffers] = useState<Offer[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [opportunities, setOpportunities] = useState<ServiceRequest[]>([]);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showWebPageModal, setShowWebPageModal] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState<{[key: string]: string}>({});
+  const [isEditingAll, setIsEditingAll] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [categorySearch, setCategorySearch] = useState('');
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [selectedCityId, setSelectedCityId] = useState<number | null>(null);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<number | null>(null);
+  const [availableCategories, setAvailableCategories] = useState<ServiceCategory[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
+  
+  // Toast sistemi
+  const toast = useToast();
+  
+  // API Hooks
+  const { cities, loading: citiesLoading } = useCities();
+  const { districts, loading: districtsLoading } = useDistricts(selectedCityId);
+  
+  // Load categories from API
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setCategoriesLoading(true);
+        
+        // Ana kategorileri çek
+        const mainResponse = await fetch('/api/categories');
+        const mainResult = await mainResponse.json();
+        
+        if (mainResult.success) {
+          const allCategories: ServiceCategory[] = [];
+          
+          // Ana kategorileri ekle
+          allCategories.push(...mainResult.categories);
+          
+          // Her ana kategori için alt kategorileri çek
+          for (const mainCat of mainResult.categories) {
+            const subResponse = await fetch(`/api/categories?parentId=${mainCat.id}`);
+            const subResult = await subResponse.json();
+            
+            if (subResult.success) {
+              allCategories.push(...subResult.categories);
+            }
+          }
+          
+          setAvailableCategories(allCategories);
+        }
+      } catch (error) {
+        console.error('Categories loading error:', error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+  
+  // Category filtreleme
+  const filteredCategories = categorySearch 
+    ? availableCategories.filter(cat => 
+        cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+      )
+    : availableCategories;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showCategoryDropdown) {
+        const target = event.target as Element;
+        if (!target.closest('.category-dropdown-container')) {
+          setShowCategoryDropdown(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCategoryDropdown]);
+
+  // Kullanıcı bilgilerini yükle
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        const userData = localStorage.getItem('currentUser');
+        
+        if (isLoggedIn === 'true' && userData) {
+          let user: User = JSON.parse(userData);
+          
+          // Eğer publicPageUrl yoksa ama sayfa oluşturulmuş ise URL'i oluştur
+          if (!user.publicPageUrl) {
+            // Mock: ayakkabı tamircisi için publicPageUrl set et
+            if (user.id === "123") {
+              user.publicPageUrl = "/123/ayakkabi-tamiri";
+              localStorage.setItem('currentUser', JSON.stringify(user));
+            }
+          }
+          
+          setCurrentUser(user);
+          
+          // API'den tam profil bilgilerini çek
+          try {
+            const response = await fetch(`/api/profile?userId=${user.id}`);
+            const profileData = await response.json();
+            
+            if (response.ok && profileData.success) {
+              // API'den gelen data ile localStorage'ı güncelle
+              const updatedUser = {
+                ...profileData.user,
+                publicPageUrl: profileData.user.publicPageUrl || user.publicPageUrl
+              };
+              setCurrentUser(updatedUser);
+              localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            }
+          } catch (apiError) {
+            console.error('API profile fetch error:', apiError);
+          }
+
+          // Son teklifleri çek
+          try {
+            const offersResponse = await fetch(`/api/offers?userId=${user.id}&limit=5`);
+            const offersData = await offersResponse.json();
+            
+            if (offersResponse.ok && offersData.success) {
+              setRecentOffers(offersData.offers);
+            }
+          } catch (offersError) {
+            console.error('Recent offers fetch error:', offersError);
+          }
+
+          // Mesajları çek
+          try {
+            const messagesResponse = await fetch(`/api/messages?userId=${user.id}`);
+            const messagesData = await messagesResponse.json();
+            
+            if (messagesResponse.ok && messagesData.success) {
+              setConversations(messagesData.conversations);
+            }
+          } catch (messagesError) {
+            console.error('Messages fetch error:', messagesError);
+          }
+
+          // Fırsatları çek (kullanıcının şehrindeki iş ilanları)
+          try {
+            const opportunitiesResponse = await fetch(`/api/service-requests?city=${user.city}&limit=5`);
+            const opportunitiesData = await opportunitiesResponse.json();
+            
+            if (opportunitiesResponse.ok && opportunitiesData.success) {
+              setOpportunities(opportunitiesData.data);
+            }
+          } catch (opportunitiesError) {
+            console.error('Opportunities fetch error:', opportunitiesError);
+          }
+        } else {
+          window.location.href = '/hizmet-veren-girisi';
+        }
+      } catch (error) {
+        console.error('User data loading error:', error);
+        window.location.href = '/hizmet-veren-girisi';
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('isLoggedIn');
+    window.location.href = '/';
+  };
+
+  const handleEditField = (fieldName: string, currentValue: string) => {
+    setEditingField(fieldName);
+    setEditValues({ ...editValues, [fieldName]: currentValue });
+  };
+
+  const handleSaveField = async (fieldName: string) => {
+    if (!currentUser) return;
+    
+    try {
+      console.log('Saving field:', fieldName, 'Value:', editValues[fieldName]);
+      
+      const requestBody = {
+        [fieldName]: editValues[fieldName]
+      };
+      
+      // Özel kategori güncelleme için selected categories kullan
+      if (fieldName === 'categories') {
+        requestBody[fieldName] = selectedCategories.join(', ');
+      }
+      
+      // Şehir değişikliği kontrolü
+      const isCityChange = fieldName === 'city' && editValues[fieldName] !== currentUser.city;
+      
+      console.log('Request body:', requestBody);
+      
+      const response = await fetch(`/api/profile?userId=${currentUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (response.ok && data.success) {
+        // Kullanıcı bilgilerini güncelle
+        if (fieldName === 'categories') {
+          // Kategoriler için API'den dönen user data'yı kullan
+          setCurrentUser(data.user);
+          localStorage.setItem('currentUser', JSON.stringify(data.user));
+        } else {
+          setCurrentUser(prev => prev ? {
+            ...prev,
+            [fieldName]: fieldName === 'experienceYears' ? parseInt(editValues[fieldName]) : editValues[fieldName],
+            // Şehir değiştiyse ilçeyi temizle
+            ...(isCityChange ? { district: '' } : {})
+          } : null);
+          const updatedUser = { 
+            ...currentUser, 
+            [fieldName]: fieldName === 'experienceYears' ? parseInt(editValues[fieldName]) : editValues[fieldName],
+            ...(isCityChange ? { district: '' } : {})
+          };
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+        }
+        
+        setEditingField(null);
+        setEditValues({});
+        setSelectedCityId(null);
+        setSelectedDistrictId(null);
+        setSelectedCategories([]);
+        setCategorySearch('');
+        setShowCategoryDropdown(false);
+        
+        console.log('Field updated successfully:', fieldName);
+        
+        // Şehir değişikliği için özel mesaj
+        if (isCityChange) {
+          toast.warning('Şehir Değiştirildi', 'İlçe bilginiz temizlendi. Lütfen yeni şehrinize uygun ilçeyi seçin.');
+        } else {
+          toast.success('Profil Güncellendi', 'Değişiklikleriniz başarıyla kaydedildi.');
+        }
+      } else {
+        console.error('Güncelleme hatası:', data.error);
+        toast.error('Güncelleme Hatası', data.error || 'Bilinmeyen hata');
+      }
+    } catch (error) {
+      console.error('Güncelleme hatası:', error);
+      toast.error('Güncelleme Hatası', error.message);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingField(null);
+    setEditValues({});
+    setSelectedCityId(null);
+    setSelectedDistrictId(null);
+    setSelectedCategories([]);
+    setCategorySearch('');
+    setShowCategoryDropdown(false);
+  };
+
+  const handleEditAll = () => {
+    if (!currentUser) return;
+    
+    setIsEditingAll(true);
+    setEditingField(null);
+    
+    // Load current city and district IDs
+    const currentCity = cities.find(city => city.name === currentUser.city);
+    if (currentCity) {
+      setSelectedCityId(currentCity.id);
+      // Wait for districts to load, then find district ID
+      setTimeout(() => {
+        const currentDistrict = districts.find(district => district.name === currentUser.district);
+        setSelectedDistrictId(currentDistrict?.id || null);
+      }, 100);
+    }
+    
+    // Load current categories
+    const categoryNames = currentUser.categories?.map(cat => cat.name) || [];
+    setSelectedCategories(categoryNames);
+    
+    setEditValues({
+      firstName: currentUser.firstName || '',
+      lastName: currentUser.lastName || '',
+      email: currentUser.email || '',
+      phone: currentUser.phone || '',
+      city: currentUser.city || '',
+      district: currentUser.district || '',
+      bio: currentUser.bio || '',
+      experienceYears: currentUser.experienceYears?.toString() || '0',
+      categories: categoryNames.join(', ')
+    });
+  };
+
+  const handleSaveAll = async () => {
+    if (!currentUser) return;
+    
+    try {
+      console.log('Saving all fields:', editValues);
+      console.log('Selected categories:', selectedCategories);
+      
+      // Request body hazırla
+      const requestBody = {
+        ...editValues,
+        categories: selectedCategories.join(', ')
+      };
+      
+      console.log('Request body for save all:', requestBody);
+      
+      const response = await fetch(`/api/profile?userId=${currentUser.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      console.log('Save all response status:', response.status);
+      const data = await response.json();
+      console.log('Save all response data:', data);
+
+      if (response.ok && data.success) {
+        // API'den dönen güncel user data'yı kullan
+        setCurrentUser(data.user);
+        setIsEditingAll(false);
+        setEditValues({});
+        setSelectedCityId(null);
+        setSelectedDistrictId(null);
+        setSelectedCategories([]);
+        setCategorySearch('');
+        setShowCategoryDropdown(false);
+        
+        // LocalStorage'ı da güncelle
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        
+        console.log('All fields updated successfully');
+        toast.success('Profil Güncellendi', 'Tüm değişiklikleriniz başarıyla kaydedildi.');
+      } else {
+        console.error('Güncelleme hatası:', data.error);
+        toast.error('Güncelleme Hatası', data.error || 'Bilinmeyen hata');
+      }
+    } catch (error) {
+      console.error('Güncelleme hatası:', error);
+      toast.error('Güncelleme Hatası', error.message);
+    }
+  };
+
+  const handleCancelAll = () => {
+    setIsEditingAll(false);
+    setEditValues({});
+    setSelectedCityId(null);
+    setSelectedDistrictId(null);
+    setSelectedCategories([]);
+    setCategorySearch('');
+    setShowCategoryDropdown(false);
+  };
+
+  const handleWebPageSuccess = (pageUrl: string) => {
+    // Kullanıcı state'ini güncelle
+    setCurrentUser(prev => prev ? {
+      ...prev,
+      publicPageUrl: pageUrl
+    } : null);
+    
+    // localStorage'ı da güncelle
+    if (currentUser) {
+      const updatedUser = { ...currentUser, publicPageUrl: pageUrl };
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    }
+    
+    // URL'yi panoya kopyala
+    const fullUrl = `https://onlineusta.com.tr${pageUrl}`;
+    navigator.clipboard.writeText(fullUrl);
+    
+    // Toast mesajı
+    toast.success('Web Sayfanız Hazır!', 
+      `Sayfanız oluşturuldu ve URL panoya kopyalandı: ${fullUrl.replace('https://', '')}`
+    );
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Profil yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentUser) return null;

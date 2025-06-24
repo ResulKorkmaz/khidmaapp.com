@@ -21,9 +21,6 @@ model User {
   avatar    String?
   role      UserRole @default(CUSTOMER)
   
-  // Public facing ID for URLs (short, readable)
-  publicId  Int?     @unique
-  
   // Authentication
   emailVerified   DateTime?
   phoneVerified   DateTime?
@@ -31,10 +28,8 @@ model User {
   refreshTokens   RefreshToken[]
   
   // Location
-  cityId    Int?
-  city      City?    @relation("UserCity", fields: [cityId], references: [id])
-  districtId Int?
-  district  District? @relation("UserDistrict", fields: [districtId], references: [id])
+  city      String
+  district  String
   address   String?
   latitude  Float?
   longitude Float?
@@ -63,11 +58,6 @@ model User {
   companyName         String?
   taxNumber           String?
   iban                String?
-  
-  // Public Page
-  publicPageTitle     String?
-  publicPageSlug      String?
-  publicPageActive    Boolean  @default(false)
   
   // Timestamps
   createdAt     DateTime @default(now())
@@ -171,70 +161,6 @@ model UserCategory {
 }
 
 // ====================================
-// LOCATIONS
-// ====================================
-
-model City {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  slug      String    @unique
-  plateCode String?   // 34, 06, 35 etc.
-  
-  // Geographic
-  latitude  Float?
-  longitude Float?
-  region    String?   // "Marmara", "İç Anadolu" etc.
-  
-  // Configuration
-  isActive  Boolean   @default(true)
-  order     Int       @default(0)
-  
-  // SEO
-  metaTitle       String?
-  metaDescription String?
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
-  districts       District[]
-  users           User[]       @relation("UserCity")
-  serviceRequests ServiceRequest[] @relation("ServiceRequestCity")
-  
-  @@map("cities")
-}
-
-model District {
-  id     Int    @id @default(autoincrement())
-  name   String
-  slug   String
-  
-  // City relation
-  cityId Int
-  city   City @relation(fields: [cityId], references: [id], onDelete: Cascade)
-  
-  // Geographic
-  latitude  Float?
-  longitude Float?
-  
-  // Configuration
-  isActive Boolean @default(true)
-  order    Int     @default(0)
-  
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relations
-  users           User[]           @relation("UserDistrict")
-  serviceRequests ServiceRequest[] @relation("ServiceRequestDistrict")
-  
-  @@unique([cityId, slug])
-  @@map("districts")
-}
-
-// ====================================
 // SERVICE REQUESTS & OFFERS
 // ====================================
 
@@ -246,10 +172,8 @@ model ServiceRequest {
   budgetType  BudgetType           @default(FIXED)
   
   // Location
-  cityId      Int?
-  city        City?    @relation("ServiceRequestCity", fields: [cityId], references: [id])
-  districtId  Int?
-  district    District? @relation("ServiceRequestDistrict", fields: [districtId], references: [id])
+  city        String
+  district    String
   address     String?
   latitude    Float?
   longitude   Float?
@@ -489,7 +413,6 @@ model Transaction {
   serviceRequest   ServiceRequest? @relation(fields: [serviceRequestId], references: [id])
   
   offerId     String?
-  offer       Offer?  @relation(fields: [offerId], references: [id])
   
   // Transaction details
   type        TransactionType

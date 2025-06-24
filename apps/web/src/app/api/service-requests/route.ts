@@ -1,7 +1,9 @@
 // Açıklama: Service request API - CRUD operasyonları
 import { NextRequest, NextResponse } from 'next/server';
-// import { prisma } from '@onlineusta/database';
+import { PrismaClient } from '@onlineusta/database';
 import { z } from 'zod';
+
+const prisma = new PrismaClient();
 
 // Validation schemas
 const CreateServiceRequestSchema = z.object({
@@ -9,8 +11,8 @@ const CreateServiceRequestSchema = z.object({
   title: z.string().min(5).max(100),
   description: z.string().min(10).max(1000),
   budget: z.number().positive().optional(),
-  city: z.string().min(2).max(50),
-  district: z.string().min(2).max(50),
+  cityId: z.number(),
+  districtId: z.number(),
   address: z.string().max(200).optional(),
   preferredDate: z.string().datetime().optional(),
   isFlexible: z.boolean().default(true),
@@ -62,7 +64,7 @@ export async function POST(request: NextRequest) {
     // Mock response - replace with actual database call
     const serviceRequest = {
       ...mockServiceRequest,
-      ...validatedData,
+        ...validatedData,
       id: `req_${Date.now()}`,
       createdAt: new Date().toISOString(),
     };
@@ -93,65 +95,56 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const params = Object.fromEntries(searchParams);
-    
-    // Validate query parameters
-    const { page, limit, category, city, status } = GetServiceRequestsSchema.parse(params);
-    
-    // Mock response - replace with actual database call
-    const serviceRequests = [
-      mockServiceRequest,
-      {
-        ...mockServiceRequest,
-        id: 'req_002',
-        title: 'Elektrik Arızası Onarımı',
-        description: 'Sigortalar atıyor, elektrik kesiliyor',
-        budget: null,
-        city: 'Ankara',
-        district: 'Çankaya',
-        category: {
-          id: 2,
-          name: 'Elektrik',
-          slug: 'elektrik',
-        },
+    const cityName = searchParams.get('city');
+    const limit = searchParams.get('limit');
+
+    console.log('Service requests API called with params:', { cityName, limit });
+
+    // Şehir filtresi ile hizmet taleplerini getir - yeni City relation yapısı
+    const serviceRequests = await prisma.serviceRequest.findMany({
+      where: cityName ? {
+        city: {
+          name: {
+            contains: cityName,
+            mode: 'insensitive'
+          }
+        }
+      } : {},
+      include: {
+        category: true,
+        city: true,
+        district: true,
         customer: {
-          id: 'user_002',
-          firstName: 'Mehmet',
-          lastName: 'Kaya',
-          avatar: null,
-          rating: 4.8,
-        },
-        _count: {
-          offers: 1,
-        },
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        }
       },
-    ];
+      orderBy: {
+        createdAt: 'desc'
+      },
+      take: limit ? parseInt(limit) : undefined
+    });
+
+    console.log(`Found ${serviceRequests.length} service requests for city: ${cityName}`);
 
     return NextResponse.json({
       success: true,
-      data: serviceRequests,
-      pagination: {
-        page,
-        limit,
-        total: 2,
-        totalPages: 1,
-      },
+      data: serviceRequests
     });
 
   } catch (error) {
-    console.error('Service requests fetch error:', error);
-    
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({
-        success: false,
-        error: 'Invalid query parameters',
-        details: error.errors,
-      }, { status: 400 });
-    }
-
-    return NextResponse.json({
-      success: false,
-      error: 'Internal server error',
-    }, { status: 500 });
+    console.error('Service requests API error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Hizmet talepleri alınırken bir hata oluştu',
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
+      { status: 500 }
+    );
   }
 } 

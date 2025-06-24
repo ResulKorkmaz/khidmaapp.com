@@ -14,7 +14,7 @@ export default function Navigation() {
   // Anasayfada mıyız kontrol et
   const isHomePage = pathname === '/';
   const heroHeight = 400; // Sabit hero yüksekliği
-  
+
   useEffect(() => {
     const handleScroll = () => {
       setScrollY(window.scrollY);
@@ -26,9 +26,9 @@ export default function Navigation() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     
-    return () => {
+      return () => {
       window.removeEventListener('scroll', handleScroll);
-    };
+      };
   }, []);
 
   // Arka plan gösterim koşulu:
@@ -41,7 +41,7 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="absolute left-0 right-0 z-50 transition-all duration-300">
+    <nav className="fixed left-0 right-0 z-50 transition-all duration-300">
       {/* Arka plan katmanı - Premium Koyu Tasarım */}
       <div 
         className={`absolute inset-0 transition-all duration-500 ${

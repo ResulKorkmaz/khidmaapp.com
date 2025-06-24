@@ -16,9 +16,14 @@
     "lint:fix": "eslint \"src/**/*.ts*\" --fix",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed-marketplace.ts"
+  },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "prisma": "^5.7.1"
+    "prisma": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "tsx": "^4.7.0"
   },
   "devDependencies": {
     "@onlineusta/eslint-config": "workspace:*",

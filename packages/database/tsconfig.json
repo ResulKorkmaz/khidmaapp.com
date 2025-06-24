@@ -8,8 +8,13 @@
     "strict": true,
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "module": "esnext",
+    "target": "ES2020",
+    "noEmit": false,
+    "incremental": false,
+    "tsBuildInfoFile": null
   },
-  "include": ["src/**/*", "prisma/schema.prisma"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "prisma/migrations", "**/*.test.ts"]
 }
