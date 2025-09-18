@@ -1,130 +1,227 @@
-# OnlineUsta.com.tr
+# KhidmaApp - خدمة أب
 
-Profesyonel hizmet sağlayıcılar ile müşterileri buluşturan modern bir pazar yeri platformu. Armut.com benzeri, ancak daha hızlı, daha güvenli ve SEO dostu olacak şekilde tasarlanmıştır.
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/khidmaapp/frontend)
 
-## 🚀 Proje Vizyonu
+## 🚀 Hızlı Başlangıç
 
-1. **Kullanıcı Dostu**: Basit, anlaşılır ve duyarlı arayüz.
-2. **Mükemmel SEO**: SSR + SSG kombinasyonu, yapılandırılmış veri, hızlı sayfa yükleme.
-3. **Performans**: Lighthouse 90+; resim optimizasyonu, kode bölme (code-splitting).
-4. **Güvenlik**: OWASP Top-10 uyumlu, 2FA, rate-limiting.
-5. **Ölçeklenebilirlik**: Mikroservis mimarisi, bulut-native altyapı.
+Bu proje **hızlı, güvenli, mükemmel SEO** ve **kolay yönetilebilir** dinamik web sitesi olarak tasarlanmıştır.
 
-## 🔧 Teknoloji Yığını
+### 📋 Gereksinimler
 
-| Katman | Teknoloji |
-| ------ | --------- |
-| Frontend | Next.js 14 (App Router) + TypeScript, TailwindCSS, Zustand, TanStack Query |
-| Backend | NestJS + TypeScript, GraphQL & REST Hybrid, CQRS |
-| Veri Tabanı | PostgreSQL (RDS) + Prisma ORM |
-| Arama | Elasticsearch (OpenSearch) |
-| Mesaj Kuyruğu | NATS JetStream |
-| CDN  & Depolama | AWS CloudFront, S3 |
-| Kimlik Yönetimi | Keycloak (OIDC) |
-| CI/CD | GitHub Actions ➜ Docker ➜ AWS EKS |
-| Gözlemlenebilirlik | OpenTelemetry, Grafana, Loki |
+- **Backend**: PHP 8.2+, Composer, MySQL 8.0+
+- **Frontend**: Node.js 18+, npm/yarn
+- **Hosting**: Hostinger VPS + Vercel
 
-## 🏗️ Mimarî Genel Bakış
+### 🛠️ Kurulum
 
-```mermaid
-flowchart TD
-  subgraph Frontend
-    A[Next.js Web] --> B[SEO Katmanı]
-  end
-  subgraph API Gateway
-    C[GraphQL Gateway]
-  end
-  subgraph Mikroservisler
-    S1[Hizmet Talebi]:::svc
-    S2[Teklif Yönetimi]:::svc
-    S3[Ödeme]:::svc
-    S4[Bildirim]:::svc
-  end
-  A --> C
-  C --> S1
-  C --> S2
-  C --> S3
-  C --> S4
+#### 1. Backend (Laravel API)
 
-  classDef svc fill:#fff5db,stroke:#f6c359,stroke-width:1px;
+```bash
+cd backend
+
+# Bağımlılıkları yükle
+composer install
+
+# Environment dosyasını kopyala
+cp .env.example .env
+
+# Uygulama anahtarı oluştur
+php artisan key:generate
+
+# Veritabanını ayarla
+php artisan migrate --seed
+
+# Sunucuyu başlat
+php artisan serve
 ```
 
-## 📂 Proje Dizin Yapısı (Monorepo: Turborepo)
+#### 2. Frontend (Next.js)
+
+```bash
+cd frontend
+
+# Bağımlılıkları yükle
+npm install
+
+# Environment dosyasını ayarla
+cp .env.example .env.local
+
+# Development sunucusu başlat
+npm run dev
+
+# Production build
+npm run build
+npm start
+```
+
+## 🏗️ Mimari
+
+### Backend (Laravel 11 API)
+- **🔐 Authentication**: Laravel Sanctum
+- **📊 Database**: MySQL/PostgreSQL with UUID primary keys
+- **📱 Admin Panel**: FilamentPHP (Türkçe)
+- **🌍 Multi-language**: Arabic (ar), English (en)
+- **📈 Performance**: Redis caching, Horizon queues
+- **🔍 Search**: Basic Laravel Scout (ready for MeiliSearch)
+
+### Frontend (Next.js 15)
+- **⚡ Performance**: App Router, ISR, SSR
+- **🌐 Multi-language**: next-intl (Arabic RTL + English LTR)
+- **🎨 Styling**: Tailwind CSS with RTL support
+- **📱 Responsive**: Mobile-first design
+- **🔍 SEO**: Perfect Lighthouse scores, Schema.org
+
+### Deployment
+- **Frontend**: Vercel (khidmaapp.com)
+- **Backend**: Hostinger VPS (api.khidmaapp.com)
+- **CDN**: Cloudflare
+- **Database**: Hostinger MySQL
+
+## 📁 Proje Yapısı
 
 ```
-.
-├─ apps/
-│  ├─ web/           # Next.js frontend
-│  └─ api-gateway/   # GraphQL Gateway
-├─ packages/
-│  ├─ ui/            # Paylaşılan tasarım sistemi bileşenleri
-│  └─ config/        # ESLint, Prettier, tsconfig ayarları
-├─ services/
-│  ├─ request/       # Hizmet talebi mikroservisi
-│  ├─ offer/         # Teklif yönetimi mikroservisi
-│  ├─ payment/       # Ödeme mikroservisi
-│  └─ notification/  # E-posta ve push
-└─ infra/            # Terraform & Helm chart'lar
+khidmaapp.com/
+├── backend/                    # Laravel 11 API
+│   ├── app/
+│   │   ├── Http/Controllers/Api/V1/
+│   │   ├── Models/
+│   │   ├── Filament/          # Admin panel
+│   │   └── Resources/
+│   ├── database/
+│   │   ├── migrations/
+│   │   └── seeders/
+│   └── routes/api.php
+├── frontend/                   # Next.js 15
+│   ├── src/
+│   │   ├── app/[locale]/      # App Router with i18n
+│   │   ├── components/        # Reusable components
+│   │   ├── lib/              # API client, utilities
+│   │   └── middleware.ts     # i18n middleware
+│   ├── messages/             # Translation files
+│   │   ├── ar.json          # Arabic
+│   │   └── en.json          # English
+│   ├── public/
+│   └── tailwind.config.js   # With RTL support
+└── docs/                    # Documentation
 ```
 
-## 🖇️ Kurulum
+## 🌐 Özellikler
 
-1. Depoyu klonlayın:
-   ```bash
-   git clone git@github.com:onlineusta/onlineusta.com.tr.git
-   cd onlineusta.com.tr
-   ```
-2. Bağımlılıkları yükleyin (pnpm tercih edilir):
-   ```bash
-   corepack enable
-   pnpm install
-   ```
-3. Environment dosyasını oluşturun:
-   ```bash
-   cp env.example .env.local
-   # Gerekli environment değişkenlerini doldurun
-   ```
-4. Husky git hooks'ları kurun:
-   ```bash
-   pnpm prepare
-   ```
-5. Geliştirme ortamını başlatın:
-   ```bash
-   pnpm dev
-   ```
-6. Test komutları:
-   ```bash
-   pnpm lint        # Linting
-   pnpm test        # Unit testleri
-   pnpm build       # Production build
-   ```
+### ✅ Mevcut Özellikler
+- [x] **Çok Dilli Destek**: Arapça (RTL) ve İngilizce
+- [x] **API Backend**: Laravel 11 ile RESTful API
+- [x] **Modern Frontend**: Next.js 15 App Router
+- [x] **Admin Panel**: FilamentPHP (Türkçe)
+- [x] **SEO Optimized**: Sitemap, Schema.org, hreflang
+- [x] **Responsive Design**: Mobil-first yaklaşım
+- [x] **Performance**: ISR, caching, optimization
 
-## 🚢 Dağıtım
+### 🚧 Gelecek Özellikler
+- [ ] **Authentication**: User login/register
+- [ ] **Service Posting**: Create service requests
+- [ ] **Bidding System**: Providers can bid on services
+- [ ] **Messaging**: Real-time chat
+- [ ] **Reviews**: Rating and review system
+- [ ] **Payment Integration**: HyperPay, PayTabs
+- [ ] **Mobile Apps**: React Native
+- [ ] **Advanced Search**: MeiliSearch integration
 
-EKS üzerine GitHub Actions ile otomatik dağıtım yapılır. PR merge edildiğinde:
-1. Unit & e2e testleri çalışır.
-2. Docker imajları build & push.
-3. Helm chart versiyonu güncellenir.
-4. `kubectl rollout` ile sürüm canlıya alınır.
+## 🌍 Çok Dil Desteği
 
-## 🔍 SEO Stratejisi
+### Desteklenen Diller
+- **العربية (ar)**: Ana dil, RTL desteği
+- **English (en)**: İkincil dil, LTR
 
-- Server-Side Rendering + Static Generation
-- JSON-LD ile yapılandırılmış veri (Product, Service)
-- Meta tag ve OpenGraph optimizasyonu
-- `robots.txt`, `sitemap.xml` otomatik oluşturma
-- Core Web Vitals takibi (Next.js Analytics)
+### URL Yapısı
+```
+https://khidmaapp.com/ar/          # Arabic homepage
+https://khidmaapp.com/en/          # English homepage
+https://khidmaapp.com/ar/riyadh/cleaning/  # Arabic category page
+https://khidmaapp.com/en/jeddah/plumbing/  # English category page
+```
 
-## 🤝 Katkı Sağlama
+## 🔧 Deployment
 
-1. Fork ➜ Branch (`feature/xyz`) ➜ PR
-2. Conventional Commits (`feat:`, `fix:` ...)
-3. Tüm testler yeşil olmalı.
-4. En az 1 reviewer onayı.
+### Frontend (Vercel)
+1. GitHub'a push yapın
+2. Vercel'e bağlayın
+3. Environment variables ayarlayın
+4. Auto-deploy aktif
+
+### Backend (Hostinger VPS)
+```bash
+# VPS'e bağlan
+ssh root@your-server-ip
+
+# Projeyi klonla
+git clone https://github.com/khidmaapp/backend
+cd backend
+
+# Kurulum
+composer install --optimize-autoloader --no-dev
+php artisan key:generate
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Nginx yapılandırması
+# /etc/nginx/sites-available/api.khidmaapp.com
+```
+
+## 📈 Performance
+
+### Lighthouse Scores (Hedef)
+- **Performance**: 95+
+- **Accessibility**: 100
+- **Best Practices**: 100
+- **SEO**: 100
+
+### Optimizasyonlar
+- **ISR**: 5 dakika cache
+- **Image Optimization**: Next.js Image + WebP
+- **Code Splitting**: Automatic
+- **Compression**: Gzip/Brotli
+- **CDN**: Cloudflare
+
+## 🛡️ Güvenlik
+
+- **CORS**: Configured for frontend domain
+- **Rate Limiting**: API endpoints protected
+- **Input Validation**: Zod schemas
+- **XSS Protection**: Built-in Next.js protection
+- **CSRF**: Laravel Sanctum tokens
+- **HTTPS**: Forced in production
+
+## 📊 Monitoring
+
+- **Frontend**: Vercel Analytics
+- **Backend**: Laravel Telescope
+- **Errors**: Sentry (optional)
+- **Uptime**: UptimeRobot
+
+## 🤝 Katkıda Bulunma
+
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
+3. Commit yapın (`git commit -m 'Add some amazing feature'`)
+4. Push yapın (`git push origin feature/amazing-feature`)
+5. Pull Request açın
 
 ## 📝 Lisans
 
-GPL-3.0
+Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
+
+## 🆘 Destek
+
+- **Email**: support@khidmaapp.com
+- **Discord**: [KhidmaApp Community](https://discord.gg/khidmaapp)
+- **Documentation**: [docs.khidmaapp.com](https://docs.khidmaapp.com)
+
+## 🇸🇦 Made in Saudi Arabia
+
+Bu proje Suudi Arabistan pazarı için özel olarak geliştirilmiştir.
 
 ---
-**OnlineUsta.com.tr** © 2024 
+
+**⭐ Eğer bu proje işinize yaradıysa, lütfen star verin!**
