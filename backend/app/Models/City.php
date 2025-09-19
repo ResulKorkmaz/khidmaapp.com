@@ -38,8 +38,8 @@ class City extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom(['name_ar', 'name_en'])
-            ->saveSlugsTo(['slug_ar', 'slug_en']);
+            ->generateSlugsFrom('name_ar')
+            ->saveSlugsTo('slug_ar');
     }
 
     // Relationships
@@ -83,18 +83,15 @@ class City extends Model
 
     public function scopeNearby($query, float $lat, float $lng, int $radiusKm = 50)
     {
-        $query->selectRaw("
-            *,
-            (6371 * acos(cos(radians(?)) 
-            * cos(radians(latitude)) 
-            * cos(radians(longitude) - radians(?)) 
-            + sin(radians(?)) 
-            * sin(radians(latitude)))) AS distance_km
-        ", [$lat, $lng, $lat])
-        ->having('distance_km', '<=', $radiusKm)
-        ->orderBy('distance_km');
-
-        return $query;
+        return $query->selectRaw("*,
+                    ( 6371 * acos( cos( radians(?) ) *
+                      cos( radians( latitude ) )
+                      * cos( radians( longitude ) - radians(?)
+                      ) + sin( radians(?) ) *
+                      sin( radians( latitude ) ) )
+                    ) AS distance", [$lat, $lng, $lat])
+            ->having("distance", "<", $radiusKm)
+            ->orderBy("distance");
     }
 
     // Accessors
@@ -108,6 +105,51 @@ class City extends Model
     {
         $locale = app()->getLocale();
         return $this->{"slug_{$locale}"} ?? $this->slug_ar;
+    }
+
+    /**
+     * Admin paneli için Arapça - Türkçe format
+     * Sadece admin panelinde kullanılacak
+     */
+    public function getAdminDisplayNameAttribute(): string
+    {
+        // Hardcoded Türkçe çeviriler - Admin paneli için
+        $translations = [
+            // Büyük şehirler
+            'الرياض' => 'Riyad',
+            'جدة' => 'Cidde',
+            'الدمام' => 'Dammam',
+            'مكة المكرمة' => 'Mekke',
+            'المدينة المنورة' => 'Medine',
+            'الطائف' => 'Taif',
+            'تبوك' => 'Tebuk',
+            'بريدة' => 'Buraydah',
+            'الخبر' => 'Khobar',
+            'خميس مشيط' => 'Khamis Mushait',
+            'الهفوف' => 'Hofuf',
+            'المبرز' => 'Mubarraz',
+            'حائل' => 'Hail',
+            'نجران' => 'Najran',
+            'الجبيل' => 'Jubail',
+            'ينبع' => 'Yanbu',
+            'أبها' => 'Abha',
+            'عرعر' => 'Arar',
+            'سكاكا' => 'Sakaka',
+            'جيزان' => 'Jizan',
+            'القطيف' => 'Qatif',
+            'الباحة' => 'Al Bahah',
+            'رفحاء' => 'Rafha',
+            'تيماء' => 'Tayma',
+            'ضباء' => 'Duba',
+        ];
+
+        $turkish = $translations[$this->name_ar] ?? '';
+        
+        if ($turkish) {
+            return $this->name_ar . ' - ' . $turkish;
+        }
+        
+        return $this->name_ar;
     }
 
     public function getDisplayNameAttribute(): string

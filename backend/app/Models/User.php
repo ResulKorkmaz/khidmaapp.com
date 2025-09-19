@@ -61,11 +61,11 @@ class User extends Authenticatable implements MustVerifyEmail
             ->dontSubmitEmptyLogs();
     }
 
-    // Relationships
-    public function profile(): HasOne
-    {
-        return $this->hasOne(UserProfile::class);
-    }
+    // Relationships (UserProfile will be added later)
+    // public function profile(): HasOne
+    // {
+    //     return $this->hasOne(UserProfile::class);
+    // }
 
     public function services(): HasMany
     {
@@ -90,12 +90,42 @@ class User extends Authenticatable implements MustVerifyEmail
     // Scopes
     public function scopeProviders($query)
     {
-        return $query->where('role', 'provider');
+        return $query->whereIn('role', ['individual_provider', 'company_provider']);
+    }
+
+    public function scopeIndividualProviders($query)
+    {
+        return $query->where('role', 'individual_provider');
+    }
+
+    public function scopeCompanyProviders($query)
+    {
+        return $query->where('role', 'company_provider');
     }
 
     public function scopeCustomers($query)
     {
         return $query->where('role', 'customer');
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function scopeEditors($query)
+    {
+        return $query->where('role', 'editor');
+    }
+
+    public function scopeBackendUsers($query)
+    {
+        return $query->whereIn('role', ['admin', 'editor']);
+    }
+
+    public function scopeFrontendUsers($query)
+    {
+        return $query->whereIn('role', ['customer', 'individual_provider', 'company_provider']);
     }
 
     public function scopeActive($query)
@@ -116,7 +146,17 @@ class User extends Authenticatable implements MustVerifyEmail
     // Accessors & Mutators
     public function getIsProviderAttribute(): bool
     {
-        return $this->role === 'provider';
+        return in_array($this->role, ['individual_provider', 'company_provider']);
+    }
+
+    public function getIsIndividualProviderAttribute(): bool
+    {
+        return $this->role === 'individual_provider';
+    }
+
+    public function getIsCompanyProviderAttribute(): bool
+    {
+        return $this->role === 'company_provider';
     }
 
     public function getIsCustomerAttribute(): bool
@@ -124,17 +164,47 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->role === 'customer';
     }
 
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function getIsEditorAttribute(): bool
+    {
+        return $this->role === 'editor';
+    }
+
+    public function getIsBackendUserAttribute(): bool
+    {
+        return in_array($this->role, ['admin', 'editor']);
+    }
+
+    public function getIsFrontendUserAttribute(): bool
+    {
+        return in_array($this->role, ['customer', 'individual_provider', 'company_provider']);
+    }
+
+    public function getRoleDisplayNameAttribute(): string
+    {
+        return match($this->role) {
+            'customer' => 'عميل',
+            'individual_provider' => 'مقدم خدمة فردي',
+            'company_provider' => 'مقدم خدمة شركة',
+            'admin' => 'مدير النظام',
+            'editor' => 'محرر',
+            default => 'غير محدد'
+        };
+    }
+
     public function getDisplayNameAttribute(): string
     {
-        return $this->profile?->company_name ?? $this->name;
+        return $this->name; // Will be enhanced when UserProfile is added
     }
 
     public function getAvatarUrlAttribute(): string
     {
-        if ($this->profile?->avatar) {
-            return asset('storage/' . $this->profile->avatar);
-        }
-        
+        // For now, always use generated avatar
+        // Will be enhanced when UserProfile is added
         return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=3B82F6&color=fff&size=200";
     }
 

@@ -1,0 +1,245 @@
+/* KhidmaApp Admin Panel - Filament v3 Custom Styles */
+
+:root {
+    /* Primary - Ice Blue (Buz Mavisi) */
+    --primary-50: #f0fdff;
+    --primary-100: #ccfbf1;
+    --primary-200: #99f6e4;
+    --primary-300: #5eead4;
+    --primary-400: #2dd4bf;
+    --primary-500: #14b8a6; /* Ana buz mavisi */
+    --primary-600: #0d9488;
+    --primary-700: #0f766e;
+    --primary-800: #115e59;
+    --primary-900: #134e4a;
+    
+    /* Secondary - Gold */
+    --secondary-50: #fefbf3;
+    --secondary-100: #fef3c7;
+    --secondary-200: #fde68a;
+    --secondary-300: #fcd34d;
+    --secondary-400: #fbbf24;
+    --secondary-500: #D4AF37; /* Ana altın */
+    --secondary-600: #d97706;
+    --secondary-700: #b45309;
+    --secondary-800: #92400e;
+    --secondary-900: #78350f;
+    
+    /* Accent - Navy */
+    --accent-50: #f8fafc;
+    --accent-100: #f1f5f9;
+    --accent-200: #e2e8f0;
+    --accent-300: #cbd5e1;
+    --accent-400: #94a3b8;
+    --accent-500: #64748b;
+    --accent-600: #475569;
+    --accent-700: #334155;
+    --accent-800: #1B263B; /* Ana lacivert */
+    --accent-900: #0f172a;
+}
+
+/* Filament v3 Panel Background */
+.fi-main {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+}
+
+/* Sidebar Styling */
+.fi-sidebar {
+    background: var(--accent-800) !important;
+    border-right: 2px solid var(--secondary-500) !important;
+}
+
+.fi-sidebar-header {
+    background: var(--accent-900) !important;
+    border-bottom: 2px solid var(--secondary-500) !important;
+}
+
+.fi-sidebar-group-label {
+    color: var(--secondary-300) !important;
+    font-weight: 600;
+}
+
+/* Navigation Items */
+.fi-sidebar-nav-item {
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+.fi-sidebar-nav-item-active {
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-600)) !important;
+    border-left: 4px solid var(--secondary-500) !important;
+    border-radius: 8px !important;
+}
+
+.fi-sidebar-nav-item-active .fi-sidebar-nav-item-label {
+    color: white !important;
+    font-weight: 600;
+}
+
+.fi-sidebar-nav-item-icon {
+    color: var(--secondary-300);
+}
+
+.fi-sidebar-nav-item-active .fi-sidebar-nav-item-icon {
+    color: white !important;
+}
+
+/* Topbar */
+.fi-topbar {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700)) !important;
+    border-bottom: 2px solid var(--secondary-500) !important;
+}
+
+.fi-topbar-item-label {
+    color: white !important;
+}
+
+/* Buttons */
+.fi-btn-primary {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600)) !important;
+    border: 1px solid var(--secondary-500) !important;
+    color: white !important;
+}
+
+.fi-btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-600), var(--primary-700)) !important;
+    border: 1px solid var(--secondary-400) !important;
+}
+
+/* Cards and Widgets */
+.fi-section-content-ctn {
+    border-left: 4px solid var(--secondary-500);
+    background: linear-gradient(135deg, #ffffff, var(--primary-50));
+}
+
+.fi-stats-overview-stats-ctn .fi-stats-overview-stat {
+    border-left: 4px solid var(--secondary-500);
+}
+
+.fi-stats-overview-stat-icon {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-600)) !important;
+    color: white !important;
+}
+
+/* Forms */
+.fi-input:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1) !important;
+}
+
+.fi-select:focus {
+    border-color: var(--primary-500) !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1) !important;
+}
+
+/* Tables */
+.fi-table-header-cell {
+    background: var(--accent-800) !important;
+    color: var(--secondary-100) !important;
+    border-bottom: 2px solid var(--secondary-500) !important;
+}
+
+.fi-table-row:hover {
+    background: var(--primary-50) !important;
+}
+
+/* Badges */
+.fi-badge {
+    font-weight: 600;
+}
+
+.fi-color-success .fi-badge {
+    background: var(--primary-100) !important;
+    color: var(--primary-800) !important;
+    border: 1px solid var(--primary-300) !important;
+}
+
+.fi-color-warning .fi-badge {
+    background: var(--secondary-100) !important;
+    color: var(--secondary-800) !important;
+    border: 1px solid var(--secondary-300) !important;
+}
+
+/* Brand Logo */
+.fi-sidebar-brand {
+    color: var(--secondary-400) !important;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* Notifications */
+.fi-no-notification {
+    background: var(--primary-500) !important;
+    color: white !important;
+}
+
+/* Tabs */
+.fi-tabs-tab-active {
+    border-bottom: 2px solid var(--secondary-500) !important;
+    color: var(--primary-600) !important;
+}
+
+/* Modals */
+.fi-modal-content {
+    border: 1px solid var(--primary-200);
+}
+
+.fi-modal-header {
+    border-bottom: 2px solid var(--secondary-500);
+    background: var(--primary-50);
+}
+
+/* Pagination */
+.fi-pagination-nav-item-active {
+    background: var(--primary-500) !important;
+    border-color: var(--primary-500) !important;
+    color: white !important;
+}
+
+/* Scrollbar */
+.fi-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fi-sidebar::-webkit-scrollbar-track {
+    background: var(--accent-700);
+}
+
+.fi-sidebar::-webkit-scrollbar-thumb {
+    background: var(--primary-500);
+    border-radius: 3px;
+}
+
+.fi-sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-600);
+}
+
+/* Additional Custom Styles */
+.fi-dashboard-widget {
+    border: 1px solid var(--primary-200);
+    background: linear-gradient(135deg, #ffffff, var(--primary-50));
+}
+
+.fi-dashboard-widget:hover {
+    border-color: var(--primary-400);
+    box-shadow: 0 4px 6px rgba(20, 184, 166, 0.1);
+}
+
+/* Login Page */
+.fi-simple-layout {
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+}
+
+.fi-simple-main {
+    background: white;
+    border: 1px solid var(--primary-200);
+}
+
+/* Dark Mode Support */
+.dark .fi-sidebar {
+    background: var(--accent-900) !important;
+}
+
+.dark .fi-main {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+}

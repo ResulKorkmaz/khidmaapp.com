@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\CitiesController;
-use App\Http\Controllers\Api\V1\ServicesController;
+use App\Http\Controllers\Api\V1\ServiceController;
+use App\Http\Controllers\Api\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +32,26 @@ Route::get('/health', function () {
 // API V1 Routes
 Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     
+    // Authentication Routes (No auth required)
+    Route::controller(AuthController::class)->group(function () {
+        Route::post('/auth/register', 'register')->name('auth.register');
+        Route::post('/auth/login', 'login')->name('auth.login');
+        Route::post('/auth/phone/otp/send', 'sendPhoneOTP')->name('auth.phone.otp.send');
+        Route::post('/auth/phone/otp/verify', 'verifyPhoneOTP')->name('auth.phone.otp.verify');
+    });
+
+    // Protected Authentication Routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::controller(AuthController::class)->group(function () {
+            Route::post('/auth/logout', 'logout')->name('auth.logout');
+            Route::post('/auth/logout-all', 'logoutAll')->name('auth.logout-all');
+            Route::get('/auth/me', 'me')->name('auth.me');
+            Route::put('/auth/profile', 'updateProfile')->name('auth.profile.update');
+            Route::post('/auth/password/change', 'changePassword')->name('auth.password.change');
+            Route::post('/auth/token/refresh', 'refreshToken')->name('auth.token.refresh');
+        });
+    });
+    
     // Cities Routes
     Route::controller(CitiesController::class)->group(function () {
         Route::get('/cities', 'index')->name('cities.index');
@@ -51,7 +73,7 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
     });
 
     // Services Routes
-    Route::controller(ServicesController::class)->group(function () {
+    Route::controller(ServiceController::class)->group(function () {
         Route::get('/services', 'index')->name('services.index');
         Route::get('/services/featured', 'featured')->name('services.featured');
         Route::get('/services/popular', 'popular')->name('services.popular');
@@ -157,4 +179,11 @@ Route::fallback(function () {
         'message' => 'API endpoint not found',
         'code' => 404
     ], 404);
+});
+
+// Search API Routes
+Route::prefix('search')->group(function () {
+    Route::get('categories', [App\Http\Controllers\Api\SearchController::class, 'categories']);
+    Route::get('services', [App\Http\Controllers\Api\SearchController::class, 'services']);
+    Route::get('suggestions', [App\Http\Controllers\Api\SearchController::class, 'suggestions']);
 });

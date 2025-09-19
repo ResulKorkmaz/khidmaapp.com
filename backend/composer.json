@@ -2,7 +2,12 @@
     "name": "khidmaapp/backend",
     "type": "project",
     "description": "KhidmaApp Laravel Backend API",
-    "keywords": ["laravel", "api", "khidma", "services"],
+    "keywords": [
+        "laravel",
+        "api",
+        "khidma",
+        "services"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",
@@ -41,7 +46,8 @@
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
+            "@php artisan package:discover --ansi",
+            "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"

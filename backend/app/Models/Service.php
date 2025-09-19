@@ -66,8 +66,8 @@ class Service extends Model
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
-            ->generateSlugsFrom(['title_ar', 'title_en'])
-            ->saveSlugsTo(['slug_ar', 'slug_en'])
+            ->generateSlugsFrom('title_ar')
+            ->saveSlugsTo('slug_ar')
             ->doNotGenerateSlugsOnUpdate();
     }
 

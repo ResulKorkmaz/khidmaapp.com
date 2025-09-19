@@ -30,7 +30,7 @@ return new class extends Migration
 
         Schema::create('categories', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('parent_id')->nullable()->constrained('categories')->nullOnDelete();
+            $table->uuid('parent_id')->nullable();
             $table->string('name_ar');
             $table->string('name_en');
             $table->string('slug_ar')->unique();
@@ -49,6 +49,11 @@ return new class extends Migration
             $table->index(['parent_id', 'is_active', 'sort_order']);
             $table->index('slug_ar');
             $table->index('slug_en');
+        });
+
+        // Add foreign key constraint after table creation
+        Schema::table('categories', function (Blueprint $table) {
+            $table->foreign('parent_id')->references('id')->on('categories')->nullOnDelete();
         });
 
         Schema::create('category_city', function (Blueprint $table) {

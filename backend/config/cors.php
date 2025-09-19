@@ -23,6 +23,9 @@ return [
         'https://khidmaapp.com',
         'https://www.khidmaapp.com',
         'http://localhost:3000', // Next.js development
+        'http://localhost:3001', // Next.js development (backup port)
+        'http://localhost:3002', // Next.js development (backup port 2)
+        'http://localhost:3003', // Next.js development (backup port 3)
         'https://*.vercel.app', // Vercel preview deployments
     ],
 
