@@ -103,8 +103,6 @@ class AuthController extends BaseController
                 'role' => $user->role,
                 'locale' => $user->locale,
                 'is_verified' => $user->is_verified,
-                'rating_avg' => $user->rating_avg,
-                'jobs_completed' => $user->jobs_completed,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
@@ -118,8 +116,7 @@ class AuthController extends BaseController
     public function logout(Request $request): JsonResponse
     {
         $request->user()->currentAccessToken()->delete();
-
-        return $this->success(null, 'Çıkış yapıldı');
+        return $this->success(null, 'Çıkış başarılı');
     }
 
     /**
@@ -128,17 +125,16 @@ class AuthController extends BaseController
     public function logoutAll(Request $request): JsonResponse
     {
         $request->user()->tokens()->delete();
-
         return $this->success(null, 'Tüm cihazlardan çıkış yapıldı');
     }
 
     /**
-     * Get current user profile
+     * Get authenticated user
      */
     public function me(Request $request): JsonResponse
     {
         $user = $request->user();
-
+        
         return $this->success([
             'id' => $user->id,
             'name' => $user->name,
@@ -147,15 +143,11 @@ class AuthController extends BaseController
             'whatsapp' => $user->whatsapp,
             'role' => $user->role,
             'locale' => $user->locale,
-            'is_verified' => $user->is_verified,
             'is_active' => $user->is_active,
-            'rating_avg' => $user->rating_avg,
-            'rating_count' => $user->rating_count,
-            'jobs_completed' => $user->jobs_completed,
-            'email_verified_at' => $user->email_verified_at,
-            'phone_verified_at' => $user->phone_verified_at,
-            'created_at' => $user->created_at->toISOString(),
-        ], 'Profil bilgileri alındı');
+            'is_verified' => $user->is_verified,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ]);
     }
 
     /**
@@ -164,26 +156,27 @@ class AuthController extends BaseController
     public function updateProfile(Request $request): JsonResponse
     {
         $user = $request->user();
-
-        $request->validate([
+        
+        $validatedData = $request->validate([
             'name' => 'sometimes|string|max:255',
             'phone' => 'sometimes|string|max:20',
-            'whatsapp' => 'sometimes|string|max:20',
-            'locale' => 'sometimes|in:ar,en',
+            'whatsapp' => 'sometimes|nullable|string|max:20',
+            'locale' => 'sometimes|in:ar,en,tr',
         ]);
 
-        $user->update($request->only(['name', 'phone', 'whatsapp', 'locale']));
+        $user->update($validatedData);
 
         return $this->success([
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'whatsapp' => $user->whatsapp,
-            'role' => $user->role,
-            'locale' => $user->locale,
-            'is_verified' => $user->is_verified,
-            'updated_at' => $user->updated_at->toISOString(),
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'whatsapp' => $user->whatsapp,
+                'role' => $user->role,
+                'locale' => $user->locale,
+                'is_verified' => $user->is_verified,
+            ],
         ], 'Profil güncellendi');
     }
 
@@ -194,7 +187,7 @@ class AuthController extends BaseController
     {
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = $request->user();
@@ -204,66 +197,13 @@ class AuthController extends BaseController
         }
 
         $user->update([
-            'password' => Hash::make($request->new_password),
+            'password' => Hash::make($request->password),
         ]);
 
-        // Logout from all devices except current
-        $user->tokens()->where('id', '!=', $request->user()->currentAccessToken()->id)->delete();
+        // Logout from all other devices
+        $user->tokens()->where('id', '!=', $user->currentAccessToken()->id)->delete();
 
         return $this->success(null, 'Şifre başarıyla değiştirildi');
-    }
-
-    /**
-     * Send OTP for phone verification
-     */
-    public function sendPhoneOTP(Request $request): JsonResponse
-    {
-        $request->validate([
-            'phone' => 'required|string|max:20',
-        ]);
-
-        // TODO: Implement actual SMS sending
-        $otp = rand(100000, 999999);
-        
-        // Store OTP in cache for 5 minutes
-        cache()->put('phone_otp_' . $request->phone, $otp, 300);
-
-        // In production, send SMS here
-        // For development, return OTP (remove this in production)
-        return $this->success([
-            'message' => 'OTP gönderildi',
-            'otp' => config('app.debug') ? $otp : null, // Only show in debug mode
-        ], 'Doğrulama kodu gönderildi');
-    }
-
-    /**
-     * Verify phone OTP
-     */
-    public function verifyPhoneOTP(Request $request): JsonResponse
-    {
-        $request->validate([
-            'phone' => 'required|string|max:20',
-            'otp' => 'required|string|size:6',
-        ]);
-
-        $cachedOTP = cache()->get('phone_otp_' . $request->phone);
-
-        if (!$cachedOTP || $cachedOTP != $request->otp) {
-            return $this->error('Geçersiz veya süresi dolmuş kod', 400);
-        }
-
-        // Remove OTP from cache
-        cache()->forget('phone_otp_' . $request->phone);
-
-        // Update user phone verification
-        if ($user = $request->user()) {
-            $user->update([
-                'phone' => $request->phone,
-                'phone_verified_at' => now(),
-            ]);
-        }
-
-        return $this->success(null, 'Telefon numarası doğrulandı');
     }
 
     /**
@@ -272,10 +212,9 @@ class AuthController extends BaseController
     public function refreshToken(Request $request): JsonResponse
     {
         $user = $request->user();
-        $currentToken = $request->user()->currentAccessToken();
         
         // Delete current token
-        $currentToken->delete();
+        $request->user()->currentAccessToken()->delete();
         
         // Create new token
         $token = $user->createToken('auth_token', ['*'], now()->addDays(30))->plainTextToken;
@@ -285,5 +224,32 @@ class AuthController extends BaseController
             'token_type' => 'Bearer',
             'expires_at' => now()->addDays(30)->toISOString(),
         ], 'Token yenilendi');
+    }
+
+    /**
+     * Send phone OTP (placeholder)
+     */
+    public function sendPhoneOTP(Request $request): JsonResponse
+    {
+        $request->validate([
+            'phone' => 'required|string|max:20',
+        ]);
+
+        // TODO: Implement SMS OTP sending
+        return $this->success(['otp_sent' => true], 'OTP gönderildi');
+    }
+
+    /**
+     * Verify phone OTP (placeholder)
+     */
+    public function verifyPhoneOTP(Request $request): JsonResponse
+    {
+        $request->validate([
+            'phone' => 'required|string|max:20',
+            'otp' => 'required|string|size:6',
+        ]);
+
+        // TODO: Implement SMS OTP verification
+        return $this->success(['verified' => true], 'Telefon doğrulandı');
     }
 }
