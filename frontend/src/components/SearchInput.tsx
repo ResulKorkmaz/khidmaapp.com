@@ -49,7 +49,7 @@ export default function SearchInput({
       isPopular: true
     },
     {
-      id: '2',
+      id: '2', 
       name_ar: 'تنظيف المنازل الفارغة',
       name_en: 'Empty House Cleaning',
       slug: 'empty-house-cleaning',

@@ -36,7 +36,8 @@ interface Ad {
   category: string
 }
 
-export default function ProfilePage() {
+export default function ProviderProfilePage() {
+  const [isLoading, setIsLoading] = useState(true)
   const [profileData, setProfileData] = useState<ProfileData>({
     firstName: '',
     lastName: '',
@@ -269,6 +270,50 @@ export default function ProfilePage() {
 
   // Load profile data on component mount
   useEffect(() => {
+    // KATI KURAL: Role-based routing control
+    // Bu sayfa SADECE bireysel hizmet veren için!
+    
+    const savedAuthUser = localStorage.getItem('authUser')
+    
+    if (savedAuthUser) {
+      const authUser = JSON.parse(savedAuthUser)
+      const userRole = authUser.role
+      
+      console.log('🔒 Provider Profile Security Check - User Role:', userRole)
+      
+      // Şirket kullanıcısı bu sayfaya erişmeye çalışıyorsa, zorla business/profile'a yönlendir
+      if (userRole === 'company_provider') {
+        console.log('🚨 SECURITY: Company user accessing provider profile - REDIRECTING')
+        setIsLoading(false) // Loading'i durdur
+        window.location.href = '/ar/dashboard/business/profile'
+        return
+      }
+      
+      // Customer bu sayfaya erişmeye çalışıyorsa, client/profile'a yönlendir
+      if (userRole === 'customer') {
+        console.log('🚨 SECURITY: Customer accessing provider profile - REDIRECTING')
+        setIsLoading(false) // Loading'i durdur
+        window.location.href = '/ar/dashboard/client/profile'
+        return
+      }
+      
+      // Sadece individual_provider bu sayfayı görebilir
+      if (userRole !== 'individual_provider') {
+        console.log('🚨 SECURITY: Unauthorized role accessing provider profile - REDIRECTING TO LOGIN')
+        setIsLoading(false) // Loading'i durdur
+        window.location.href = '/ar/login'
+        return
+      }
+      
+      console.log('✅ SECURITY: Individual provider authorized for this profile')
+    } else {
+      // Authentication yoksa login'e yönlendir
+      console.log('🚨 SECURITY: No authentication found - REDIRECTING TO LOGIN')
+      setIsLoading(false) // Loading'i durdur
+      window.location.href = '/ar/login'
+      return
+    }
+    
     const savedProfileData = localStorage.getItem('profileData')
     
     let profileDataToUse: ProfileData
@@ -324,6 +369,9 @@ export default function ProfilePage() {
     
     // Check if user already has a website
     checkExistingWebsite(profileDataToUse)
+    
+    // Loading complete
+    setIsLoading(false)
   }, [])
 
   const checkExistingWebsite = (data: ProfileData) => {
@@ -562,8 +610,21 @@ export default function ProfilePage() {
     })
   }
 
+  // Show loading while checking authentication and role
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center" dir="rtl">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">جاري التحميل...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // This is the Individual Provider Profile Page
   return (
-    <div className="min-h-screen bg-gray-50" dir="rtl">
+    <div className="min-h-screen bg-gray-50 pt-32 pb-12" dir="rtl">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 py-4">
@@ -578,7 +639,7 @@ export default function ProfilePage() {
               </Link>
             </div>
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
-              <h1 className="text-2xl font-bold text-navy-800">لوحة التحكم</h1>
+              <h1 className="text-2xl font-bold text-navy-800">لوحة تحكم مقدم الخدمة</h1>
               <div className="relative">
                 <button 
                   onClick={() => setActiveTab('messages')}
@@ -688,7 +749,7 @@ export default function ProfilePage() {
                     }`}
                   >
                     <Globe className="w-5 h-5 ml-2" />
-                    {existingWebsiteSlug ? 'عرض موقعي الشخصي' : 'إنشاء موقع ويب'}
+                    {existingWebsiteSlug ? 'زيارة موقعي الويب' : 'إنشاء موقع ويب'}
                   </button>
                 </div>
               </nav>

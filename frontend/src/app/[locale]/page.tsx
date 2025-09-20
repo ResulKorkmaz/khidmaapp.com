@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import WhyChooseUs from "@/components/sections/WhyChooseUs"
 import PopularServices from "@/components/sections/PopularServices"
 import HowItWorks from "@/components/sections/HowItWorks"
@@ -8,6 +9,22 @@ import Footer from "@/components/Footer"
 import SearchInput from "@/components/SearchInput"
 
 export default function HomePage() {
+  // Handle hash-based navigation from other pages
+  useEffect(() => {
+    const hash = window.location.hash.slice(1) // Remove the # symbol
+    if (hash) {
+      // Wait for the page to fully load
+      setTimeout(() => {
+        const element = document.getElementById(hash)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+          // Clean up the hash from URL
+          window.history.replaceState({}, document.title, window.location.pathname)
+        }
+      }, 100)
+    }
+  }, [])
+
   const handleSearch = (query: string) => {
     // Handle search logic here
     console.log('Searching for:', query)
@@ -16,7 +33,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-500 to-primary-700 py-20">
+      <section className="bg-gradient-to-r from-primary-500 to-primary-700 pt-40 pb-20">
         <div className="container mx-auto px-4 text-center text-white">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">
             مرحباً بكم في خدمة أب (KhidmaApp)
@@ -26,7 +43,7 @@ export default function HomePage() {
           </p>
           
           {/* Smart Search Box */}
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto text-gray-900 mb-12">
+          <div id="search-section" className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl mx-auto text-gray-900 mb-12">
             <h2 className="text-2xl font-semibold mb-6 text-navy-800">
               ابحث عن الخدمة التي تحتاجها
             </h2>
@@ -65,7 +82,9 @@ export default function HomePage() {
       {/* Page Sections */}
       <WhyChooseUs />
       <PopularServices />
-      <HowItWorks />
+      <div id="how-it-works-section">
+        <HowItWorks />
+      </div>
       <ServiceAreas />
       <Footer />
     </div>

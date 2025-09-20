@@ -126,8 +126,14 @@ export default function ProviderLoginPage({ params }: ProviderLoginPageProps) {
         // Show success message
         alert('تم تسجيل الدخول بنجاح!')
         
-        // Redirect to provider dashboard
-        window.location.href = `/${locale}/dashboard/profile`
+        // Redirect based on provider type
+        if (response.data.user.role === 'individual_provider') {
+          window.location.href = `/${locale}/dashboard/provider/profile`
+        } else if (response.data.user.role === 'company_provider') {
+          window.location.href = `/${locale}/dashboard/business/profile`
+        } else {
+          window.location.href = `/${locale}/dashboard/provider/profile` // Default for individual
+        }
       } else {
         throw new Error(response.message || 'خطأ في تسجيل الدخول')
       }
@@ -149,7 +155,7 @@ export default function ProviderLoginPage({ params }: ProviderLoginPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center pt-32 pb-12 px-4 sm:px-6 lg:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">

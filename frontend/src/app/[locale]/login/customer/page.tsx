@@ -127,7 +127,7 @@ export default function CustomerLoginPage({ params }: CustomerLoginPageProps) {
         alert('تم تسجيل الدخول بنجاح!')
         
         // Redirect to customer dashboard
-        window.location.href = `/${locale}/dashboard`
+        window.location.href = `/${locale}/dashboard/client/profile`
       } else {
         throw new Error(response.message || 'خطأ في تسجيل الدخول')
       }
@@ -149,7 +149,7 @@ export default function CustomerLoginPage({ params }: CustomerLoginPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-gold-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 to-gold-100 flex items-center justify-center pt-32 pb-12 px-4 sm:px-6 lg:px-8" dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">

@@ -18,6 +18,25 @@ class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable, HasUuids, HasRoles, LogsActivity;
 
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Prevent deletion of critical admin users
+        static::deleting(function ($user) {
+            // Prevent deletion of main admin user
+            if ($user->email === 'admin@khidmaapp.com') {
+                throw new \Exception('Main admin user (admin@khidmaapp.com) cannot be deleted for security reasons.');
+            }
+            
+            // Prevent deletion of the last admin user
+            $adminCount = static::where('role', 'admin')->where('id', '!=', $user->id)->count();
+            if ($user->role === 'admin' && $adminCount < 1) {
+                throw new \Exception('Cannot delete the last admin user. At least one admin user must exist.');
+            }
+        });
+    }
+
     protected $fillable = [
         'name',
         'email',
@@ -85,6 +104,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function givenReviews(): HasMany
     {
         return $this->hasMany(ServiceReview::class, 'customer_id');
+    }
+
+    public function verification(): HasOne
+    {
+        return $this->hasOne(ProfileVerification::class);
+    }
+
+    public function verifications(): HasMany
+    {
+        return $this->hasMany(ProfileVerification::class);
     }
 
     // Scopes
@@ -233,5 +262,74 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getPreferredLanguage(): string
     {
         return $this->locale ?? 'ar';
+    }
+
+    // Verification Helper Methods
+    public function getIsVerifiedProviderAttribute(): bool
+    {
+        if (!$this->isProvider()) {
+            return false;
+        }
+
+        $verification = $this->verification;
+        return $verification && $verification->is_verified;
+    }
+
+    public function getVerificationStatusAttribute(): string
+    {
+        $verification = $this->verification;
+        
+        if (!$verification) {
+            return 'none';
+        }
+        
+        if ($verification->is_expired) {
+            return 'expired';
+        }
+        
+        return $verification->status;
+    }
+
+    public function getVerificationExpiryAttribute(): ?string
+    {
+        $verification = $this->verification;
+        
+        if (!$verification) {
+            return null;
+        }
+        
+        if ($verification->is_trial && $verification->trial_expires_at) {
+            return $verification->trial_expires_at->format('Y-m-d');
+        }
+        
+        if ($verification->expires_at) {
+            return $verification->expires_at->format('Y-m-d');
+        }
+        
+        return null;
+    }
+
+    public function isProvider(): bool
+    {
+        return in_array($this->role, ['individual_provider', 'company_provider']);
+    }
+
+    public function isCompanyProvider(): bool
+    {
+        return $this->role === 'company_provider';
+    }
+
+    public function canRequestVerification(): bool
+    {
+        return $this->isProvider() && !$this->verification;
+    }
+
+    public function createTrialVerification(): ?ProfileVerification
+    {
+        if (!$this->canRequestVerification()) {
+            return null;
+        }
+
+        return ProfileVerification::createTrialVerification($this);
     }
 }

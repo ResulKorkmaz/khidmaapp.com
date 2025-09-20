@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoriesController;
 use App\Http\Controllers\Api\V1\CitiesController;
 use App\Http\Controllers\Api\V1\ServiceController;
+use App\Http\Controllers\Api\V1\VerificationController;
 use App\Http\Controllers\Api\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,15 @@ Route::group(['prefix' => 'v1', 'as' => 'api.v1.'], function () {
             Route::put('/auth/profile', 'updateProfile')->name('auth.profile.update');
             Route::post('/auth/password/change', 'changePassword')->name('auth.password.change');
             Route::post('/auth/token/refresh', 'refreshToken')->name('auth.token.refresh');
+        });
+
+        // Verification Routes (Protected)
+        Route::controller(VerificationController::class)->prefix('verification')->group(function () {
+            Route::get('/status', 'getStatus')->name('verification.status');
+            Route::post('/request', 'requestVerification')->name('verification.request');
+            Route::post('/upgrade', 'upgradeVerification')->name('verification.upgrade');
+            Route::get('/pricing', 'getPricing')->name('verification.pricing');
+            Route::get('/statistics', 'getStatistics')->name('verification.statistics'); // Admin only
         });
     });
     

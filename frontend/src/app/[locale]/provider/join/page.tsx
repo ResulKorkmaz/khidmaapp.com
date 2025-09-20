@@ -821,7 +821,7 @@ export default function ProviderJoinPage() {
           alert('تم إنشاء الحساب بنجاح! مرحباً بك في خدمة أب')
           
           // Redirect to profile page
-          window.location.href = '/ar/dashboard/profile'
+          window.location.href = '/ar/dashboard/provider/profile'
         } else {
           throw new Error(response.message || 'حدث خطأ أثناء إنشاء الحساب')
         }
@@ -1648,7 +1648,7 @@ export default function ProviderJoinPage() {
           localStorage.removeItem('tempRegistrationData')
           
           alert('تم إنشاء حساب الشركة بنجاح! مرحباً بك في خدمة أب')
-          window.location.href = '/ar/dashboard/profile'
+          window.location.href = '/ar/dashboard/business/profile'
         } else {
           throw new Error(response.message || 'حدث خطأ أثناء إنشاء الحساب')
         }
@@ -1833,7 +1833,7 @@ export default function ProviderJoinPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 pt-32 pb-12">
       <div className="container mx-auto px-4">
         {/* Progress Indicator */}
         {providerType === 'individual' && currentStep !== 'type-selection' && currentStep !== 'success' && currentStep !== 'password-reset' && (
