@@ -868,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ============================================
 // FAQ ACCORDION
 // ============================================
-function toggleFaq(button) {
+window.toggleFaq = function(button) {
     const faqItem = button.closest('.faq-item');
     const answer = faqItem.querySelector('.faq-answer');
     const icon = button.querySelector('.faq-icon');
