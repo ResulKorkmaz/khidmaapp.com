@@ -864,7 +864,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script>
 
+<script>
 // ============================================
 // FAQ ACCORDION
 // ============================================
