@@ -1,3 +1,26 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar-SA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Tags -->
+    <title><?= $pageTitle ?? 'خدمة - منصة الخدمات الرائدة في السعودية' ?></title>
+    <meta name="description" content="<?= $pageDescription ?? 'منصة خدماتية متخصصة في ربط العملاء بمقدمي الخدمات المنزلية والتجارية في السعودية' ?>">
+    <meta name="keywords" content="<?= $pageKeywords ?? 'خدمات, دهانات, ترميم, تنظيف, صيانة, كهرباء, سباكة, مكيفات, السعودية' ?>">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/assets/images/logo.png">
+    
+    <!-- Tailwind CSS -->
+    <link href="/assets/css/app.css" rel="stylesheet">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#0ea5e9">
+</head>
+<body class="bg-gray-50">
+
 <header class="fixed top-0 w-full bg-white/90 backdrop-blur-xl border-b border-gray-100/50 z-50 transition-all duration-500 shadow-sm hover:shadow-md">
     <div class="container-custom">
         <div class="flex items-center justify-between h-16 md:h-18">
