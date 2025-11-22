@@ -864,6 +864,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// ============================================
+// FAQ ACCORDION
+// ============================================
+function toggleFaq(button) {
+    const faqItem = button.closest('.faq-item');
+    const answer = faqItem.querySelector('.faq-answer');
+    const icon = button.querySelector('.faq-icon');
+    const isOpen = !answer.classList.contains('hidden');
+    
+    if (isOpen) {
+        // Close
+        answer.classList.add('hidden');
+        icon.style.transform = 'rotate(0deg)';
+    } else {
+        // Close all other FAQs first
+        document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+        document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
+        
+        // Open this one
+        answer.classList.remove('hidden');
+        icon.style.transform = 'rotate(180deg)';
+    }
+}
 </script>
 
 </body>
