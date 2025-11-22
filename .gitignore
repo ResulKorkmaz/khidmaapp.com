@@ -1,47 +1,50 @@
-# Dependencies
-node_modules/
-vendor/
+# KhidmaApp.com - Git Ignore
+# Created: 2025-11-22
+# Purpose: Prevent sensitive files and dependencies from being committed
 
-# Environment files
+# =====================================================
+# ENVIRONMENT & SECRETS
+# =====================================================
 .env
 .env.local
 .env.production
-.env.development
-.env.test
-*.env
+.env.backup
+*.pem
+*.key
+*.cert
 
-# Configuration files with sensitive data
-config/hostinger.conf
-config/*.key
-config/*.pem
-config/secrets.*
+# =====================================================
+# DEPENDENCIES
+# =====================================================
+/vendor/
+/node_modules/
+composer.lock
+package-lock.json
 
-# Logs
+# =====================================================
+# BUILD & CACHE
+# =====================================================
+/public/assets/css/app.css
+/public/assets/css/*.map
+*.cache
+.phpunit.cache/
+.php-cs-fixer.cache
+
+# =====================================================
+# LOGS
+# =====================================================
 *.log
-logs/
-storage/logs/
-var/log/
+/logs/
+/storage/logs/
+error_log
+debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Cache
-.cache/
-storage/framework/cache/
-storage/framework/sessions/
-storage/framework/views/
-
-# Build outputs
-.next/
-build/
-dist/
-public/build/
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS generated files
+# =====================================================
+# OS & IDE
+# =====================================================
 .DS_Store
 .DS_Store?
 ._*
@@ -49,61 +52,57 @@ public/build/
 .Trashes
 ehthumbs.db
 Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Backup files
-*.backup
+# =====================================================
+# BACKUP & TEMPORARY FILES
+# =====================================================
 *.bak
+*.backup
 *.tmp
+*.temp
+*~
+*.old
 
-# SSL certificates
-*.crt
-*.key
-*.pem
-ssl/
-
-# Database
+# =====================================================
+# DATABASE
+# =====================================================
+*.sql
 *.sqlite
 *.db
+!database/schema.sql
+!database/migration*.sql
 
-# Uploads
-storage/app/public/
-public/storage/
+# =====================================================
+# UPLOADS & USER CONTENT
+# =====================================================
+/public/uploads/
+/storage/uploads/
+/public/media/
 
-# Compiled assets
-/public/hot
-/public/storage
-/storage/*.key
+# =====================================================
+# TEST & COVERAGE
+# =====================================================
+/coverage/
+/.phpunit.result.cache
+/tests/coverage/
+phpunit.xml
 
-# Laravel specific
-/bootstrap/cache/*.php
-/storage/framework/cache/data/*
-/storage/framework/sessions/*
-/storage/framework/testing/*
-/storage/framework/views/*
+# =====================================================
+# DOCUMENTATION (generated)
+# =====================================================
+/docs/api/
+/docs/coverage/
 
-# Node.js
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# =====================================================
+# MISC
+# =====================================================
+.htpasswd
+adminer.php
+/public/adminer.php
 
-# PHP
-composer.phar
-/vendor/
 
-# Next.js
-.next/
-out/
-
-# Docker
-docker-compose.override.yml
-.dockerignore
-
-# API Keys and sensitive data
-*.api
-*.secret
-secrets/
-keys/
-
-# Local testing
-test-data/
-temp/

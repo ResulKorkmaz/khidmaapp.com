@@ -1,227 +1,395 @@
-# KhidmaApp - خدمة أب
+# KhidmaApp.com – README.md
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/khidmaapp/frontend)
+PHP + MySQL + Tailwind CSS ile geliştirilen,
+Suudi Arabistan pazarına yönelik **lead satış / müşteri talebi platformu**.
 
-## 🚀 Hızlı Başlangıç
+- Müşteri tarafı: Hizmet arayan kullanıcılar (boya, tadilat, temizlik, klima, vb.)
+- Usta / firma tarafı: **WhatsApp kanalı** ve site üzerinden toplanan hizmet verenler
+- İş modeli: Toplanan her **doğrulanmış müşteri talebi (lead)** hizmet verenlere **lead başı** veya **paket** olarak satılır.
 
-Bu proje **hızlı, güvenli, mükemmel SEO** ve **kolay yönetilebilir** dinamik web sitesi olarak tasarlanmıştır.
+> Not: Bu dosya, özellikle **Cursor + yapay zeka ile geliştirme** yaparken projeyi doğru yönlendirmek için referans dokümandır.
 
-### 📋 Gereksinimler
-
-- **Backend**: PHP 8.2+, Composer, MySQL 8.0+
-- **Frontend**: Node.js 18+, npm/yarn
-- **Hosting**: Hostinger VPS + Vercel
-
-### 🛠️ Kurulum
-
-#### 1. Backend (Laravel API)
-
-```bash
-cd backend
-
-# Bağımlılıkları yükle
-composer install
-
-# Environment dosyasını kopyala
-cp .env.example .env
-
-# Uygulama anahtarı oluştur
-php artisan key:generate
-
-# Veritabanını ayarla
-php artisan migrate --seed
-
-# Sunucuyu başlat
-php artisan serve
-```
-
-#### 2. Frontend (Next.js)
-
-```bash
-cd frontend
-
-# Bağımlılıkları yükle
-npm install
-
-# Environment dosyasını ayarla
-cp .env.example .env.local
-
-# Development sunucusu başlat
-npm run dev
-
-# Production build
-npm run build
-npm start
-```
-
-## 🏗️ Mimari
-
-### Backend (Laravel 11 API)
-- **🔐 Authentication**: Laravel Sanctum
-- **📊 Database**: MySQL/PostgreSQL with UUID primary keys
-- **📱 Admin Panel**: FilamentPHP (Türkçe)
-- **🌍 Multi-language**: Arabic (ar), English (en)
-- **📈 Performance**: Redis caching, Horizon queues
-- **🔍 Search**: Basic Laravel Scout (ready for MeiliSearch)
-
-### Frontend (Next.js 15)
-- **⚡ Performance**: App Router, ISR, SSR
-- **🌐 Multi-language**: next-intl (Arabic RTL + English LTR)
-- **🎨 Styling**: Tailwind CSS with RTL support
-- **📱 Responsive**: Mobile-first design
-- **🔍 SEO**: Perfect Lighthouse scores, Schema.org
-
-### Deployment
-- **Frontend**: Vercel (khidmaapp.com)
-- **Backend**: Hostinger VPS (api.khidmaapp.com)
-- **CDN**: Cloudflare
-- **Database**: Hostinger MySQL
-
-## 📁 Proje Yapısı
-
-```
-khidmaapp.com/
-├── backend/                    # Laravel 11 API
-│   ├── app/
-│   │   ├── Http/Controllers/Api/V1/
-│   │   ├── Models/
-│   │   ├── Filament/          # Admin panel
-│   │   └── Resources/
-│   ├── database/
-│   │   ├── migrations/
-│   │   └── seeders/
-│   └── routes/api.php
-├── frontend/                   # Next.js 15
-│   ├── src/
-│   │   ├── app/[locale]/      # App Router with i18n
-│   │   ├── components/        # Reusable components
-│   │   ├── lib/              # API client, utilities
-│   │   └── middleware.ts     # i18n middleware
-│   ├── messages/             # Translation files
-│   │   ├── ar.json          # Arabic
-│   │   └── en.json          # English
-│   ├── public/
-│   └── tailwind.config.js   # With RTL support
-└── docs/                    # Documentation
-```
-
-## 🌐 Özellikler
-
-### ✅ Mevcut Özellikler
-- [x] **Çok Dilli Destek**: Arapça (RTL) ve İngilizce
-- [x] **API Backend**: Laravel 11 ile RESTful API
-- [x] **Modern Frontend**: Next.js 15 App Router
-- [x] **Admin Panel**: FilamentPHP (Türkçe)
-- [x] **SEO Optimized**: Sitemap, Schema.org, hreflang
-- [x] **Responsive Design**: Mobil-first yaklaşım
-- [x] **Performance**: ISR, caching, optimization
-
-### 🚧 Gelecek Özellikler
-- [ ] **Authentication**: User login/register
-- [ ] **Service Posting**: Create service requests
-- [ ] **Bidding System**: Providers can bid on services
-- [ ] **Messaging**: Real-time chat
-- [ ] **Reviews**: Rating and review system
-- [ ] **Payment Integration**: HyperPay, PayTabs
-- [ ] **Mobile Apps**: React Native
-- [ ] **Advanced Search**: MeiliSearch integration
-
-## 🌍 Çok Dil Desteği
-
-### Desteklenen Diller
-- **العربية (ar)**: Ana dil, RTL desteği
-- **English (en)**: İkincil dil, LTR
-
-### URL Yapısı
-```
-https://khidmaapp.com/ar/          # Arabic homepage
-https://khidmaapp.com/en/          # English homepage
-https://khidmaapp.com/ar/riyadh/cleaning/  # Arabic category page
-https://khidmaapp.com/en/jeddah/plumbing/  # English category page
-```
-
-## 🔧 Deployment
-
-### Frontend (Vercel)
-1. GitHub'a push yapın
-2. Vercel'e bağlayın
-3. Environment variables ayarlayın
-4. Auto-deploy aktif
-
-### Backend (Hostinger VPS)
-```bash
-# VPS'e bağlan
-ssh root@your-server-ip
-
-# Projeyi klonla
-git clone https://github.com/khidmaapp/backend
-cd backend
-
-# Kurulum
-composer install --optimize-autoloader --no-dev
-php artisan key:generate
-php artisan migrate --force
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-
-# Nginx yapılandırması
-# /etc/nginx/sites-available/api.khidmaapp.com
-```
-
-## 📈 Performance
-
-### Lighthouse Scores (Hedef)
-- **Performance**: 95+
-- **Accessibility**: 100
-- **Best Practices**: 100
-- **SEO**: 100
-
-### Optimizasyonlar
-- **ISR**: 5 dakika cache
-- **Image Optimization**: Next.js Image + WebP
-- **Code Splitting**: Automatic
-- **Compression**: Gzip/Brotli
-- **CDN**: Cloudflare
-
-## 🛡️ Güvenlik
-
-- **CORS**: Configured for frontend domain
-- **Rate Limiting**: API endpoints protected
-- **Input Validation**: Zod schemas
-- **XSS Protection**: Built-in Next.js protection
-- **CSRF**: Laravel Sanctum tokens
-- **HTTPS**: Forced in production
-
-## 📊 Monitoring
-
-- **Frontend**: Vercel Analytics
-- **Backend**: Laravel Telescope
-- **Errors**: Sentry (optional)
-- **Uptime**: UptimeRobot
-
-## 🤝 Katkıda Bulunma
-
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit yapın (`git commit -m 'Add some amazing feature'`)
-4. Push yapın (`git push origin feature/amazing-feature`)
-5. Pull Request açın
-
-## 📝 Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır. Detaylar için [LICENSE](LICENSE) dosyasına bakın.
-
-## 🆘 Destek
-
-- **Email**: support@khidmaapp.com
-- **Discord**: [KhidmaApp Community](https://discord.gg/khidmaapp)
-- **Documentation**: [docs.khidmaapp.com](https://docs.khidmaapp.com)
-
-## 🇸🇦 Made in Saudi Arabia
-
-Bu proje Suudi Arabistan pazarı için özel olarak geliştirilmiştir.
+> ⚠️ **ÖNEMLİ:** Lead gönderme sistemi detayları için `leads-gonderme.md` dosyasına bakın!
 
 ---
 
-**⭐ Eğer bu proje işinize yaradıysa, lütfen star verin!**
+## 1. Amaç ve İş Modeli
+
+**KhidmaApp.com'un ana amacı:**
+
+1. Suudi Arabistan'da **bakım / tadilat / hizmet** arayan kullanıcıları toplamak  
+2. Müşterilerin taleplerini **form veya WhatsApp** üzerinden almak  
+3. Bu talepleri:
+   - Doğrulamak (telefon/WhatsApp üzerinden)
+   - Kategorize etmek (şehir, hizmet türü, bütçe, aciliyet)
+4. Doğrulanmış lead'leri:
+   - **WhatsApp kanalı** üzerinden ustalara göstermek (örnek/preview olarak)
+   - Tam iletişim bilgisi ve detayları **lead satışı** veya **abonelik** ile vermek
+
+Bu proje **Armut gibi pazar yeri değil**, **lead satış platformudur**.
+
+---
+
+## 2. Teknoloji Stack'i
+
+- **Backend:** PHP (>= 8.x, framework'süz veya hafif MVC yapı)
+- **Veritabanı:** MySQL / MariaDB
+- **Frontend:** Tailwind CSS (arabic/RTL uyumlu)
+- **View yapısı:** PHP template dosyaları (`views/` altında)
+- **Sunucu:** Paylaşımlı hosting (ör: Hostinger) veya basit VPS
+
+---
+
+## 3. Ana Özellikler (MVP)
+
+### 3.1. Müşteri (Lead) tarafı
+
+- [x] Hizmet seçimi (boya, tadilat, temizlik, klima, vb.)
+- [x] Şehir / bölge seçimi (Riyad, Cidde, Mekke, vb.)
+- [x] Açıklama alanı (kısa iş tarifi)
+- [x] Telefon numarası alanı (zorunlu)
+- [x] Tercihen WhatsApp'a yönlendirme veya "biz sizi arayalım" akışı
+- [x] Form gönderildiğinde `leads` tablosuna kayıt
+- [x] Basit SPAM koruması (honeypot field)
+- [x] "Teşekkürler" sayfası
+
+### 3.2. Usta / Hizmet veren tarafı
+
+- [x] Sitede "**Ustalarımız Arasına Katılın** / انضم إلى مزودي الخدمة" butonu
+- [x] Bu butonun **WhatsApp kanalına yönlendirilmesi**
+- [ ] İleride: Ustalara özel panel (e-posta / telefon doğrulamalı login)
+- [ ] Paket ve lead geçmişi görüntüleme
+
+### 3.3. Admin Panel (v1 basit taslak)
+
+- [x] Giriş (tek admin hesabı, database'den)
+- [x] Lead listesi (filtre: tarih, şehir, hizmet türü, lead durumu)
+- [x] Lead durumu:
+  - `new`
+  - `verified`
+  - `sold`
+  - `invalid`
+- [x] Lead detay sayfası
+- [x] Pagination sistemi
+- [x] Status güncelleme
+- [ ] İleride: Hangi ustaya satıldı, kaç kez gösterildi gibi alanlar
+
+---
+
+## 4. Önerilen Dizin Yapısı
+
+```bash
+project-root/
+├─ public/
+│  ├─ index.php        # Ana giriş (router)
+│  ├─ assets/
+│  │  ├─ css/
+│  │  │  └─ app.css    # Tailwind build çıktısı
+│  │  ├─ js/
+│  │  │  └─ app.js
+│  │  └─ images/
+│  └─ .htaccess        # URL yönlendirme (public index'e)
+├─ src/
+│  ├─ config/
+│  │  └─ config.php    # DB bağlantısı, genel ayarlar
+│  ├─ Controllers/
+│  │  ├─ HomeController.php
+│  │  ├─ LeadController.php
+│  │  └─ AdminController.php
+│  ├─ Models/
+│  │  ├─ Lead.php
+│  │  └─ Admin.php
+│  └─ Views/
+│     ├─ layouts/
+│     │  ├─ header.php
+│     │  ├─ footer.php
+│     │  └─ base.php   # ortak layout
+│     ├─ home.php
+│     ├─ lead_form.php
+│     ├─ thanks.php
+│     └─ admin/
+│        ├─ login.php
+│        └─ leads.php
+├─ database/
+│  └─ schema.sql       # tablo tanımları
+├─ tailwind.config.js
+├─ package.json        # (sadece Tailwind build için)
+├─ composer.json       # (gerekirse)
+├─ .env.example
+└─ README.md
+```
+
+## 5. Veritabanı Taslak Şeması
+
+### 5.1. leads tablosu
+
+```sql
+CREATE TABLE leads (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    service_type VARCHAR(50) NOT NULL,       -- paint, renovation, cleaning, ac, etc.
+    city VARCHAR(100) NOT NULL,              -- Riyadh, Jeddah, vb.
+    description TEXT,
+    phone VARCHAR(30) NOT NULL,
+    whatsapp_phone VARCHAR(30) NULL,
+    budget_min INT NULL,
+    budget_max INT NULL,
+    source VARCHAR(50) DEFAULT 'website',    -- website, whatsapp, form, etc.
+    status ENUM('new', 'verified', 'sold', 'invalid') DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 5.2. admins tablosu (basit)
+
+```sql
+CREATE TABLE admins (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## 6. Kurulum (Local Geliştirme)
+
+### 6.1. Gereksinimler
+
+- PHP 8.x
+- MySQL / MariaDB
+- Node.js (Tailwind için)
+- Composer (opsiyonel)
+
+### 6.2. Adımlar
+
+1. Depoyu klonla veya dosyaları klasöre kopyala.
+
+2. `database/schema.sql` dosyasını MySQL üzerinde çalıştır.
+
+3. `.env.example` dosyasını `.env` olarak kopyala ve düzenle:
+
+```env
+APP_ENV=local
+APP_DEBUG=true
+
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=khidmaapp
+DB_USER=root
+DB_PASS=your_password
+
+BASE_URL=http://localhost/khidmaapp/public
+WHATSAPP_CHANNEL_URL=https://whatsapp.com/channel/0029VbCCqZoI1rcjIn9IWV2l
+```
+
+4. `src/config/config.php` içinde .env değerlerini okuyacak basit bir fonksiyon kullan.
+
+5. Tailwind'i kur:
+
+```bash
+npm install
+# veya
+npm install tailwindcss postcss autoprefixer
+npx tailwindcss init
+```
+
+6. Tailwind build script'i:
+
+`package.json` içine:
+
+```json
+{
+  "scripts": {
+    "dev": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --watch",
+    "build": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --minify"
+  }
+}
+```
+
+7. Local sunucu:
+
+```bash
+php -S localhost:8000 -t public
+```
+
+## 7. Tailwind ve Arayüz Kuralları
+
+**Tasarım:**
+- Minimal, profesyonel, sade.
+- Arka plan genelde açık / soft tonlar.
+- Tüm form ve butonlar mobil öncelikli (mobile-first) tasarlanacak.
+
+**Dil / yön:**
+- Müşteri görünen kısım Arapça + RTL odaklı olacak.
+- Gerekirse `<html dir="rtl" lang="ar">` kullan.
+
+**Bileşenler:**
+- Formlar için tekrar kullanılabilir partial'lar (Views/partials/).
+- Header/footer ayrı dosyalara bölünecek.
+
+**Örnek Tailwind buton sınıfı:**
+
+```html
+<a href="<?= htmlspecialchars($whatsappChannelUrl) ?>"
+   class="inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-semibold
+          bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2
+          focus:ring-offset-2 focus:ring-green-600">
+    انضم إلى مزودي الخدمة
+</a>
+```
+
+## 8. Routing Mantığı (Basit)
+
+`public/index.php` içinde basit bir router:
+
+```php
+<?php
+
+require_once __DIR__ . '/../src/config/config.php';
+require_once __DIR__ . '/../src/Controllers/HomeController.php';
+require_once __DIR__ . '/../src/Controllers/LeadController.php';
+require_once __DIR__ . '/../src/Controllers/AdminController.php';
+
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$path = str_replace('/public', '', $path); // ihtiyaca göre
+
+switch ($path) {
+    case '/':
+    case '/home':
+        (new HomeController())->index();
+        break;
+
+    case '/lead/submit':
+        (new LeadController())->store();
+        break;
+
+    case '/admin':
+        (new AdminController())->index();
+        break;
+
+    default:
+        http_response_code(404);
+        echo "404 Not Found";
+        break;
+}
+```
+
+## 9. Güvenlik ve Temel Kurallar
+
+**Tüm input'larda:**
+- `filter_input()` veya manuel `trim` + `htmlspecialchars` kullan.
+- SQL için prepared statement'lar (`PDO::prepare`).
+
+**Admin giriş:**
+- Şifreler `password_hash`/`password_verify` ile saklanacak.
+- Admin kullanıcı adı/şifresi ilk kurulumda manuel eklenebilir (`INSERT INTO admins...`).
+
+## 10. Cursor & Yapay Zeka ile Çalışma Notları
+
+Bu proje Cursor + yapay zeka ile geliştirilecekse:
+
+**Dosya yapısına saygı:**
+- `public/` sadece entry point ve statik dosyalar
+- `src/Controllers`, `src/Models`, `src/Views` ayrımına sadık kal
+
+**Değişiklik kapsamı:**
+- Tek seferde küçük, net işleri yap (örn. sadece LeadController'a validasyon ekle).
+- Büyük refactor işlemlerinde önce planı yorum satırında anlat, sonra uygula.
+
+**Konfigürasyon:**
+- `.env` dosyasına dokunma, sadece `.env.example` üzerinde öneri ver.
+
+**Dil:**
+- Kod yorumları İngilizce kısa ve net.
+- Kullanıcıya gösterilen metinler Arapça, yönetim/README Türkçe.
+
+## 11. Yol Haritası (Roadmap – Kısa)
+
+- [x] Ana sayfa (Arapça, RTL, "Hizmet Talep Et" formu)
+- [x] Lead oluşturma (form → DB)
+- [x] Basit teşekkür sayfası
+- [x] "Ustalarımız Arasına Katılın" butonu → WhatsApp kanal linki
+- [x] Basit admin login
+- [x] Admin'de lead listesi ve filtreleme
+- [x] Lead durumu güncelleme (new → verified → sold)
+- [x] Lead detay sayfası
+- [x] Pagination
+- [x] SPAM koruması (honeypot)
+- [x] Model katmanı (Lead, Admin)
+- [x] Notification infrastructure
+- [x] Service detail sayfaları
+- [ ] İleride: Ustalara özel panel, paket sistemi, ödeme entegrasyonu (Stripe, Paytabs vb.)
+
+---
+
+Bu README, KhidmaApp.com projesi için temel teknik çerçeveyi ve iş modelinin mantığını tanımlar.
+Geliştirme sırasında bu yapıya sadık kalınırsa proje temiz, genişlemeye uygun ve yönetilebilir kalacaktır.
+
+---
+
+## 12. 🚨 LEAD GÖNDERME SİSTEMİ - KRİTİK KURALLAR
+
+> **⚠️ ASLA UNUTMA! Detaylı dokümantasyon: `leads-gonderme.md`**
+
+### **Özet Sistem Akışı:**
+
+#### **1. Paket Satın Alındığında:**
+- ✅ Admin paneline **BİLDİRİM** gelir
+- ✅ Admin kontrol eder: Sistemde uygun lead var mı?
+- ✅ Varsa → Admin **MANUEL** olarak 1 adet gönderir
+- ❌ Kalan 2 lead otomatik GÖNDERİLMEZ!
+
+#### **2. Kalan Lead'ler İçin:**
+- ✅ Usta **"Lead İste"** butonuna MUTLAKA basmalı
+- ✅ Admin panelinde **BİLDİRİM** gelir
+- ✅ Admin kontrol eder ve **MANUEL** gönderir
+
+#### **3. Sıralama Sistemi:**
+- Aynı şehir + aynı hizmet türü
+- İlk satın alan → İlk sırada
+- Paket bitince → Sonraki sıraya
+
+#### **4. Örnek Senaryo:**
+```
+Usta A: Bugün 3'lü paket aldı
+  → Admin paneline bildirim geldi
+  → Admin 1 lead MANUEL gönderdi
+  → Usta "Lead İste" butonuna bastı → Admin 1 lead daha gönderdi
+  → Usta "Lead İste" butonuna bastı → Admin 1 lead daha gönderdi
+  → Paket tamamlandı (3/3)
+
+Usta B: Aynı gün 3'lü paket aldı
+  → Admin paneline bildirim geldi
+  → Admin 1 lead MANUEL gönderdi
+  → Henüz "Lead İste" butonuna basmadı (müsait değil)
+  → Kalan 2 lead beklemede
+```
+
+### **Neden Bu Sistem?**
+- ✅ **Admin kontrolü:** Her lead admin onayı ile gider
+- ✅ **Müsaitlik kontrolü:** "Lead İste" = "Ben hazırım!"
+- ✅ **Lead kalitesi:** Müsait usta = daha iyi hizmet
+- ✅ **Adil dağıtım:** Sıra sistemi (admin takibi)
+- ✅ **Spam önleme:** Otomatik bombardıman YOK
+- ❌ **Otomatik gönderim YOK:** Her şey manuel
+
+### **Gerekli UI/UX:**
+1. **Provider Dashboard:**
+   - "Lead İste" butonu (her pakette)
+   - Kalan lead sayısı göstergesi
+   - Loading + success animasyonu
+
+2. **Admin Panel:**
+   - Yeni paket bildirimleri
+   - Lead istekleri tablosu
+   - "Lead Gönder" butonu (MANUEL)
+   - ❌ Otomatik kontrol sistemi YOK
+
+**Detaylı dokümantasyon, kod örnekleri, tablo yapıları için:**
+👉 **`leads-gonderme.md`** dosyasına bakın!
+
+---
+
+
+
+

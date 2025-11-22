@@ -1,0 +1,42 @@
+{
+  "name": "khidmaapp.com",
+  "version": "1.0.0",
+  "description": "Lead generation platform for service providers in Saudi Arabia",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --watch",
+    "build": "npx tailwindcss -i ./resources/css/app.css -o ./public/assets/css/app.css --minify",
+    "install-tailwind": "npm install -D tailwindcss postcss autoprefixer",
+    "init-tailwind": "npx tailwindcss init"
+  },
+  "keywords": [
+    "lead-generation",
+    "service-platform",
+    "saudi-arabia",
+    "php",
+    "tailwindcss"
+  ],
+  "author": "KhidmaApp Team",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/khidmaapp/khidmaapp.com"
+  },
+  "bugs": {
+    "url": "https://github.com/khidmaapp/khidmaapp.com/issues"
+  },
+  "homepage": "https://khidmaapp.com"
+}
+
+
+
+
+
+
+
+

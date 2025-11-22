@@ -1,0 +1,408 @@
+/* KhidmaApp.com - Ana CSS Dosyası */
+/* Tailwind CSS base, components ve utilities */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fonts - Arapça için Noto Sans Arabic */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Base Layer - Temel stiller */
+@layer base {
+  /* HTML ve Body için temel ayarlar */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-arabic text-gray-900 bg-gray-50 leading-relaxed;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* RTL için temel ayarlar */
+  [dir="rtl"] {
+    font-family: 'Noto Sans Arabic', 'Cairo', 'Tajawal', sans-serif;
+  }
+  
+  [dir="ltr"] {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  /* Heading'ler için stil */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-gray-800 leading-tight;
+  }
+  
+  h1 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h3 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  /* Link stilleri */
+  a {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Input ve form elemanları */
+  input, textarea, select {
+    @apply transition-all duration-300 focus:outline-none;
+  }
+  
+  /* Placeholder renkleri */
+  input::placeholder,
+  textarea::placeholder {
+    @apply text-gray-400;
+  }
+  
+  [dir="rtl"] input::placeholder,
+  [dir="rtl"] textarea::placeholder {
+    text-align: right;
+  }
+}
+
+/* Components Layer - Özel bileşenler */
+@layer components {
+  /* Primary Button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl text-white font-medium
+           bg-gradient-to-r from-primary-600 to-primary-700 
+           hover:from-primary-700 hover:to-primary-800
+           focus:ring-4 focus:ring-primary-200 focus:outline-none
+           transform hover:scale-105 transition-all duration-300
+           shadow-lg hover:shadow-xl;
+  }
+  
+  /* Secondary Button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl
+           bg-white text-primary-700 font-medium border-2 border-primary-200
+           hover:bg-primary-50 hover:border-primary-300
+           focus:ring-4 focus:ring-primary-200 focus:outline-none
+           transform hover:scale-105 transition-all duration-300
+           shadow-md hover:shadow-lg;
+  }
+  
+  /* WhatsApp Button */
+  .btn-whatsapp {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-xl text-white font-medium
+           bg-gradient-to-r from-green-600 to-green-700 
+           hover:from-green-700 hover:to-green-800
+           focus:ring-4 focus:ring-green-200 focus:outline-none
+           transform hover:scale-105 transition-all duration-300
+           shadow-lg hover:shadow-xl;
+  }
+  
+  /* Form Input */
+  .form-input {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+           focus:border-primary-400 focus:ring-4 focus:ring-primary-100
+           text-gray-900 placeholder-gray-400
+           transition-all duration-300;
+  }
+  
+  [dir="rtl"] .form-input {
+    @apply text-right;
+  }
+  
+  /* Form Select */
+  .form-select {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+           focus:border-primary-400 focus:ring-4 focus:ring-primary-100
+           text-gray-900 cursor-pointer
+           transition-all duration-300;
+  }
+  
+  [dir="rtl"] .form-select {
+    background-position: left 1rem center;
+  }
+  
+  /* Form Textarea */
+  .form-textarea {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white
+           focus:border-primary-400 focus:ring-4 focus:ring-primary-100
+           text-gray-900 placeholder-gray-400 resize-none
+           transition-all duration-300;
+  }
+  
+  [dir="rtl"] .form-textarea {
+    @apply text-right;
+  }
+  
+  /* Dark Background Form Styles (for hero section) */
+  .hero-dark-section .form-input,
+  .hero-dark-section .form-select,
+  .hero-dark-section .form-textarea {
+    @apply bg-slate-800 backdrop-blur-sm border-slate-700 text-white
+           focus:border-blue-500 focus:ring-blue-500/20;
+  }
+  
+  .hero-dark-section .form-input::placeholder,
+  .hero-dark-section .form-textarea::placeholder {
+    color: rgb(156 163 175);
+  }
+  
+  .hero-dark-section label {
+    @apply text-white font-semibold !important;
+  }
+  
+  .hero-dark-section .form-select option {
+    @apply bg-slate-800 text-white;
+  }
+  
+  /* Compact Form Styles - Smaller inputs for compact layouts */
+  @media (min-width: 1024px) {
+    .service-request-form.space-y-3 .form-input,
+    .service-request-form.space-y-3 .form-select {
+      @apply py-2.5 px-3.5 text-sm;
+    }
+    
+    .service-request-form.space-y-3 .form-textarea {
+      @apply py-2.5 px-3.5 text-sm;
+    }
+  }
+  
+  .hero-dark-section p.text-gray-500 {
+    color: rgb(191 219 254);
+  }
+  
+  .hero-dark-section p.text-gray-600 {
+    color: rgb(219 234 254);
+  }
+  
+  /* Terms & Privacy Notice */
+  .service-request-form p.text-xs {
+    @apply text-gray-600;
+  }
+  
+  .service-request-form p.text-xs a {
+    @apply text-gray-500 hover:text-gray-700;
+  }
+  
+  /* Hero Section - White text */
+  .hero-dark-section p.text-xs {
+    @apply text-white;
+  }
+  
+  .hero-dark-section p.text-xs a {
+    @apply text-gray-300 hover:text-gray-200;
+  }
+  
+  /* Service Time Buttons (Minimal) */
+  .hero-dark-section .service-time-label {
+    @apply bg-slate-700/50 border-slate-600;
+  }
+  
+  .service-time-btn input[value="urgent"]:checked ~ .service-time-label {
+    @apply border-red-500 bg-red-500 shadow-sm;
+  }
+  
+  .service-time-btn input[value="urgent"]:checked ~ .service-time-label p {
+    @apply text-white;
+  }
+  
+  .service-time-btn input[value="within_24h"]:checked ~ .service-time-label {
+    @apply border-blue-500 bg-blue-500 shadow-sm;
+  }
+  
+  .service-time-btn input[value="within_24h"]:checked ~ .service-time-label p {
+    @apply text-white;
+  }
+  
+  .service-time-btn input[value="scheduled"]:checked ~ .service-time-label {
+    @apply border-green-500 bg-green-500 shadow-sm;
+  }
+  
+  .service-time-btn input[value="scheduled"]:checked ~ .service-time-label input {
+    @apply text-white;
+  }
+  
+  /* Date picker styling */
+  .hero-dark-section input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8) brightness(1.2);
+    cursor: pointer;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+  }
+  
+  /* Card */
+  .card {
+    @apply bg-white rounded-2xl shadow-card p-6 border border-gray-100
+           hover:shadow-float transition-all duration-300;
+  }
+  
+  /* Service Card */
+  .service-card {
+    @apply card cursor-pointer hover:border-primary-200
+           transform hover:scale-105 transition-all duration-300;
+  }
+  
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+  
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800;
+  }
+  
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-800;
+  }
+  
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+  
+  /* Loading Spinner */
+  .spinner {
+    @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+  }
+  
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* Section Padding */
+  .section-padding {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+}
+
+/* Utilities Layer - Özel utility sınıfları */
+@layer utilities {
+  /* RTL için özel marginler */
+  .me-4 {
+    margin-inline-end: 1rem;
+  }
+  
+  .ms-4 {
+    margin-inline-start: 1rem;
+  }
+  
+  .pe-4 {
+    padding-inline-end: 1rem;
+  }
+  
+  .ps-4 {
+    padding-inline-start: 1rem;
+  }
+  
+  /* Text alignment RTL */
+  .text-start {
+    text-align: start;
+  }
+  
+  .text-end {
+    text-align: end;
+  }
+  
+  /* Arabic number formatting */
+  .arabic-numbers {
+    font-variant-numeric: normal;
+  }
+  
+  .english-numbers {
+    font-variant-numeric: lining-nums;
+  }
+  
+  /* Hide scrollbar but keep functionality */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Glass effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    @apply bg-gradient-to-br from-primary-500 via-primary-600 to-primary-700;
+  }
+  
+  .bg-gradient-soft {
+    @apply bg-gradient-to-br from-gray-50 via-white to-gray-100;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slideInFromRight {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+.animate-slideInFromLeft {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+/* RTL için özel animasyonlar */
+[dir="rtl"] .animate-slideInFromRight {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+[dir="rtl"] .animate-slideInFromLeft {
+  animation: slideInFromRight 0.6s ease-out;
+}
