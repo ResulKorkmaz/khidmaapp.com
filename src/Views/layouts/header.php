@@ -167,15 +167,18 @@ $linkPrefix = $isHome ? '' : '/';
     visibility: visible !important;
 }
 
-/* Hamburger Animation */
+/* Hamburger Animation - Keep White Color */
 #mobile-menu-btn.active span:nth-child(1) {
     @apply -rotate-45 -translate-y-[7px];
+    background-color: #ffffff !important;
 }
 #mobile-menu-btn.active span:nth-child(2) {
     @apply opacity-0;
+    background-color: #ffffff !important;
 }
 #mobile-menu-btn.active span:nth-child(3) {
     @apply rotate-45 translate-y-[7px];
+    background-color: #ffffff !important;
 }
 </style>
 
