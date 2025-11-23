@@ -1,3 +1,34 @@
+<?php
+// Get current user role for menu permissions
+$currentUserRole = 'user';
+$newLeadsCount = 0;
+$pendingProvidersCount = 0;
+
+try {
+    $pdo = getDatabase();
+    if ($pdo) {
+        // Get user role
+        $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
+        $stmt->execute([$_SESSION['admin_id'] ?? 0]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $currentUserRole = $result['role'] ?? 'user';
+        
+        // Get new leads count (status = 'new')
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM leads WHERE status = 'new'");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $newLeadsCount = $result['count'] ?? 0;
+        
+        // Get pending providers count (status = 'pending')
+        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM service_providers WHERE status = 'pending'");
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $pendingProvidersCount = $result['count'] ?? 0;
+    }
+} catch (PDOException $e) {
+    error_log("Get user role error: " . $e->getMessage());
+}
+?>
 <!DOCTYPE html>
 <html lang="tr" dir="ltr">
 <head>
@@ -215,9 +246,9 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
         <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-full lg:h-screen w-64 flex-shrink-0 bg-white border-r border-gray-200 shadow-xl transition-transform duration-300 ease-in-out z-50 flex flex-col">
             <!-- Desktop Header -->
             <div class="hidden lg:flex flex-shrink-0 items-center gap-3 px-6 py-6 border-b border-gray-200">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <div>
@@ -248,14 +279,9 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
                     <!-- Lead İstekleri - EN ÜSTTE! -->
                     <li>
                         <a href="/admin/lead-requests" class="relative flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'lead-requests' ? 'bg-orange-600 text-white shadow-lg' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-2 border-orange-200' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span class="font-bold">⏰ Lead İstekleri</span>
-                            </div>
+                            <span class="font-semibold whitespace-nowrap">Lead İstekleri</span>
                             <?php if (isset($pendingLeadRequestsCount) && $pendingLeadRequestsCount > 0): ?>
-                                <span id="pending-requests-badge" class="flex items-center justify-center min-w-[32px] h-8 px-3 text-base font-extrabold rounded-full request-badge-pulse" style="background: #dc2626 !important; color: #ffffff !important; display: flex !important; opacity: 1 !important; z-index: 9999 !important; position: relative !important; border: 3px solid #ffffff !important; box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6) !important;">
+                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
                                     <?= $pendingLeadRequestsCount ?>
                                 </span>
                             <?php endif; ?>
@@ -264,17 +290,16 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
 
                     <!-- Lead'ler -->
                     <li>
-                        <a href="/admin/leads" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'leads' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                            </svg>
-                            <span class="font-semibold">Lead'ler</span>
-                            <?php 
-                            // Lead sayısını göster (opsiyonel)
-                            if (isset($totalLeads) && $totalLeads > 0): 
-                            ?>
-                                <span class="ml-auto bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">
-                                    <?= $totalLeads ?>
+                        <a href="/admin/leads" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'leads' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                </svg>
+                                <span class="font-semibold">Lead'ler</span>
+                            </div>
+                            <?php if ($newLeadsCount > 0): ?>
+                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
+                                    <?= $newLeadsCount ?>
                                 </span>
                             <?php endif; ?>
                         </a>
@@ -282,17 +307,16 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
 
                     <!-- Ustalar -->
                     <li>
-                        <a href="/admin/providers" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'providers' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            <span class="font-semibold">Ustalar</span>
-                            <?php 
-                            // Usta sayısını göster (opsiyonel)
-                            if (isset($totalProviders) && $totalProviders > 0): 
-                            ?>
-                                <span class="ml-auto bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
-                                    <?= $totalProviders ?>
+                        <a href="/admin/providers" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'providers' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                                <span class="font-semibold">Ustalar</span>
+                            </div>
+                            <?php if ($pendingProvidersCount > 0): ?>
+                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
+                                    <?= $pendingProvidersCount ?>
                                 </span>
                             <?php endif; ?>
                         </a>
@@ -303,12 +327,12 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
                         <a href="/admin/purchases" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'purchases' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                 </svg>
-                                <span class="font-semibold">💳 Satın Alımlar</span>
+                                <span class="font-semibold">Satın Alımlar</span>
                             </div>
                             <?php if ($newPurchasesCount > 0): ?>
-                                <span id="new-purchases-badge" class="flex items-center justify-center min-w-[32px] h-8 px-3 text-base font-extrabold rounded-full shadow-lg border-2 border-white purchase-badge-pulse" style="background-color: #dc2626 !important; color: #ffffff !important; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.6) !important;">
+                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full">
                                     <?= $newPurchasesCount ?>
                                 </span>
                             <?php endif; ?>
@@ -348,44 +372,46 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            <span class="font-semibold">📨 Provider Mesajları</span>
-                        </a>
-                    </li>
-
-                    <!-- Ana Siteye Git -->
-                    <li>
-                        <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span class="font-medium">Ana Siteye Git</span>
-                        </a>
-                    </li>
-
-                    <!-- Çıkış Yap (Desktop) -->
-                    <li class="hidden lg:block">
-                        <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span class="font-semibold">Çıkış Yap</span>
+                            <span class="font-semibold">Provider Mesajları</span>
                         </a>
                     </li>
                 </ul>
         </nav>
         
             <!-- User Info (Desktop) -->
-            <div class="hidden lg:block flex-shrink-0 px-6 py-4 border-t border-gray-200">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="hidden lg:block flex-shrink-0 px-6 py-4 border-t border-gray-200 relative">
+                <button id="profileMenuToggle" class="w-full flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors group">
+                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                        <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                         </svg>
                     </div>
-                    <div class="flex-1 min-w-0">
+                    <div class="flex-1 min-w-0 text-left">
                         <p class="text-sm font-semibold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['admin_username'] ?? '') ?></p>
                         <p class="text-xs text-gray-500">Yönetici</p>
                     </div>
+                    <svg class="w-4 h-4 text-gray-400 transition-transform" id="profileMenuChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div id="profileDropdown" class="hidden absolute bottom-full left-0 right-0 mb-2 mx-4 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+                    <?php if ($currentUserRole === 'super_admin'): ?>
+                    <a href="/admin/users" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">Kullanıcı Yönetimi</span>
+                    </a>
+                    <div class="border-t border-gray-100"></div>
+                    <?php endif; ?>
+                    <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors">
+                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        <span class="text-sm font-medium text-red-600">Çıkış Yap</span>
+                    </a>
                 </div>
             </div>
         </aside>
@@ -418,6 +444,27 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
             sidebar.classList.remove('show');
             sidebarOverlay.classList.remove('show');
             document.body.style.overflow = '';
+        }
+        
+        // Profile dropdown functionality
+        const profileMenuToggle = document.getElementById('profileMenuToggle');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const profileMenuChevron = document.getElementById('profileMenuChevron');
+        
+        if (profileMenuToggle && profileDropdown) {
+            profileMenuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileDropdown.classList.toggle('hidden');
+                profileMenuChevron.classList.toggle('rotate-180');
+            });
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileMenuToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.add('hidden');
+                    profileMenuChevron.classList.remove('rotate-180');
+                }
+            });
         }
 
         // Toggle sidebar
@@ -722,352 +769,3 @@ try {
 
 error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
 ?>
-<body class="bg-gray-50">
-    <!-- Mobile Header -->
-    <header class="bg-white border-b border-gray-200 shadow-sm lg:hidden sticky top-0 z-50">
-        <div class="flex items-center justify-between px-4 py-4">
-            <div class="flex items-center gap-3">
-                <button id="mobileMenuToggle" class="text-gray-600 hover:text-blue-600 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-                <a href="/admin" class="text-xl font-bold text-blue-600">KhidmaApp</a>
-            </div>
-            <a href="/admin/logout" class="text-sm text-red-600 hover:text-red-700 font-medium">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                </svg>
-            </a>
-        </div>
-    </header>
-    
-    <!-- Sidebar Overlay (Mobile) -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
-
-    <div class="flex min-h-screen">
-        <!-- Sidebar Navigation -->
-        <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-full lg:h-screen w-64 flex-shrink-0 bg-white border-r border-gray-200 shadow-xl transition-transform duration-300 ease-in-out z-50 flex flex-col">
-            <!-- Desktop Header -->
-            <div class="hidden lg:flex flex-shrink-0 items-center gap-3 px-6 py-6 border-b border-gray-200">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900">KhidmaApp</h2>
-                    <p class="text-xs text-gray-500">Admin Paneli</p>
-                </div>
-            </div>
-
-            <!-- User Info (Mobile) -->
-            <div class="lg:hidden flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-blue-50">
-                <p class="text-sm font-semibold text-gray-900">Hoş geldiniz</p>
-                <p class="text-xs text-gray-600"><?= htmlspecialchars($_SESSION['admin_username'] ?? '') ?></p>
-            </div>
-
-            <!-- Navigation Menu -->
-            <nav class="flex-1 py-4 overflow-y-auto min-h-0">
-                <ul class="space-y-1 px-3">
-                    <!-- Dashboard -->
-                    <li>
-                        <a href="/admin" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'dashboard' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                            <span class="font-semibold">Dashboard</span>
-                        </a>
-                    </li>
-
-                    <!-- Lead İstekleri - EN ÜSTTE! -->
-                    <li>
-                        <a href="/admin/lead-requests" class="relative flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'lead-requests' ? 'bg-orange-600 text-white shadow-lg' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-2 border-orange-200' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                <span class="font-bold">⏰ Lead İstekleri</span>
-                            </div>
-                            <?php if (isset($pendingLeadRequestsCount) && $pendingLeadRequestsCount > 0): ?>
-                                <span id="pending-requests-badge" class="flex items-center justify-center min-w-[32px] h-8 px-3 text-base font-extrabold rounded-full request-badge-pulse" style="background: #dc2626 !important; color: #ffffff !important; display: flex !important; opacity: 1 !important; z-index: 9999 !important; position: relative !important; border: 3px solid #ffffff !important; box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6) !important;">
-                                    <?= $pendingLeadRequestsCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Lead'ler -->
-                    <li>
-                        <a href="/admin/leads" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'leads' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                            </svg>
-                            <span class="font-semibold">Lead'ler</span>
-                            <?php 
-                            // Lead sayısını göster (opsiyonel)
-                            if (isset($totalLeads) && $totalLeads > 0): 
-                            ?>
-                                <span class="ml-auto bg-blue-100 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">
-                                    <?= $totalLeads ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Ustalar -->
-                    <li>
-                        <a href="/admin/providers" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'providers' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            <span class="font-semibold">Ustalar</span>
-                            <?php 
-                            // Usta sayısını göster (opsiyonel)
-                            if (isset($totalProviders) && $totalProviders > 0): 
-                            ?>
-                                <span class="ml-auto bg-indigo-100 text-indigo-600 text-xs font-bold px-2 py-1 rounded-full">
-                                    <?= $totalProviders ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Satın Alımlar -->
-                    <li>
-                        <a href="/admin/purchases" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'purchases' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                </svg>
-                                <span class="font-semibold">💳 Satın Alımlar</span>
-                            </div>
-                            <?php if ($newPurchasesCount > 0): ?>
-                                <span id="new-purchases-badge" class="flex items-center justify-center min-w-[32px] h-8 px-3 text-base font-extrabold rounded-full shadow-lg border-2 border-white purchase-badge-pulse" style="background-color: #dc2626 !important; color: #ffffff !important; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.6) !important;">
-                                    <?= $newPurchasesCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Divider -->
-                    <li class="pt-4">
-                        <div class="px-4 mb-2">
-                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Ayarlar</p>
-                        </div>
-                    </li>
-
-                    <!-- Hizmetler -->
-                    <li>
-                        <a href="/admin/services" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'services' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-semibold">Hizmetler</span>
-                        </a>
-                    </li>
-                    
-                    <!-- Lead Paketleri -->
-                    <li>
-                        <a href="/admin/lead-packages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'lead-packages' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                            <span class="font-semibold">Lead Paketleri</span>
-                        </a>
-                    </li>
-                    
-                    <!-- Provider Mesajları -->
-                    <li>
-                        <a href="/admin/provider-messages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'provider-messages' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-semibold">📨 Provider Mesajları</span>
-                        </a>
-                    </li>
-
-                    <!-- Ana Siteye Git -->
-                    <li>
-                        <a href="/" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-700 hover:bg-gray-100 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                            </svg>
-                            <span class="font-medium">Ana Siteye Git</span>
-                        </a>
-                    </li>
-
-                    <!-- Çıkış Yap (Desktop) -->
-                    <li class="hidden lg:block">
-                        <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                            </svg>
-                            <span class="font-semibold">Çıkış Yap</span>
-                        </a>
-                    </li>
-                </ul>
-        </nav>
-        
-            <!-- User Info (Desktop) -->
-            <div class="hidden lg:block flex-shrink-0 px-6 py-4 border-t border-gray-200">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-semibold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['admin_username'] ?? '') ?></p>
-                        <p class="text-xs text-gray-500">Yönetici</p>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 bg-gray-50 w-full lg:w-auto">
-            <!-- Mobile spacing for header -->
-            <div class="lg:hidden h-20"></div>
-            
-            <!-- Content Container -->
-            <div class="w-full max-w-full px-4 py-6 lg:px-8 lg:py-8">
-        <?= $content ?? '' ?>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        // Mobile menu functionality
-        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-        function openSidebar() {
-            sidebar.classList.add('show');
-            sidebarOverlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-            document.body.style.overflow = '';
-        }
-
-        // Toggle sidebar
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (sidebar.classList.contains('show')) {
-                    closeSidebar();
-                } else {
-                    openSidebar();
-                }
-            });
-        }
-
-        // Close when clicking overlay
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        }
-
-        // Close sidebar when clicking a link on mobile
-        if (sidebar) {
-            const sidebarLinks = sidebar.querySelectorAll('a');
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 1024) {
-                        closeSidebar();
-                    }
-                });
-            });
-        }
-
-        // Close sidebar on window resize to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                closeSidebar();
-            }
-        });
-        
-        // Lead Request Badge Güncellemesi
-        window.updatePendingRequestsBadge = function(newCount) {
-            const badge = document.getElementById('pending-requests-badge');
-            
-            if (!badge) {
-                console.warn('Badge element bulunamadı');
-                return;
-            }
-            
-            if (newCount > 0) {
-                // Sayıyı güncelle
-                badge.textContent = newCount;
-                badge.classList.remove('hidden');
-                
-                // Style'ı AGRESIF zorla - TEK RENK (gradient yok!)
-                badge.style.background = '#dc2626'; // Solid red
-                badge.style.color = '#ffffff';
-                badge.style.display = 'flex';
-                badge.style.alignItems = 'center';
-                badge.style.justifyContent = 'center';
-                badge.style.opacity = '1';
-                badge.style.visibility = 'visible';
-                badge.style.zIndex = '9999';
-                badge.style.position = 'relative';
-                badge.style.border = '3px solid #ffffff';
-                badge.style.boxShadow = '0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.fontSize = '16px';
-                badge.style.fontWeight = '800';
-                
-                // Count up animasyonu ekle
-                badge.classList.remove('count-up');
-                void badge.offsetWidth; // Reflow trick
-                badge.classList.add('count-up');
-                
-                console.log('✅ Badge güncellendi (TEK RENK):', newCount);
-            } else {
-                // Sayı 0 ise badge'i gizle
-                badge.classList.add('hidden');
-                console.log('🔴 Badge gizlendi (sayı: 0)');
-            }
-        };
-        
-        // Sayfa yüklendiğinde badge'i kontrol et ve style'ı AGRESIF zorla
-        document.addEventListener('DOMContentLoaded', function() {
-            const badge = document.getElementById('pending-requests-badge');
-            if (badge && !badge.classList.contains('hidden')) {
-                // Style'ı AGRESIF zorla uygula - TEK RENK (gradient yok!)
-                badge.style.background = '#dc2626'; // Solid red, no gradient
-                badge.style.color = '#ffffff';
-                badge.style.display = 'flex';
-                badge.style.alignItems = 'center';
-                badge.style.justifyContent = 'center';
-                badge.style.opacity = '1';
-                badge.style.visibility = 'visible';
-                badge.style.zIndex = '9999';
-                badge.style.position = 'relative';
-                badge.style.border = '3px solid #ffffff';
-                badge.style.boxShadow = '0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.border = '2px solid white';
-                badge.style.boxShadow = '0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.fontSize = '16px';
-                badge.style.fontWeight = '800';
-                
-                console.log('📊 Pending requests badge aktif:', badge.textContent);
-                console.log('🎨 Badge style AGRESIF zorlandı');
-                console.log('   ├─ bg: gradient red');
-                console.log('   ├─ color:', badge.style.color);
-                console.log('   ├─ border: 2px solid white');
-                console.log('   └─ shadow: kırmızı glow');
-            }
-        });
-    </script>
-    
-    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-
-
-

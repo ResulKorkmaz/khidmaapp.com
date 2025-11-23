@@ -424,6 +424,28 @@ try {
             $controller = new AdminController();
             $method = 'purchases';
             break;
+        
+        // Kullanıcı Yönetimi (Super Admin Only)
+        case '/admin/users':
+            require_once __DIR__ . '/../src/Controllers/AdminController.php';
+            $controller = new AdminController();
+            $method = 'users';
+            break;
+        case '/admin/users/create':
+            require_once __DIR__ . '/../src/Controllers/AdminController.php';
+            $controller = new AdminController();
+            $method = 'createUser';
+            break;
+        case '/admin/users/delete':
+            require_once __DIR__ . '/../src/Controllers/AdminController.php';
+            $controller = new AdminController();
+            $method = 'deleteUser';
+            break;
+        case '/admin/users/toggle-status':
+            require_once __DIR__ . '/../src/Controllers/AdminController.php';
+            $controller = new AdminController();
+            $method = 'toggleUserStatus';
+            break;
             
         // Admin services management
         case '/admin/services':

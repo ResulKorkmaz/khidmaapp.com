@@ -3308,4 +3308,239 @@ class AdminController
             ]);
         }
     }
+    
+    /**
+     * Kullanıcı Yönetimi (Sadece Super Admin)
+     */
+    public function users() {
+        requireAdminLogin();
+        
+        // Super admin kontrolü
+        $currentRole = $this->getCurrentUserRole();
+        if ($currentRole !== 'super_admin') {
+            header('Location: /admin');
+            exit;
+        }
+        
+        try {
+            // Tüm kullanıcıları getir (super_admin hariç kendisi hariç)
+            $stmt = $this->pdo->prepare("
+                SELECT id, username, email, role, is_active, created_at, last_login 
+                FROM admins 
+                WHERE username != ?
+                ORDER BY 
+                    CASE role 
+                        WHEN 'super_admin' THEN 1 
+                        WHEN 'admin' THEN 2 
+                        WHEN 'user' THEN 3 
+                    END,
+                    created_at DESC
+            ");
+            $stmt->execute([$_SESSION['admin_username']]);
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            include __DIR__ . '/../Views/admin/users/index.php';
+        } catch (PDOException $e) {
+            error_log("Get users error: " . $e->getMessage());
+            $_SESSION['error'] = 'Kullanıcılar yüklenirken hata oluştu';
+            header('Location: /admin');
+            exit;
+        }
+    }
+    
+    /**
+     * Yeni Kullanıcı Oluşturma
+     */
+    public function createUser() {
+        requireAdminLogin();
+        
+        $currentRole = $this->getCurrentUserRole();
+        
+        // Yetki kontrolü
+        if ($currentRole !== 'super_admin' && $currentRole !== 'admin') {
+            header('Location: /admin');
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $username = sanitizeInput($_POST['username'] ?? '');
+            $email = sanitizeInput($_POST['email'] ?? '');
+            $password = $_POST['password'] ?? '';
+            $role = sanitizeInput($_POST['role'] ?? 'user');
+            
+            // Super admin kontrolü - admin kullanıcısı sadece user oluşturabilir
+            if ($currentRole === 'admin' && $role !== 'user') {
+                $_SESSION['error'] = 'Admin kullanıcısı sadece "User" rolü atayabilir';
+                header('Location: /admin/users/create');
+                exit;
+            }
+            
+            // Super admin kontrolü - super_admin rolü sadece super_admin tarafından verilebilir
+            if ($role === 'super_admin' && $currentRole !== 'super_admin') {
+                $_SESSION['error'] = 'Super Admin rolü atanamaz';
+                header('Location: /admin/users/create');
+                exit;
+            }
+            
+            // Validasyon
+            $errors = [];
+            if (empty($username)) $errors[] = 'Kullanıcı adı gerekli';
+            if (empty($email)) $errors[] = 'E-posta gerekli';
+            if (empty($password)) $errors[] = 'Şifre gerekli';
+            if (strlen($password) < 6) $errors[] = 'Şifre en az 6 karakter olmalı';
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Geçerli bir e-posta adresi girin';
+            if (!in_array($role, ['super_admin', 'admin', 'user'])) $errors[] = 'Geçersiz rol';
+            
+            if (empty($errors)) {
+                try {
+                    // Kullanıcı adı kontrolü
+                    $stmt = $this->pdo->prepare("SELECT id FROM admins WHERE username = ? OR email = ?");
+                    $stmt->execute([$username, $email]);
+                    if ($stmt->fetch()) {
+                        $_SESSION['error'] = 'Bu kullanıcı adı veya e-posta zaten kullanımda';
+                    } else {
+                        // Kullanıcı oluştur
+                        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+                        $stmt = $this->pdo->prepare("
+                            INSERT INTO admins (username, email, password_hash, role, is_active, created_at)
+                            VALUES (?, ?, ?, ?, 1, NOW())
+                        ");
+                        $stmt->execute([$username, $email, $passwordHash, $role]);
+                        
+                        $_SESSION['success'] = 'Kullanıcı başarıyla oluşturuldu';
+                        header('Location: /admin/users');
+                        exit;
+                    }
+                } catch (PDOException $e) {
+                    error_log("Create user error: " . $e->getMessage());
+                    $_SESSION['error'] = 'Kullanıcı oluşturulurken hata oluştu';
+                }
+            } else {
+                $_SESSION['error'] = implode(', ', $errors);
+            }
+            
+            header('Location: /admin/users/create');
+            exit;
+        }
+        
+        include __DIR__ . '/../Views/admin/users/create.php';
+    }
+    
+    /**
+     * Kullanıcı Silme
+     */
+    public function deleteUser() {
+        requireAdminLogin();
+        
+        $currentRole = $this->getCurrentUserRole();
+        if ($currentRole !== 'super_admin') {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Yetkiniz yok']);
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+        
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || !verifyCsrfToken($_POST['csrf_token'])) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+            exit;
+        }
+        
+        $userId = intval($_POST['user_id'] ?? 0);
+        
+        try {
+            // Kendi hesabını silemez
+            $stmt = $this->pdo->prepare("SELECT username FROM admins WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && $user['username'] === $_SESSION['admin_username']) {
+                echo json_encode(['success' => false, 'message' => 'Kendi hesabınızı silemezsiniz']);
+                exit;
+            }
+            
+            $stmt = $this->pdo->prepare("DELETE FROM admins WHERE id = ? AND username != ?");
+            $stmt->execute([$userId, $_SESSION['admin_username']]);
+            
+            echo json_encode(['success' => true, 'message' => 'Kullanıcı silindi']);
+        } catch (PDOException $e) {
+            error_log("Delete user error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Kullanıcı silinirken hata oluştu']);
+        }
+    }
+    
+    /**
+     * Kullanıcı Durum Değiştirme (Aktif/Pasif)
+     */
+    public function toggleUserStatus() {
+        requireAdminLogin();
+        
+        $currentRole = $this->getCurrentUserRole();
+        if ($currentRole !== 'super_admin') {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Yetkiniz yok']);
+            exit;
+        }
+        
+        // CSRF token validation
+        if (!isset($_POST['csrf_token']) || !verifyCsrfToken($_POST['csrf_token'])) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'message' => 'Invalid CSRF token']);
+            exit;
+        }
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+        
+        $userId = intval($_POST['user_id'] ?? 0);
+        
+        try {
+            // Kendi hesabını pasif yapamaz
+            $stmt = $this->pdo->prepare("SELECT username, is_active FROM admins WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($user && $user['username'] === $_SESSION['admin_username']) {
+                echo json_encode(['success' => false, 'message' => 'Kendi hesabınızı pasif yapamazsınız']);
+                exit;
+            }
+            
+            $newStatus = $user['is_active'] ? 0 : 1;
+            $stmt = $this->pdo->prepare("UPDATE admins SET is_active = ? WHERE id = ?");
+            $stmt->execute([$newStatus, $userId]);
+            
+            echo json_encode([
+                'success' => true, 
+                'message' => 'Kullanıcı durumu güncellendi',
+                'is_active' => $newStatus
+            ]);
+        } catch (PDOException $e) {
+            error_log("Toggle user status error: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'İşlem başarısız']);
+        }
+    }
+    
+    /**
+     * Mevcut kullanıcının rolünü getir
+     */
+    private function getCurrentUserRole() {
+        try {
+            $stmt = $this->pdo->prepare("SELECT role FROM admins WHERE id = ?");
+            $stmt->execute([$_SESSION['admin_id']]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result['role'] ?? 'user';
+        } catch (PDOException $e) {
+            error_log("Get current user role error: " . $e->getMessage());
+            return 'user';
+        }
+    }
 }
