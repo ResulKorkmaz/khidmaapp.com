@@ -134,13 +134,11 @@
                     
                     <!-- CTA Button -->
                     <a href="/services/<?= htmlspecialchars($key) ?>" 
-                       class="inline-flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-sm md:text-base group/btn relative">
-                        <span class="relative z-10">طلب الخدمة</span>
-                        <svg class="w-4 h-4 md:w-5 md:h-5 relative z-10 group-hover/btn:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                       class="inline-flex items-center justify-center gap-2 bg-[#3B9DD9] hover:bg-[#2B7AB8] text-white font-bold text-sm md:text-base px-6 py-3 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        <span>طلب الخدمة</span>
+                        <svg class="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
-                        <!-- Underline Effect -->
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 group-hover/btn:w-full transition-all duration-300"></span>
                     </a>
                 </div>
             </div>
