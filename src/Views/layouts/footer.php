@@ -4,128 +4,120 @@ if (session_status() === PHP_SESSION_NONE) {
     startSession();
 }
 ?>
-<footer class="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-950 text-white overflow-hidden">
+<footer class="relative bg-[#0F2942] text-white overflow-hidden" dir="rtl">
     <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 50px 50px;"></div>
+    <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 30px 30px;"></div>
     
     <!-- Decorative Gradient Orbs -->
-    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl -translate-x-1/2 translate-y-1/2"></div>
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#3B9DD9]/10 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/2 pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[100px] -translate-x-1/3 translate-y-1/2 pointer-events-none"></div>
     
     <div class="relative z-10">
         <!-- Main Footer Content -->
-        <div class="container-custom py-16 md:py-20">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-                <!-- Company Info & Logo -->
-                <div class="col-span-2 lg:col-span-1">
+        <div class="container-custom py-16 md:py-20 px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+                
+                <!-- 1. Brand & Description -->
+                <div class="col-span-1 md:col-span-2 lg:col-span-1">
                     <!-- Logo -->
                     <div class="flex items-center mb-6">
-                        <div class="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                            <img src="/assets/images/logo-new.png?v=<?= time() ?>" 
-                                 alt="KhidmaApp" 
-                                 class="w-10 h-10 object-contain">
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
+                            <!-- Simple Logo Icon -->
+                            <svg class="w-7 h-7 text-[#3B9DD9]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
                         </div>
                         <div class="mr-4">
-                            <h3 class="text-2xl font-extrabold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
+                            <h3 class="text-2xl font-black text-white tracking-wide">
                                 خدمة
                             </h3>
-                            <p class="text-gray-400 text-sm font-medium">KhidmaApp.com</p>
+                            <p class="text-blue-300/80 text-xs font-medium tracking-widest uppercase">KhidmaApp.com</p>
                         </div>
                     </div>
                     
-                    <!-- Description -->
-                    <p class="text-gray-300 mb-8 leading-relaxed text-sm max-w-xs">
-                        منصة متخصصة في ربط العملاء بمقدمي الخدمات المنزلية والتجارية الموثوقين في جميع أنحاء المملكة العربية السعودية.
+                    <p class="text-gray-400 mb-8 leading-relaxed text-sm">
+                        المنصة الأولى في المملكة لربط العملاء بأفضل مقدمي الخدمات المحترفين. جودة، سرعة، وموثوقية في كل خدمة.
                     </p>
                     
                     <!-- Social Media Links -->
-                    <div class="flex items-center gap-4">
-                        <p class="text-gray-400 text-sm font-medium hidden sm:block">تابعنا:</p>
-                        <div class="flex items-center gap-3">
-                            <!-- WhatsApp -->
-                            <a href="<?= htmlspecialchars(WHATSAPP_CHANNEL_URL) ?>" 
-                               target="_blank" 
-                               rel="noopener noreferrer"
-                               class="group w-11 h-11 bg-gray-800/50 hover:bg-green-500 rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg hover:shadow-green-500/30">
-                                <svg class="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
-                                </svg>
-                            </a>
-                            
-                            <!-- Twitter/X -->
-                            <a href="#" 
-                               class="group w-11 h-11 bg-gray-800/50 hover:bg-gray-700 rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
-                                <svg class="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                </svg>
-                            </a>
-                            
-                            <!-- Telegram -->
-                            <a href="#" 
-                               class="group w-11 h-11 bg-gray-800/50 hover:bg-blue-500 rounded-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/30">
-                                <svg class="w-5 h-5 text-gray-300 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                                </svg>
-                            </a>
-                        </div>
+                    <div class="flex items-center gap-3">
+                        <!-- WhatsApp -->
+                        <a href="<?= htmlspecialchars(WHATSAPP_CHANNEL_URL) ?>" target="_blank" class="group w-10 h-10 bg-white/5 hover:bg-[#25D366] rounded-lg flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-transparent">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
+                            </svg>
+                        </a>
+                        
+                        <!-- X (Twitter) -->
+                        <a href="#" class="group w-10 h-10 bg-white/5 hover:bg-black rounded-lg flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-transparent">
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                            </svg>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="#" class="group w-10 h-10 bg-white/5 hover:bg-pink-600 rounded-lg flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-transparent">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.451 2.53c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.821-.049.975-.045 1.504-.207 1.857-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.049-3.821-.045-.975-.207-1.504-.344-1.857a3.657 3.657 0 00-.748-1.15 3.657 3.657 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"/>
+                            </svg>
+                        </a>
+
+                        <!-- Facebook -->
+                        <a href="#" class="group w-10 h-10 bg-white/5 hover:bg-blue-600 rounded-lg flex items-center justify-center transition-all duration-300 border border-white/10 hover:border-transparent">
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"/>
+                            </svg>
+                        </a>
                     </div>
                 </div>
                 
-                <!-- Quick Links -->
+                <!-- 2. Quick Links -->
                 <div>
-                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
+                    <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-[#3B9DD9] rounded-full"></span>
                         روابط سريعة
-                        <span class="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500"></span>
                     </h4>
-                    <ul class="space-y-4">
+                    <ul class="space-y-3">
                         <li>
-                            <a href="/" class="group flex items-center text-gray-300 hover:text-white transition-all duration-200">
-                                <svg class="w-4 h-4 me-3 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                                </svg>
+                            <a href="/" class="text-gray-400 hover:text-[#3B9DD9] hover:translate-x-[-4px] transition-all duration-200 flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-[#3B9DD9]"></span>
                                 الرئيسية
                             </a>
                         </li>
                         <li>
-                            <a href="/#services" class="group flex items-center text-gray-300 hover:text-white transition-all duration-200">
-                                <svg class="w-4 h-4 me-3 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                                </svg>
+                            <a href="/#services" class="text-gray-400 hover:text-[#3B9DD9] hover:translate-x-[-4px] transition-all duration-200 flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-[#3B9DD9]"></span>
                                 الخدمات
                             </a>
                         </li>
                         <li>
-                            <a href="/#about" class="group flex items-center text-gray-300 hover:text-white transition-all duration-200">
-                                <svg class="w-4 h-4 me-3 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                            <a href="/#about" class="text-gray-400 hover:text-[#3B9DD9] hover:translate-x-[-4px] transition-all duration-200 flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-[#3B9DD9]"></span>
                                 عن خدمة
                             </a>
                         </li>
                         <li>
-                            <a href="/#contact" class="group flex items-center text-gray-300 hover:text-white transition-all duration-200">
-                                <svg class="w-4 h-4 me-3 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                اتصل بنا
+                            <a href="/#faq" class="text-gray-400 hover:text-[#3B9DD9] hover:translate-x-[-4px] transition-all duration-200 flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-[#3B9DD9]"></span>
+                                الأسئلة الشائعة
                             </a>
                         </li>
                     </ul>
                 </div>
                 
-                <!-- Services -->
+                <!-- 3. Services -->
                 <div>
-                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
+                    <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-[#3B9DD9] rounded-full"></span>
                         خدماتنا
-                        <span class="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500"></span>
                     </h4>
-                    <ul class="space-y-4">
-                        <?php foreach (getServiceTypes() as $key => $service): ?>
+                    <ul class="space-y-3">
+                        <?php 
+                        $footerServices = array_slice(getServiceTypes(), 0, 5); // Show only first 5
+                        foreach ($footerServices as $key => $service): ?>
                         <li>
-                            <a href="/services/<?= htmlspecialchars($key) ?>" class="group flex items-center text-gray-300 hover:text-white transition-all duration-200">
-                                <svg class="w-4 h-4 me-3 text-blue-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                            <a href="/services/<?= htmlspecialchars($key) ?>" class="text-gray-400 hover:text-[#3B9DD9] hover:translate-x-[-4px] transition-all duration-200 flex items-center gap-2 text-sm">
+                                <span class="w-1.5 h-1.5 bg-gray-600 rounded-full group-hover:bg-[#3B9DD9]"></span>
                                 <?= htmlspecialchars($service['ar']) ?>
                             </a>
                         </li>
@@ -133,73 +125,59 @@ if (session_status() === PHP_SESSION_NONE) {
                     </ul>
                 </div>
                 
-                <!-- Contact & CTA -->
-                <div class="col-span-2 lg:col-span-1">
-                    <h4 class="text-lg font-bold mb-6 text-white relative inline-block">
-                        تواصل معنا
-                        <span class="absolute bottom-0 right-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500"></span>
+                <!-- 4. Contact & CTA -->
+                <div>
+                    <h4 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <span class="w-1 h-6 bg-[#3B9DD9] rounded-full"></span>
+                        المساعدة والدعم
                     </h4>
                     
                     <!-- Complaint Button -->
-                    <div class="mb-6">
-                        <button onclick="openComplaintModal()" class="group inline-flex items-center justify-center w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-red-500/30 hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-105">
-                            <svg class="w-5 h-5 me-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                            </svg>
-                            تقديم شكوى
+                    <div class="mb-4">
+                        <button onclick="openComplaintModal()" class="w-full group flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300">
+                            <span class="text-gray-300 text-sm font-medium group-hover:text-white">تقديم شكوى</span>
+                            <div class="w-8 h-8 bg-red-500/20 text-red-400 rounded-lg flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                                </svg>
+                            </div>
                         </button>
                     </div>
                     
-                    <!-- CTA Button -->
-                    <a href="<?= htmlspecialchars(WHATSAPP_CHANNEL_URL) ?>" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="group inline-flex items-center justify-center w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-green-500/30 hover:shadow-green-500/40 transition-all duration-300 transform hover:scale-105">
-                        <svg class="w-5 h-5 me-2 group-hover:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
-                        </svg>
-                        انضم كمقدم خدمة
-                    </a>
+                    <!-- Join Provider -->
+                    <div>
+                        <a href="/#join-provider" class="w-full group flex items-center justify-between p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-all duration-300">
+                            <span class="text-gray-300 text-sm font-medium group-hover:text-white">انضم كمقدم خدمة</span>
+                            <div class="w-8 h-8 bg-[#3B9DD9]/20 text-[#3B9DD9] rounded-lg flex items-center justify-center group-hover:bg-[#3B9DD9] group-hover:text-white transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         
         <!-- Bottom Footer Bar -->
-        <div class="border-t border-gray-800/50 bg-gray-950/50 backdrop-blur-sm">
-            <div class="container-custom py-6">
+        <div class="border-t border-white/5 bg-[#0A1D30]">
+            <div class="container-custom py-6 px-4">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <!-- Copyright -->
-                    <div class="text-center md:text-start">
-                        <p class="text-gray-400 text-sm">
-                            © <?= date('Y') ?> <span class="text-white font-semibold">خدمة</span> (KhidmaApp.com). جميع الحقوق محفوظة.
+                    <div class="text-center md:text-start order-2 md:order-1">
+                        <p class="text-gray-500 text-xs">
+                            © <?= date('Y') ?> جميع الحقوق محفوظة لمنصة <span class="text-white font-semibold">خدمة</span>
                         </p>
                     </div>
                     
-                    <!-- Legal Links & Complaint Button -->
-                    <div class="flex flex-col sm:flex-row items-center gap-4">
-                        <div class="flex items-center flex-wrap justify-center gap-6">
-                            <a href="/privacy" class="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-200 relative group">
-                                سياسة الخصوصية
-                                <span class="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-200"></span>
-                            </a>
-                            <span class="text-gray-600">•</span>
-                            <a href="/terms" class="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-200 relative group">
-                                شروط الاستخدام
-                                <span class="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-200"></span>
-                            </a>
-                            <span class="text-gray-600">•</span>
-                            <a href="/cookies" class="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-200 relative group">
-                                ملفات تعريف الارتباط
-                                <span class="absolute bottom-0 right-0 w-0 h-0.5 bg-blue-400 group-hover:w-full transition-all duration-200"></span>
-                            </a>
-                        </div>
-                        <!-- Complaint Button -->
-                        <button onclick="openComplaintModal()" class="inline-flex items-center gap-2 text-red-400 hover:text-red-300 text-sm font-semibold transition-colors duration-200 group">
-                            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                            </svg>
-                            تقديم شكوى
-                        </button>
+                    <!-- Legal Links -->
+                    <div class="flex items-center gap-6 order-1 md:order-2">
+                        <a href="/privacy" class="text-gray-500 hover:text-[#3B9DD9] text-xs transition-colors">
+                            سياسة الخصوصية
+                        </a>
+                        <a href="/terms" class="text-gray-500 hover:text-[#3B9DD9] text-xs transition-colors">
+                            شروط الاستخدام
+                        </a>
                     </div>
                 </div>
             </div>
@@ -207,6 +185,7 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 </footer>
 
+<!-- Modals and Scripts remain the same -->
 <!-- Complaint Modal -->
 <div id="complaintModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 transition-opacity duration-300" style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
     <div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="complaintModalContent">
@@ -779,183 +758,94 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
     // ============================================
-    // PROVIDER AUTHENTICATION MODAL
+    // FAQ ACCORDION
     // ============================================
-    window.openProviderAuthModal = function() {
-        const modal = document.getElementById('providerAuthModal');
-        const overlay = document.getElementById('providerAuthOverlay');
+    window.toggleFaq = function(button) {
+        const faqItem = button.closest('.faq-item');
+        const answer = faqItem.querySelector('.faq-answer');
+        const icon = button.querySelector('.faq-icon');
+        const isOpen = !answer.classList.contains('hidden');
         
-        if (modal && overlay) {
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            
-            // Animate in
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                modal.classList.remove('scale-95', 'opacity-0');
-                modal.classList.add('scale-100', 'opacity-100');
-            }, 10);
-            
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
-        }
-    };
-    
-    window.closeProviderAuthModal = function() {
-        const modal = document.getElementById('providerAuthModal');
-        const overlay = document.getElementById('providerAuthOverlay');
-        
-        if (modal && overlay) {
-            // Animate out
-            overlay.classList.add('opacity-0');
-            modal.classList.remove('scale-100', 'opacity-100');
-            modal.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                overlay.classList.remove('flex');
-                overlay.classList.add('hidden');
-            }, 300);
-            
-            // Restore body scroll
-            document.body.style.overflow = '';
-        }
-    };
-    
-    window.switchProviderAuthTab = function(tab) {
-        const loginForm = document.getElementById('providerLoginForm');
-        const registerForm = document.getElementById('providerRegisterForm');
-        const loginTab = document.getElementById('providerLoginTab');
-        const registerTab = document.getElementById('providerRegisterTab');
-        
-        if (tab === 'login') {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            loginTab.classList.add('bg-blue-600', 'text-white');
-            loginTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
-            registerTab.classList.remove('bg-blue-600', 'text-white');
-            registerTab.classList.add('text-gray-600', 'hover:bg-gray-100');
+        if (isOpen) {
+            // Close
+            answer.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
         } else {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-            registerTab.classList.add('bg-blue-600', 'text-white');
-            registerTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
-            loginTab.classList.remove('bg-blue-600', 'text-white');
-            loginTab.classList.add('text-gray-600', 'hover:bg-gray-100');
-        }
-    };
-    
-    // Close modal on overlay click
-    const providerAuthOverlay = document.getElementById('providerAuthOverlay');
-    if (providerAuthOverlay) {
-        providerAuthOverlay.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProviderAuthModal();
-            }
-        });
-    }
-    
-    // Close modal on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const overlay = document.getElementById('providerAuthOverlay');
-            if (overlay && !overlay.classList.contains('hidden')) {
-                closeProviderAuthModal();
-            }
-        }
-    });
-});
-</script>
-
-<script>
-// ============================================
-// FAQ ACCORDION
-// ============================================
-window.toggleFaq = function(button) {
-    const faqItem = button.closest('.faq-item');
-    const answer = faqItem.querySelector('.faq-answer');
-    const icon = button.querySelector('.faq-icon');
-    const isOpen = !answer.classList.contains('hidden');
-    
-    if (isOpen) {
-        // Close
-        answer.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
-    } else {
-        // Close all other FAQs first
-        document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
-        document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
-        
-        // Open this one
-        answer.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
-    }
-}
-
-// ============================================
-// AUTO-FILL SERVICE DESCRIPTION
-// ============================================
-// خاصية ملء وصف الخدمة تلقائياً للعملاء الكسولين 😄
-document.addEventListener('DOMContentLoaded', function() {
-    // قاموس الرسائل الافتراضية لكل خدمة
-    const serviceMessages = {
-        'paint': 'أحتاج إلى دهان غرفة أو أكثر في المنزل',
-        'renovation': 'أحتاج إلى ترميم وتجديد',
-        'cleaning': 'أحتاج إلى تنظيف شامل للمنزل',
-        'ac': 'يوجد مشكلة في المكيف - يحتاج صيانة أو تنظيف',
-        'plumbing': 'يوجد تسريب مياه أو مشكلة في السباكة تحتاج إصلاح',
-        'electric': 'يوجد مشكلة في الكهرباء تحتاج إصلاح'
-    };
-    
-    // البحث عن جميع نماذج الخدمة في الصفحة
-    document.querySelectorAll('.service-request-form').forEach(function(form) {
-        const serviceSelect = form.querySelector('.service-type-select');
-        const descriptionTextarea = form.querySelector('textarea[name="description"]');
-        
-        // إذا لم يكن هناك حقل وصف، تجاهل هذا النموذج
-        if (!serviceSelect || !descriptionTextarea) {
-            return;
-        }
-        
-        // متابعة ما إذا كان المستخدم قد عدّل النص يدوياً
-        let userModified = false;
-        
-        // تتبع التعديلات اليدوية
-        descriptionTextarea.addEventListener('input', function() {
-            // إذا كان الحقل فارغاً، اسمح بالتعبئة التلقائية مرة أخرى
-            if (this.value.trim() === '') {
-                userModified = false;
-            } else {
-                // المستخدم كتب شيئاً، علّم أنه معدّل يدوياً
-                const currentService = serviceSelect.value;
-                const defaultMessage = serviceMessages[currentService] || '';
-                // فقط علّم كمعدّل إذا كان النص مختلفاً عن الافتراضي
-                if (this.value.trim() !== defaultMessage.trim()) {
-                    userModified = true;
-                }
-            }
-        });
-        
-        // عند تغيير نوع الخدمة
-        serviceSelect.addEventListener('change', function() {
-            const selectedService = this.value;
+            // Close all other FAQs first
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+            document.querySelectorAll('.faq-icon').forEach(i => i.style.transform = 'rotate(0deg)');
             
-            // إذا لم يعدّل المستخدم النص، املأ الرسالة الافتراضية
-            if (!userModified && selectedService && serviceMessages[selectedService]) {
-                descriptionTextarea.value = serviceMessages[selectedService];
-                // أضف تأثير بسيط لجذب الانتباه
-                descriptionTextarea.classList.add('ring-2', 'ring-blue-300');
-                setTimeout(function() {
-                    descriptionTextarea.classList.remove('ring-2', 'ring-blue-300');
-                }, 1000);
+            // Open this one
+            answer.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        }
+    }
+
+    // ============================================
+    // AUTO-FILL SERVICE DESCRIPTION
+    // ============================================
+    // خاصية ملء وصف الخدمة تلقائياً للعملاء الكسولين 😄
+    document.addEventListener('DOMContentLoaded', function() {
+        // قاموس الرسائل الافتراضية لكل خدمة
+        const serviceMessages = {
+            'paint': 'أحتاج إلى دهان غرفة أو أكثر في المنزل',
+            'renovation': 'أحتاج إلى ترميم وتجديد',
+            'cleaning': 'أحتاج إلى تنظيف شامل للمنزل',
+            'ac': 'يوجد مشكلة في المكيف - يحتاج صيانة أو تنظيف',
+            'plumbing': 'يوجد تسريب مياه أو مشكلة في السباكة تحتاج إصلاح',
+            'electric': 'يوجد مشكلة في الكهرباء تحتاج إصلاح'
+        };
+        
+        // البحث عن جميع نماذج الخدمة في الصفحة
+        document.querySelectorAll('.service-request-form').forEach(function(form) {
+            const serviceSelect = form.querySelector('.service-type-select');
+            const descriptionTextarea = form.querySelector('textarea[name="description"]');
+            
+            // إذا لم يكن هناك حقل وصف، تجاهل هذا النموذج
+            if (!serviceSelect || !descriptionTextarea) {
+                return;
+            }
+            
+            // متابعة ما إذا كان المستخدم قد عدّل النص يدوياً
+            let userModified = false;
+            
+            // تتبع التعديلات اليدوية
+            descriptionTextarea.addEventListener('input', function() {
+                // إذا كان الحقل فارغاً، اسمح بالتعبئة التلقائية مرة أخرى
+                if (this.value.trim() === '') {
+                    userModified = false;
+                } else {
+                    // المستخدم كتب شيئاً، علّم أنه معدّل يدوياً
+                    const currentService = serviceSelect.value;
+                    const defaultMessage = serviceMessages[currentService] || '';
+                    // فقط علّم كمعدّل إذا كان النص مختلفاً عن الافتراضي
+                    if (this.value.trim() !== defaultMessage.trim()) {
+                        userModified = true;
+                    }
+                }
+            });
+            
+            // عند تغيير نوع الخدمة
+            serviceSelect.addEventListener('change', function() {
+                const selectedService = this.value;
+                
+                // إذا لم يعدّل المستخدم النص، املأ الرسالة الافتراضية
+                if (!userModified && selectedService && serviceMessages[selectedService]) {
+                    descriptionTextarea.value = serviceMessages[selectedService];
+                    // أضف تأثير بسيط لجذب الانتباه
+                    descriptionTextarea.classList.add('ring-2', 'ring-blue-300');
+                    setTimeout(function() {
+                        descriptionTextarea.classList.remove('ring-2', 'ring-blue-300');
+                    }, 1000);
+                }
+            });
+            
+            // إذا كانت الخدمة محددة مسبقاً (عند تحميل الصفحة)
+            if (serviceSelect.value && !descriptionTextarea.value && serviceMessages[serviceSelect.value]) {
+                descriptionTextarea.value = serviceMessages[serviceSelect.value];
             }
         });
-        
-        // إذا كانت الخدمة محددة مسبقاً (عند تحميل الصفحة)
-        if (serviceSelect.value && !descriptionTextarea.value && serviceMessages[serviceSelect.value]) {
-            descriptionTextarea.value = serviceMessages[serviceSelect.value];
-        }
     });
-});
 </script>
 
 </body>
