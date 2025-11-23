@@ -17,7 +17,7 @@
     <link href="/assets/css/app.css" rel="stylesheet">
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#059669">
+    <meta name="theme-color" content="#3B9DD9">
 </head>
 <body class="bg-gray-50">
 
