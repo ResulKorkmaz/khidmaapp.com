@@ -29,12 +29,12 @@ require_once __DIR__ . '/../layouts/header.php';
 </script>
 
 <!-- MODERN HERO SECTION -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background: #10b981;">
     <!-- Animated Background -->
     <div class="absolute inset-0">
-        <div class="absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" style="background: #60a5fa;"></div>
-        <div class="absolute top-40 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" style="background: #3b82f6;"></div>
-        <div class="absolute bottom-20 left-1/2 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" style="background: #2563eb;"></div>
+        <div class="absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" style="background: #10b981;"></div>
+        <div class="absolute top-40 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" style="background: #10b981;"></div>
+        <div class="absolute bottom-20 left-1/2 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" style="background: #10b981;"></div>
     </div>
     
     <div class="container-custom relative z-10 py-20">
@@ -86,7 +86,7 @@ require_once __DIR__ . '/../layouts/header.php';
                 
                 <!-- CTA Buttons -->
                 <div class="flex flex-wrap gap-4 mb-12">
-                    <a href="#request-service" class="group relative inline-flex items-center gap-3 bg-white text-blue-700 font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl hover:shadow-white/30 transition-all hover:scale-105 overflow-hidden">
+                    <a href="#request-service" class="group relative inline-flex items-center gap-3 bg-white text-gray-900 font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl hover:shadow-white/30 transition-all hover:scale-105 overflow-hidden">
                         <span class="absolute inset-0 bg-gradient-to-r from-blue-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         <svg class="w-6 h-6 relative z-10 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -239,7 +239,7 @@ require_once __DIR__ . '/../layouts/header.php';
 </section>
 
 <!-- CTA FORM SECTION -->
-<section id="request-service" class="py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);">
+<section id="request-service" class="py-24 relative overflow-hidden" style="background: #10b981;">
     <!-- Background Pattern -->
     <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
     
