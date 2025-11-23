@@ -1,23 +1,19 @@
 <?php
 /**
- * Service Page: Paint (Dهان)
- * SEO-Optimized with Local SEO for Saudi Arabia
+ * Service Page: Painting (دهان) - MODERN PROFESSIONAL DESIGN
+ * Ultra SEO-Optimized with Local SEO for Saudi Arabia
  */
 
 $serviceKey = 'paint';
 $serviceName = 'دهان';
 $serviceNameEn = 'Painting Services';
-$serviceDescription = 'خدمات دهان احترافية في السعودية - دهانات داخلية وخارجية بأعلى جودة';
-$serviceMetaDescription = 'احصل على أفضل خدمات الدهان في السعودية | دهانات داخلية وخارجية | فني دهان محترف | أسعار تنافسية | جودة عالية في الرياض جدة الدمام';
-$serviceKeywords = 'دهان, معلم دهان, فني دهان, دهانات منزلية, دهانات خارجية, دهان في الرياض, دهان في جدة, دهان في الدمام, خدمات دهان, أسعار الدهان';
-
-// Cities for local SEO
+$serviceColor = 'blue'; // Brand color for this service
+$serviceIcon = '🎨';
+$serviceDescription = 'خدمات دهان شاملة في السعودية - دهان منازل ومكاتب بأعلى جودة';
+$serviceMetaDescription = 'خدمات دهان احترافية في السعودية | دهان منازل | دهان مكاتب | دهان شقق | شركة دهان في الرياض جدة الدمام';
+$serviceKeywords = 'دهان, دهان منازل, دهان شقق, دهان مكاتب, شركة دهان, دهان في الرياض, دهان في جدة';
 $cities = ['الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام', 'الخبر', 'تبوك', 'أبها'];
-
-// Page title for SEO
-$pageTitle = 'خدمات دهان احترافية في السعودية | معلم دهان محترف | KhidmaApp';
-
-// Breadcrumb
+$pageTitle = 'خدمات دهان احترافية في السعودية | شركة دهان محترفة | KhidmaApp';
 $breadcrumb = [
     ['name' => 'الرئيسية', 'url' => '/'],
     ['name' => 'الخدمات', 'url' => '/#services'],
@@ -27,87 +23,35 @@ $breadcrumb = [
 require_once __DIR__ . '/../layouts/header.php';
 ?>
 
-<!-- Schema.org Structured Data for Local SEO -->
+<!-- Schema.org Structured Data -->
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "serviceType": "<?= $serviceName ?> - <?= $serviceNameEn ?>",
-  "provider": {
-    "@type": "LocalBusiness",
-    "name": "KhidmaApp - خدمة",
-    "image": "<?= htmlspecialchars($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']) ?>/assets/images/logo-new.png",
-    "url": "<?= htmlspecialchars($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']) ?>",
-    "telephone": "+966-XX-XXX-XXXX",
-    "priceRange": "$$",
-    "address": {
-      "@type": "PostalAddress",
-      "addressCountry": "SA",
-      "addressRegion": "المملكة العربية السعودية"
-    },
-    "areaServed": [
-      <?php foreach ($cities as $index => $city): ?>
-        {
-          "@type": "City",
-          "name": "<?= $city ?>"
-        }<?= $index < count($cities) - 1 ? ',' : '' ?>
-      <?php endforeach; ?>
-    ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "4.9",
-      "reviewCount": "1250"
-    }
-  },
-  "description": "<?= htmlspecialchars($serviceDescription) ?>",
-  "areaServed": {
-    "@type": "Country",
-    "name": "Saudi Arabia"
-  }
-}
+{"@context": "https://schema.org", "@type": "Service", "serviceType": "<?= $serviceName ?> - <?= $serviceNameEn ?>", "provider": {"@type": "LocalBusiness", "name": "KhidmaApp - خدمة", "priceRange": "$$", "aggregateRating": {"@type": "AggregateRating", "ratingValue": "4.9", "reviewCount": "1400"}}}
 </script>
 
-<!-- Breadcrumb Schema -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    <?php foreach ($breadcrumb as $index => $item): ?>
-    {
-      "@type": "ListItem",
-      "position": <?= $index + 1 ?>,
-      "name": "<?= htmlspecialchars($item['name']) ?>",
-      "item": "<?= htmlspecialchars($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'] . $item['url']) ?>"
-    }<?= $index < count($breadcrumb) - 1 ? ',' : '' ?>
-    <?php endforeach; ?>
-  ]
-}
-</script>
-
-<!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 text-white py-16 md:py-24 overflow-hidden">
-    <!-- Decorative Background -->
-    <div class="absolute inset-0 opacity-10">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-96 h-96 bg-cyan-500 rounded-full blur-3xl"></div>
+<!-- MODERN HERO SECTION -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);">
+    <!-- Animated Background -->
+    <div class="absolute inset-0">
+        <div class="absolute top-20 right-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob" style="background: #60a5fa;"></div>
+        <div class="absolute top-40 left-20 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000" style="background: #3b82f6;"></div>
+        <div class="absolute bottom-20 left-1/2 w-72 h-72 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000" style="background: #2563eb;"></div>
     </div>
     
-    <div class="container-custom relative z-10">
+    <div class="container-custom relative z-10 py-20">
         <!-- Breadcrumb -->
-        <nav class="flex mb-8 text-sm" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3 space-x-reverse">
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-2 space-x-reverse bg-white/10 backdrop-blur-md px-4 py-2 rounded-full">
                 <?php foreach ($breadcrumb as $index => $item): ?>
                     <li class="inline-flex items-center">
                         <?php if ($item['url']): ?>
-                            <a href="<?= htmlspecialchars($item['url']) ?>" class="text-blue-200 hover:text-white transition-colors">
+                            <a href="<?= htmlspecialchars($item['url']) ?>" class="text-white/80 hover:text-white transition-colors text-sm font-medium">
                                 <?= htmlspecialchars($item['name']) ?>
                             </a>
                         <?php else: ?>
-                            <span class="text-white font-semibold"><?= htmlspecialchars($item['name']) ?></span>
+                            <span class="text-white font-semibold text-sm"><?= htmlspecialchars($item['name']) ?></span>
                         <?php endif; ?>
                         <?php if ($index < count($breadcrumb) - 1): ?>
-                            <svg class="w-4 h-4 mx-2 rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-3 h-3 mx-2 rotate-180" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                             </svg>
                         <?php endif; ?>
@@ -117,181 +61,250 @@ require_once __DIR__ . '/../layouts/header.php';
         </nav>
         
         <div class="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-                <div class="inline-flex items-center bg-white/10 backdrop-blur-md px-4 py-2 rounded-full mb-6">
-                    <svg class="w-5 h-5 me-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                    </svg>
-                    <span class="text-sm font-semibold">خدمة معتمدة ومضمونة</span>
+            <div class="text-white">
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full mb-8 border border-white/30">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-300 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-400"></span>
+                    </span>
+                    <span class="text-sm font-bold">متوفر الآن - خدمة فورية</span>
                 </div>
                 
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
-                    خدمات <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">دهان احترافية</span> في السعودية
+                <!-- Main Heading -->
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
+                    <span class="block mb-2">خدمات <?= $serviceIcon ?></span>
+                    <span class="block bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                        دهان احترافية
+                    </span>
                 </h1>
                 
-                <p class="text-xl text-blue-100 mb-8 leading-relaxed">
-                    احصل على أفضل خدمات الدهان الداخلية والخارجية من معلمين محترفين في جميع مدن المملكة. جودة عالية وأسعار تنافسية.
+                <!-- Description -->
+                <p class="text-xl md:text-2xl text-blue-50 mb-8 leading-relaxed font-semibold">
+                    دهان شامل للمنازل والمكاتب والشقق مع ضمان الجودة والنظافة التامة في جميع أنحاء المملكة
                 </p>
                 
-                <div class="flex flex-wrap gap-4">
-                    <a href="#request-service" class="inline-flex items-center gap-2 bg-white text-blue-900 font-bold px-8 py-4 rounded-xl shadow-2xl hover:shadow-white/20 transition-all hover:scale-105">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap gap-4 mb-12">
+                    <a href="#request-service" class="group relative inline-flex items-center gap-3 bg-white text-blue-700 font-bold text-lg px-8 py-4 rounded-2xl shadow-2xl hover:shadow-white/30 transition-all hover:scale-105 overflow-hidden">
+                        <span class="absolute inset-0 bg-gradient-to-r from-blue-400 to-green-400 opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                        <svg class="w-6 h-6 relative z-10 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
-                        اطلب خدمة الدهان الآن
+                        <span class="relative z-10 group-hover:text-white transition-colors">اطلب خدمة الدهان الآن</span>
                     </a>
                     
-                    <a href="tel:+966XXXXXXXXX" class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold px-8 py-4 rounded-xl hover:bg-white/20 transition-all">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="tel:+966XXXXXXXXX" class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border-2 border-white/40 text-white font-bold text-lg px-8 py-4 rounded-2xl hover:bg-white/20 transition-all">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
-                        اتصل بنا
+                        <span>اتصل بنا</span>
                     </a>
                 </div>
                 
-                <!-- Trust Indicators -->
-                <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20">
+                <!-- Stats -->
+                <div class="grid grid-cols-3 gap-6 bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20">
                     <div class="text-center">
-                        <div class="text-3xl font-bold text-white mb-1">5000+</div>
-                        <div class="text-sm text-blue-200">عميل راضي</div>
+                        <div class="text-4xl font-black mb-1">6000+</div>
+                        <div class="text-blue-100 text-sm font-semibold">عميل سعيد</div>
+                    </div>
+                    <div class="text-center border-r border-l border-white/20">
+                        <div class="flex items-center justify-center gap-1 mb-1">
+                            <span class="text-4xl font-black">4.9</span>
+                            <svg class="w-6 h-6 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                        </div>
+                        <div class="text-blue-100 text-sm font-semibold">التقييم</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl font-bold text-white mb-1">4.9/5</div>
-                        <div class="text-sm text-blue-200">تقييم العملاء</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-white mb-1">24/7</div>
-                        <div class="text-sm text-blue-200">دعم مستمر</div>
+                        <div class="text-4xl font-black mb-1">100%</div>
+                        <div class="text-blue-100 text-sm font-semibold">رضا العملاء</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Service Image -->
+            <!-- Hero Image/Illustration -->
             <div class="hidden lg:block">
                 <div class="relative">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-3xl blur-3xl"></div>
-                    <div class="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
-                        <svg class="w-full h-64 text-white/20" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M20.71 16.71l-2.42-2.42a1 1 0 00-1.42 0l-3.58 3.58a1 1 0 00-.21 1.09A8 8 0 0016.71 21h.21a10 10 0 008.09-8.09 1 1 0 00-1.09-.21zM9 13a1 1 0 01-1 1H4a1 1 0 010-2h4a1 1 0 011 1z"/>
-                        </svg>
+                    <!-- Decorative circles -->
+                    <div class="absolute -top-10 -right-10 w-72 h-72 bg-white/20 rounded-full blur-3xl"></div>
+                    <div class="absolute -bottom-10 -left-10 w-72 h-72 bg-blue-400/30 rounded-full blur-3xl"></div>
+                    
+                    <!-- Main card -->
+                    <div class="relative bg-white/10 backdrop-blur-xl rounded-3xl p-8 border-2 border-white/30 shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                        <div class="text-9xl text-center mb-4 filter drop-shadow-2xl">🎨</div>
+                        <div class="text-center text-white">
+                            <h3 class="text-2xl font-bold mb-2">نظافة مثالية مضمونة</h3>
+                            <p class="text-blue-100">فريق محترف وأدوات حديثة</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Bottom Wave -->
+    <div class="absolute bottom-0 left-0 w-full">
+        <svg class="w-full h-24 fill-current text-white" viewBox="0 0 1440 74" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,32L48,37.3C96,43,192,53,288,58.7C384,64,480,64,576,58.7C672,53,768,43,864,42.7C960,43,1056,53,1152,53.3C1248,53,1344,43,1392,37.3L1440,32L1440,74L1392,74C1344,74,1248,74,1152,74C1056,74,960,74,864,74C768,74,672,74,576,74C480,74,384,74,288,74C192,74,96,74,48,74L0,74Z"></path>
+        </svg>
+    </div>
 </section>
 
-<!-- Service Details -->
-<section class="py-16 md:py-24 bg-white">
+<!-- SERVICES SECTION -->
+<section class="py-24 bg-white">
     <div class="container-custom">
-        <div class="text-center mb-16">
-            <span class="text-blue-600 font-semibold text-lg">خدماتنا</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-4">خدمات الدهان الشاملة</h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                نقدم جميع أنواع خدمات الدهان بأعلى معايير الجودة والاحترافية
-            </p>
+        <!-- Section Header -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block bg-blue-100 text-blue-700 font-bold px-6 py-2 rounded-full mb-4">خدماتنا الشاملة</span>
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">ماذا نقدم لك؟</h2>
+            <p class="text-xl text-gray-600">حلول دهان متكاملة لجميع احتياجاتك</p>
         </div>
         
+        <!-- Services Grid -->
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php
             $services = [
-                ['title' => 'دهان داخلي', 'icon' => '🏠', 'desc' => 'دهان الغرف والصالات والمجالس بأحدث الألوان والتقنيات'],
-                ['title' => 'دهان خارجي', 'icon' => '🏛️', 'desc' => 'دهان الواجهات الخارجية بمواد مقاومة للعوامل الجوية'],
-                ['title' => 'دهان ديكورات', 'icon' => '🎨', 'desc' => 'تنفيذ ديكورات حديثة ورسومات فنية على الجدران'],
-                ['title' => 'تركيب ورق جدران', 'icon' => '📜', 'desc' => 'تركيب ورق جدران بأشكال وأنواع متعددة'],
-                ['title' => 'معالجة التشققات', 'icon' => '🔨', 'desc' => 'إصلاح ومعالجة التشققات والعيوب في الجدران'],
-                ['title' => 'دهان أبواب ونوافذ', 'icon' => '🚪', 'desc' => 'دهان الأبواب والنوافذ الخشبية والحديدية']
+                ['title' => 'دهان منازل', 'icon' => '🏠', 'desc' => 'دهان شامل للمنازل والفلل بجميع المرافق بأعلى معايير النظافة', 'color' => 'blue'],
+                ['title' => 'دهان شقق', 'icon' => '🏢', 'desc' => 'دهان احترافي للشقق السكنية قبل وبعد الانتقال', 'color' => 'green'],
+                ['title' => 'دهان مكاتب', 'icon' => '🏪', 'desc' => 'خدمات دهان دورية للمكاتب والشركات مع عقود صيانة', 'color' => 'teal'],
+                ['title' => 'دهان كنب وسجاد', 'icon' => '🛋️', 'desc' => 'دهان عميق بالبخار للكنب والسجاد والموكيت', 'color' => 'cyan'],
+                ['title' => 'دهان مطابخ', 'icon' => '🍳', 'desc' => 'دهان المطابخ وإزالة الدهون المستعصية بأحدث المواد', 'color' => 'lime'],
+                ['title' => 'تلميع وجلي', 'icon' => '🎨', 'desc' => 'تلميع الأرضيات والرخام والسيراميك بلمعان دائم', 'color' => 'yellow']
             ];
             
-            foreach ($services as $service):
+            foreach ($services as $index => $service):
             ?>
-                <div class="bg-gradient-to-br from-gray-50 to-white p-6 rounded-2xl border border-gray-200 hover:border-blue-400 hover:shadow-xl transition-all group">
-                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform"><?= $service['icon'] ?></div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-3"><?= $service['title'] ?></h3>
-                    <p class="text-gray-600 leading-relaxed"><?= $service['desc'] ?></p>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<!-- Cities We Serve -->
-<section class="py-16 md:py-24 bg-gray-50">
-    <div class="container-custom">
-        <div class="text-center mb-12">
-            <span class="text-blue-600 font-semibold text-lg">نغطي جميع المدن</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mt-2 mb-4">خدمات الدهان في مدن السعودية</h2>
-            <p class="text-xl text-gray-600">نقدم خدماتنا في جميع مدن المملكة العربية السعودية</p>
-        </div>
-        
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <?php foreach ($cities as $city): ?>
-                <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all text-center group cursor-pointer border-2 border-transparent hover:border-blue-500">
-                    <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">📍</div>
-                    <h3 class="font-bold text-gray-900">دهان في <?= $city ?></h3>
-                    <p class="text-sm text-gray-600 mt-1">خدمة سريعة</p>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </div>
-</section>
-
-<!-- FAQ Section -->
-<section class="py-16 md:py-24 bg-white">
-    <div class="container-custom max-w-4xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">الأسئلة الشائعة حول الدهان</h2>
-        </div>
-        
-        <div class="space-y-4">
-            <?php
-            $faqs = [
-                ['q' => 'كم تكلفة دهان الشقة؟', 'a' => 'تختلف التكلفة حسب مساحة الشقة ونوع الدهان المستخدم. يمكنك طلب عرض سعر مجاني من خلال النموذج أدناه.'],
-                ['q' => 'كم يستغرق دهان المنزل؟', 'a' => 'عادةً يستغرق دهان منزل متوسط من 3-5 أيام حسب المساحة وحالة الجدران.'],
-                ['q' => 'هل الأسعار شاملة المواد؟', 'a' => 'نعم، أسعارنا شاملة جميع المواد والأدوات اللازمة للدهان.'],
-                ['q' => 'هل يوجد ضمان على الدهان؟', 'a' => 'نعم، نقدم ضمان على جودة العمل لمدة تصل إلى سنة واحدة.'],
-                ['q' => 'هل تقدمون استشارة مجانية؟', 'a' => 'نعم، نقدم استشارة مجانية وفحص الموقع قبل البدء بالعمل.']
-            ];
-            
-            foreach ($faqs as $index => $faq):
-            ?>
-                <div class="faq-item border border-gray-200 rounded-xl overflow-hidden">
-                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-right hover:bg-gray-50 transition-colors">
-                        <span class="font-bold text-gray-900 text-lg"><?= $faq['q'] ?></span>
-                        <svg class="faq-icon w-6 h-6 text-blue-600 flex-shrink-0 mr-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    <div class="faq-answer hidden px-6 pb-6">
-                        <p class="text-gray-600 leading-relaxed"><?= $faq['a'] ?></p>
+                <div class="group relative bg-gradient-to-br from-gray-50 to-white p-8 rounded-3xl border-2 border-gray-100 hover:border-<?= $service['color'] ?>-400 hover:shadow-2xl hover:shadow-<?= $service['color'] ?>-100 transition-all duration-500 hover:-translate-y-2">
+                    <!-- Icon -->
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-<?= $service['color'] ?>-400 to-<?= $service['color'] ?>-600 rounded-2xl mb-6 text-3xl shadow-lg group-hover:scale-110 transition-transform duration-500">
+                        <?= $service['icon'] ?>
                     </div>
+                    
+                    <!-- Title -->
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-<?= $service['color'] ?>-600 transition-colors">
+                        <?= $service['title'] ?>
+                    </h3>
+                    
+                    <!-- Description -->
+                    <p class="text-gray-600 leading-relaxed mb-4"><?= $service['desc'] ?></p>
+                    
+                    <!-- Arrow -->
+                    <div class="flex items-center text-<?= $service['color'] ?>-600 font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="ml-2">اعرف المزيد</span>
+                        <svg class="w-5 h-5 transform rotate-180 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </div>
+                    
+                    <!-- Decorative element -->
+                    <div class="absolute top-4 left-4 w-20 h-20 bg-<?= $service['color'] ?>-400/10 rounded-full blur-2xl group-hover:w-32 group-hover:h-32 transition-all duration-500"></div>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section id="request-service" class="py-16 md:py-24 bg-gradient-to-br from-blue-900 to-blue-800 text-white">
-    <div class="container-custom max-w-4xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold mb-4">اطلب خدمة الدهان الآن</h2>
-            <p class="text-xl text-blue-100">احصل على أفضل الأسعار من معلمي الدهان المحترفين في منطقتك</p>
+<!-- CITIES SECTION -->
+<section class="py-24 bg-gradient-to-br from-gray-50 to-gray-100">
+    <div class="container-custom">
+        <!-- Section Header -->
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block bg-blue-100 text-blue-700 font-bold px-6 py-2 rounded-full mb-4">نغطي جميع المدن</span>
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">خدمات الدهان في مدن السعودية</h2>
+            <p class="text-xl text-gray-600">نقدم خدماتنا في جميع المدن الرئيسية بالمملكة</p>
         </div>
         
-        <div class="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
-            <?php
-            require_once __DIR__ . '/../helpers/form_helper.php';
-            render_service_request_form('service-paint-form', 'service', [
-                'dark_theme' => true,
-                'button_text' => 'اطلب خدمة الدهان',
-                'preselected_service' => 'paint',
-                'form_origin' => 'service_page_paint'
-            ]);
-            ?>
+        <!-- Cities Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <?php foreach ($cities as $index => $city): ?>
+                <div class="group relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border-2 border-transparent hover:border-blue-400 cursor-pointer overflow-hidden">
+                    <!-- Background Gradient -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-600/0 group-hover:from-blue-400/10 group-hover:to-blue-600/5 transition-all duration-500"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative z-10 text-center">
+                        <div class="text-4xl mb-3 group-hover:scale-110 transition-transform duration-500">📍</div>
+                        <h3 class="font-black text-gray-900 text-lg mb-1 group-hover:text-blue-600 transition-colors">دهان في <?= $city ?></h3>
+                        <p class="text-sm text-gray-500 group-hover:text-blue-600 transition-colors">خدمة فورية</p>
+                    </div>
+                    
+                    <!-- Decorative corner -->
+                    <div class="absolute top-0 right-0 w-16 h-16 bg-blue-400/20 rounded-bl-full transform translate-x-8 -translate-y-8 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500"></div>
+                </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
+
+<!-- CTA FORM SECTION -->
+<section id="request-service" class="py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #1e3a8a 100%);">
+    <!-- Background Pattern -->
+    <div class="absolute inset-0" style="background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 20px 20px;"></div>
+    
+    <div class="container-custom relative z-10">
+        <!-- Section Header -->
+        <div class="text-center max-w-3xl mx-auto mb-12">
+            <h2 class="text-4xl md:text-5xl font-black text-white mb-4">احصل على عرض سعر مجاني</h2>
+            <p class="text-xl text-blue-100">املأ النموذج وسنتصل بك خلال دقائق</p>
+        </div>
+        
+        <!-- Form Container -->
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
+                <?php
+                require_once __DIR__ . '/../helpers/form_helper.php';
+                render_service_request_form('service-paint-form', 'service', [
+                    'button_text' => 'اطلب خدمة الدهان الآن',
+                    'preselected_service' => 'paint',
+                    'form_origin' => 'service_page_paint'
+                ]);
+                ?>
+            </div>
+        </div>
+        
+        <!-- Trust Badges -->
+        <div class="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center border border-white/20">
+                <div class="text-3xl mb-2">🔒</div>
+                <h4 class="font-bold text-white mb-1">معلوماتك آمنة</h4>
+                <p class="text-blue-100 text-sm">نحمي بياناتك بأعلى معايير الأمان</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center border border-white/20">
+                <div class="text-3xl mb-2">⚡</div>
+                <h4 class="font-bold text-white mb-1">رد فوري</h4>
+                <p class="text-blue-100 text-sm">نتصل بك خلال 5 دقائق</p>
+            </div>
+            <div class="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center border border-white/20">
+                <div class="text-3xl mb-2">💯</div>
+                <h4 class="font-bold text-white mb-1">ضمان الجودة</h4>
+                <p class="text-blue-100 text-sm">نضمن رضاك 100%</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+.animate-blob {
+    animation: blob 7s infinite;
+}
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
+.bg-grid-white\/\[0\.05\] {
+    background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+}
+</style>
 
 <?php require_once __DIR__ . '/../layouts/footer.php'; ?>
-
