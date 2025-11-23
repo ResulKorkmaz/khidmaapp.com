@@ -49,17 +49,17 @@ $linkPrefix = $isHome ? '' : '/';
             
             <!-- Desktop Navigation -->
             <nav class="hidden lg:flex items-center gap-8 mx-auto">
-                <a href="/" class="nav-link-white <?= $isHome ? 'nav-active' : '' ?>">الرئيسية</a>
-                <a href="<?= $linkPrefix ?>#services" class="nav-link-white">الخدمات</a>
-                <a href="<?= $linkPrefix ?>#about" class="nav-link-white">عن خدمة</a>
-                <a href="<?= $linkPrefix ?>#faq" class="nav-link-white">الأسئلة الشائعة</a>
+                <a href="/" class="nav-link-white <?= $isHome ? 'nav-active' : '' ?>" style="color: #ffffff !important;">الرئيسية</a>
+                <a href="<?= $linkPrefix ?>#services" class="nav-link-white" style="color: #ffffff !important;">الخدمات</a>
+                <a href="<?= $linkPrefix ?>#about" class="nav-link-white" style="color: #ffffff !important;">عن خدمة</a>
+                <a href="<?= $linkPrefix ?>#faq" class="nav-link-white" style="color: #ffffff !important;">الأسئلة الشائعة</a>
             </nav>
             
             <!-- Right Side Actions -->
             <div class="flex items-center gap-4 z-[101]">
                 
                 <!-- Provider Login -->
-                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-white hover:bg-white/10 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5">
+                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-white hover:bg-white/10 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5" style="color: #ffffff !important; border-color: #ffffff !important;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -77,9 +77,9 @@ $linkPrefix = $isHome ? '' : '/';
                 <!-- Mobile Menu Toggle Button -->
                 <button type="button" id="mobile-menu-btn" class="lg:hidden p-3 rounded-xl hover:bg-white/10 transition-colors focus:outline-none touch-manipulation cursor-pointer relative">
                     <div class="w-6 h-5 flex flex-col justify-between pointer-events-none">
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right"></span>
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300"></span>
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right"></span>
+                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
+                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300" style="background-color: #ffffff !important;"></span>
+                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
                     </div>
                 </button>
             </div>
@@ -90,19 +90,19 @@ $linkPrefix = $isHome ? '' : '/';
     <div id="mobile-menu" class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-emerald-700 z-40 transform translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto border-t border-emerald-600" style="height: calc(100vh - 80px);">
         <div class="p-6 space-y-8 min-h-full flex flex-col">
             <nav class="flex flex-col gap-4">
-                <a href="/" class="mobile-link-white <?= $isHome ? 'active' : '' ?>">
+                <a href="/" class="mobile-link-white <?= $isHome ? 'active' : '' ?>" style="color: #ffffff !important;">
                     <span class="text-2xl">🏠</span>
                     <span class="text-xl font-bold">الرئيسية</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#services" class="mobile-link-white">
+                <a href="<?= $linkPrefix ?>#services" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">🛠️</span>
                     <span class="text-xl font-bold">الخدمات</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#about" class="mobile-link-white">
+                <a href="<?= $linkPrefix ?>#about" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">ℹ️</span>
                     <span class="text-xl font-bold">عن خدمة</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#faq" class="mobile-link-white">
+                <a href="<?= $linkPrefix ?>#faq" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">❓</span>
                     <span class="text-xl font-bold">الأسئلة الشائعة</span>
                 </a>
@@ -113,7 +113,7 @@ $linkPrefix = $isHome ? '' : '/';
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     <span>اطلب خدمة الآن</span>
                 </a>
-                <button onclick="openProviderAuthModal()" class="flex items-center justify-center gap-3 w-full py-4 bg-emerald-800 text-white rounded-2xl font-bold text-xl border border-emerald-600">
+                <button onclick="openProviderAuthModal()" class="flex items-center justify-center gap-3 w-full py-4 bg-emerald-800 text-white rounded-2xl font-bold text-xl border border-emerald-600" style="color: #ffffff !important;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>دخول المهنيين</span>
                 </button>
@@ -126,6 +126,7 @@ $linkPrefix = $isHome ? '' : '/';
 /* White Navigation Styles */
 .nav-link-white {
     @apply text-white font-bold text-lg hover:text-emerald-100 transition-colors py-2 relative opacity-90 hover:opacity-100 cursor-pointer;
+    color: #ffffff !important; /* FORCE WHITE */
 }
 
 .nav-link-white::after {
@@ -140,11 +141,13 @@ $linkPrefix = $isHome ? '' : '/';
 
 .nav-link-white.nav-active {
     @apply text-white opacity-100;
+    color: #ffffff !important; /* FORCE WHITE */
 }
 
 /* Mobile Link Styles */
 .mobile-link-white {
     @apply flex items-center gap-4 p-4 rounded-2xl text-white hover:bg-emerald-600 transition-all cursor-pointer select-none;
+    color: #ffffff !important; /* FORCE WHITE */
 }
 
 .mobile-link-white:active {
@@ -153,6 +156,7 @@ $linkPrefix = $isHome ? '' : '/';
 
 .mobile-link-white.active {
     @apply bg-emerald-800 text-white border-r-4 border-emerald-400;
+    color: #ffffff !important; /* FORCE WHITE */
 }
 
 /* Header Scroll State */
