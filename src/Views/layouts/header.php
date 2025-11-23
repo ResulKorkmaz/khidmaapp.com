@@ -73,15 +73,15 @@ $linkPrefix = $isHome ? '' : '/';
                     <span>اطلب خدمة</span>
                 </a>
                 
-                <!-- Mobile Menu Toggle Button (Inline JS for reliability) -->
+                <!-- Mobile Menu Toggle Button -->
                 <button type="button" 
                         id="mobile-menu-btn" 
                         onclick="toggleMobileMenu(event)"
-                        class="lg:hidden p-3 rounded-xl hover:bg-white/10 transition-colors focus:outline-none touch-manipulation cursor-pointer relative z-[9999]">
-                    <div class="w-7 h-6 flex flex-col justify-between pointer-events-none">
-                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 origin-center shadow-lg" style="background-color: #ffffff !important;"></span>
-                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 shadow-lg" style="background-color: #ffffff !important;"></span>
-                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 origin-center shadow-lg" style="background-color: #ffffff !important;"></span>
+                        style="display: block; padding: 12px; border-radius: 12px; background: transparent; border: none; cursor: pointer; position: relative; z-index: 9999;">
+                    <div style="width: 28px; height: 24px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;">
+                        <span class="menu-line" style="display: block; width: 100%; height: 3px; background-color: #ffffff; border-radius: 3px; transition: all 0.3s ease;"></span>
+                        <span class="menu-line" style="display: block; width: 100%; height: 3px; background-color: #ffffff; border-radius: 3px; transition: all 0.3s ease;"></span>
+                        <span class="menu-line" style="display: block; width: 100%; height: 3px; background-color: #ffffff; border-radius: 3px; transition: all 0.3s ease;"></span>
                     </div>
                 </button>
             </div>
@@ -167,20 +167,17 @@ $linkPrefix = $isHome ? '' : '/';
     visibility: visible !important;
 }
 
-/* Hamburger Animation - Bold White X */
-#mobile-menu-btn.active span:nth-child(1) {
-    transform: rotate(-45deg) translateY(10px) !important;
+/* Hamburger X Animation - Pure White */
+#mobile-menu-btn.active .menu-line:nth-child(1) {
+    transform: rotate(-45deg) translateY(10.5px) !important;
     background-color: #ffffff !important;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
 }
-#mobile-menu-btn.active span:nth-child(2) {
+#mobile-menu-btn.active .menu-line:nth-child(2) {
     opacity: 0 !important;
-    background-color: #ffffff !important;
 }
-#mobile-menu-btn.active span:nth-child(3) {
-    transform: rotate(45deg) translateY(-10px) !important;
+#mobile-menu-btn.active .menu-line:nth-child(3) {
+    transform: rotate(45deg) translateY(-10.5px) !important;
     background-color: #ffffff !important;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
 }
 </style>
 
