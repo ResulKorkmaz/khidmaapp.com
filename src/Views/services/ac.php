@@ -110,7 +110,7 @@ require_once __DIR__ . '/../layouts/header.php';
 
                 <!-- CTA Buttons -->
                 <div class="flex flex-wrap gap-4">
-                    <a href="#request-service" class="inline-flex items-center justify-center px-8 py-4 text-lg font-black text-[#1E5A8A] bg-white rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <a href="#request-service" class="inline-flex items-center justify-center px-8 py-4 text-lg font-black bg-white rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1" style="color: #1E5A8A !important;">
                         اطلب فني تكييف
                     </a>
                 </div>
