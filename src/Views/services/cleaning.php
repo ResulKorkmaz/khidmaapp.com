@@ -74,7 +74,7 @@ require_once __DIR__ . '/../layouts/header.php';
                 <!-- Main Heading -->
                 <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
                     <span class="block mb-2">خدمات <?= $serviceIcon ?></span>
-                    <span class="block bg-gradient-to-r from-white via-emerald-100 to-white bg-clip-text text-transparent">
+                    <span class="block text-white font-black">
                         تنظيف احترافية
                     </span>
                 </h1>
