@@ -28,15 +28,16 @@ $isHome = ($currentPath === '/' || $currentPath === '/index.php');
 $linkPrefix = $isHome ? '' : '/';
 ?>
 
-<header class="fixed top-0 w-full bg-emerald-600 border-b border-emerald-500 z-50 transition-all duration-500 shadow-md">
+<!-- Removed backdrop-blur and ensure solid background -->
+<header class="fixed top-0 w-full bg-emerald-600 border-b border-emerald-500 z-50 shadow-md">
     <div class="container-custom">
         <div class="flex items-center justify-between h-20 md:h-24">
             
             <!-- Logo Section -->
             <div class="flex items-center flex-shrink-0">
                 <a href="/" class="group relative block">
-                    <!-- Logo Box (Transparent on Green Header) -->
-                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/10 transition-transform duration-300 group-hover:scale-105">
+                    <!-- Logo Box (Solid White/10 is ok, but ensure no transparency affects header) -->
+                    <div class="bg-white/10 rounded-2xl p-2 border border-white/10 transition-transform duration-300 group-hover:scale-105">
                         <img src="/assets/images/logo-new.png?v=<?= time() . rand(1000, 9999) ?>" alt="KhidmaApp" 
                              class="w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 invert" 
                              onload="console.log('Logo loaded')"
@@ -58,7 +59,7 @@ $linkPrefix = $isHome ? '' : '/';
             <div class="flex items-center gap-4">
                 
                 <!-- Provider Login (White Text) -->
-                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-emerald-400 hover:bg-emerald-500 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5">
+                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-emerald-400 hover:bg-emerald-500 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5 bg-emerald-600">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -147,7 +148,7 @@ $linkPrefix = $isHome ? '' : '/';
     @apply bg-emerald-700 text-white border-r-4 border-emerald-300;
 }
 
-/* Header Scroll State - Keep it Green but add shadow */
+/* Header Scroll State - Keep it Solid Green */
 .header-scrolled {
     @apply shadow-xl bg-emerald-700 border-emerald-600;
 }
