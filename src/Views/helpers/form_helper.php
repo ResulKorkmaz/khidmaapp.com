@@ -210,7 +210,8 @@ if (!function_exists('render_service_request_form')) {
                     </label>
                     <textarea id="<?= $fieldPrefix ?>_description"
                               name="description"
-                              class="<?= $inputClasses ?> <?= $textareaHeight ?> p-3"
+                              dir="rtl"
+                              class="<?= $inputClasses ?> <?= $textareaHeight ?> p-3 text-right"
                               placeholder="<?= $ultraCompact ? 'التفاصيل...' : 'اكتب تفاصيل أكثر...' ?>"></textarea>
                 </div>
             <?php endif; ?>
@@ -256,6 +257,60 @@ if (!function_exists('render_service_request_form')) {
                 color: <?= $darkTheme ? '#ffffff' : '#047857' ?> !important;
             }
         </style>
+        
+        <!-- Auto-fill Service Description Script -->
+        <script>
+        (function() {
+            const formId = '<?= $formId ?>';
+            const fieldPrefix = '<?= $fieldPrefix ?>';
+            const serviceSelect = document.getElementById(fieldPrefix + '_service_type');
+            const descriptionTextarea = document.getElementById(fieldPrefix + '_description');
+            
+            if (!serviceSelect || !descriptionTextarea) return;
+            
+            let userModifiedDescription = false;
+            
+            // Hazır mesajlar (Auto-fill messages)
+            const serviceMessages = {
+                'paint': 'أحتاج إلى دهان غرفة أو أكثر في المنزل',
+                'renovation': 'أحتاج إلى ترميم وتجديد',
+                'cleaning': 'أحتاج إلى تنظيف شامل للمنزل',
+                'ac': 'يوجد مشكلة في المكيف - يحتاج صيانة أو تنظيف',
+                'plumbing': 'يوجد تسريب مياه أو مشكلة في السباكة تحتاج إصلاح',
+                'electric': 'يوجد مشكلة في الكهرباء تحتاج إصلاح'
+            };
+            
+            // Kullanıcı manuel değişiklik yaptığında işaretle
+            descriptionTextarea.addEventListener('input', function() {
+                userModifiedDescription = true;
+            });
+            
+            // Servis seçildiğinde otomatik doldur
+            serviceSelect.addEventListener('change', function() {
+                const selectedService = this.value;
+                
+                if (serviceMessages[selectedService] && !userModifiedDescription) {
+                    descriptionTextarea.value = serviceMessages[selectedService];
+                    
+                    // Görsel feedback (mavi ring)
+                    descriptionTextarea.classList.add('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                    setTimeout(() => {
+                        descriptionTextarea.classList.remove('ring-2', 'ring-blue-500', 'ring-opacity-50');
+                    }, 1000);
+                } else if (!selectedService && !userModifiedDescription) {
+                    descriptionTextarea.value = '';
+                }
+                
+                // Reset flag after auto-fill
+                userModifiedDescription = false;
+            });
+            
+            // Sayfa yüklendiğinde eğer servis seçiliyse otomatik doldur
+            if (serviceSelect.value && serviceMessages[serviceSelect.value] && !userModifiedDescription) {
+                descriptionTextarea.value = serviceMessages[serviceSelect.value];
+            }
+        })();
+        </script>
         <?php
     }
 }

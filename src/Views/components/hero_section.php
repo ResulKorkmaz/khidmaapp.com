@@ -56,11 +56,11 @@
                     </div>
 
                     <?php
-                    // Form Helper çağrısı - ultra_compact mode
+                    // Form Helper çağrısı - ultra_compact mode with description
                     render_service_request_form('hero-service-form', 'hero', [
                         'compact' => true,
                         'ultra_compact' => true,
-                        'include_description' => false, // Açıklama alanını kaldır (daha kısa form)
+                        'include_description' => true, // Açıklama alanı açık (hazır mesajlar için gerekli)
                         'button_text' => 'إرسال الطلب',
                         'button_classes' => 'w-full bg-[#1E5A8A] text-white hover:bg-[#165080] font-bold py-3 rounded-xl shadow-lg transition-all duration-300 text-sm',
                         'form_origin' => 'hero',
