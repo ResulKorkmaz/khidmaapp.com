@@ -28,15 +28,14 @@ $isHome = ($currentPath === '/' || $currentPath === '/index.php');
 $linkPrefix = $isHome ? '' : '/';
 ?>
 
-<!-- Force solid background color with inline style to prevent transparency issues -->
-<header class="fixed top-0 w-full z-[100] shadow-md" style="background-color: #059669;">
+<!-- Header -->
+<header id="main-header" class="fixed top-0 w-full z-[100] shadow-md transition-colors duration-300" style="background-color: #059669;">
     <div class="container-custom">
         <div class="flex items-center justify-between h-20 md:h-24">
             
-            <!-- Logo Section -->
+            <!-- Logo -->
             <div class="flex items-center flex-shrink-0 z-[101]">
                 <a href="/" class="group relative block">
-                    <!-- Logo Box -->
                     <div class="bg-white/10 rounded-2xl p-2 border border-white/20 transition-transform duration-300 group-hover:scale-105">
                         <img src="/assets/images/logo-new.png?v=<?= time() . rand(1000, 9999) ?>" alt="KhidmaApp" 
                              class="w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 invert" 
@@ -74,12 +73,15 @@ $linkPrefix = $isHome ? '' : '/';
                     <span>اطلب خدمة</span>
                 </a>
                 
-                <!-- Mobile Menu Toggle Button -->
-                <button type="button" id="mobile-menu-btn" class="lg:hidden p-3 rounded-xl hover:bg-white/10 transition-colors focus:outline-none touch-manipulation cursor-pointer relative">
+                <!-- Mobile Menu Toggle Button (Inline JS for reliability) -->
+                <button type="button" 
+                        id="mobile-menu-btn" 
+                        onclick="toggleMobileMenu(event)"
+                        class="lg:hidden p-3 rounded-xl hover:bg-white/10 transition-colors focus:outline-none touch-manipulation cursor-pointer relative z-[9999]">
                     <div class="w-6 h-5 flex flex-col justify-between pointer-events-none">
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300" style="background-color: #ffffff !important;"></span>
-                        <span class="w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
+                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
+                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300" style="background-color: #ffffff !important;"></span>
+                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
                     </div>
                 </button>
             </div>
@@ -87,33 +89,35 @@ $linkPrefix = $isHome ? '' : '/';
     </div>
     
     <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-emerald-700 z-40 transform translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto border-t border-emerald-600" style="height: calc(100vh - 80px);">
+    <div id="mobile-menu" 
+         class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-emerald-700 z-[90] transform translate-x-full opacity-0 pointer-events-none transition-all duration-300 flex flex-col overflow-y-auto border-t border-emerald-600" 
+         style="height: calc(100vh - 80px); background-color: #047857 !important;">
         <div class="p-6 space-y-8 min-h-full flex flex-col">
             <nav class="flex flex-col gap-4">
-                <a href="/" class="mobile-link-white <?= $isHome ? 'active' : '' ?>" style="color: #ffffff !important;">
+                <a href="/" onclick="toggleMobileMenu(event)" class="mobile-link-white <?= $isHome ? 'active' : '' ?>" style="color: #ffffff !important;">
                     <span class="text-2xl">🏠</span>
                     <span class="text-xl font-bold">الرئيسية</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#services" class="mobile-link-white" style="color: #ffffff !important;">
+                <a href="<?= $linkPrefix ?>#services" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">🛠️</span>
                     <span class="text-xl font-bold">الخدمات</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#about" class="mobile-link-white" style="color: #ffffff !important;">
+                <a href="<?= $linkPrefix ?>#about" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">ℹ️</span>
                     <span class="text-xl font-bold">عن خدمة</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#faq" class="mobile-link-white" style="color: #ffffff !important;">
+                <a href="<?= $linkPrefix ?>#faq" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">❓</span>
                     <span class="text-xl font-bold">الأسئلة الشائعة</span>
                 </a>
             </nav>
             
             <div class="mt-auto pt-8 border-t border-emerald-600 flex flex-col gap-4 pb-8">
-                <a href="<?= $linkPrefix ?>#request-service" class="flex items-center justify-center gap-3 w-full py-4 bg-white text-emerald-700 rounded-2xl font-bold text-xl shadow-lg">
+                <a href="<?= $linkPrefix ?>#request-service" onclick="toggleMobileMenu(event)" class="flex items-center justify-center gap-3 w-full py-4 bg-white text-emerald-700 rounded-2xl font-bold text-xl shadow-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     <span>اطلب خدمة الآن</span>
                 </a>
-                <button onclick="openProviderAuthModal()" class="flex items-center justify-center gap-3 w-full py-4 bg-emerald-800 text-white rounded-2xl font-bold text-xl border border-emerald-600" style="color: #ffffff !important;">
+                <button onclick="openProviderAuthModal(); toggleMobileMenu(event);" class="flex items-center justify-center gap-3 w-full py-4 bg-emerald-800 text-white rounded-2xl font-bold text-xl border border-emerald-600" style="color: #ffffff !important;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>دخول المهنيين</span>
                 </button>
@@ -123,55 +127,41 @@ $linkPrefix = $isHome ? '' : '/';
 </header>
 
 <style>
-/* White Navigation Styles */
+/* Styles */
 .nav-link-white {
     @apply text-white font-bold text-lg hover:text-emerald-100 transition-colors py-2 relative opacity-90 hover:opacity-100 cursor-pointer;
-    color: #ffffff !important; /* FORCE WHITE */
+    color: #ffffff !important;
 }
-
 .nav-link-white::after {
     content: '';
     @apply absolute bottom-0 right-0 w-0 h-0.5 bg-white transition-all duration-300;
 }
-
-.nav-link-white:hover::after,
-.nav-link-white.nav-active::after {
+.nav-link-white:hover::after, .nav-link-white.nav-active::after {
     @apply w-full;
 }
-
 .nav-link-white.nav-active {
     @apply text-white opacity-100;
-    color: #ffffff !important; /* FORCE WHITE */
 }
 
-/* Mobile Link Styles */
 .mobile-link-white {
     @apply flex items-center gap-4 p-4 rounded-2xl text-white hover:bg-emerald-600 transition-all cursor-pointer select-none;
-    color: #ffffff !important; /* FORCE WHITE */
+    color: #ffffff !important;
 }
-
 .mobile-link-white:active {
     @apply bg-emerald-800 transform scale-[0.98];
 }
-
 .mobile-link-white.active {
     @apply bg-emerald-800 text-white border-r-4 border-emerald-400;
-    color: #ffffff !important; /* FORCE WHITE */
 }
 
-/* Header Scroll State */
 .header-scrolled {
     background-color: #047857 !important; /* emerald-700 */
     @apply shadow-xl;
 }
 
-/* Mobile Menu Animation Classes */
-.menu-open {
-    @apply overflow-hidden;
-}
-
+/* Mobile Menu State Classes */
 #mobile-menu.is-open {
-    @apply translate-x-0;
+    @apply translate-x-0 opacity-100 pointer-events-auto;
 }
 
 /* Hamburger Animation */
@@ -187,87 +177,47 @@ $linkPrefix = $isHome ? '' : '/';
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementleri güvenli şekilde seç
-    const menuBtn = document.getElementById('mobile-menu-btn');
+// Define globally to ensure availability
+window.toggleMobileMenu = function(e) {
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
-    const header = document.querySelector('header');
-    let isOpen = false;
-
-    // Toggle Fonksiyonu
-    function toggleMenu() {
-        isOpen = !isOpen;
-        
-        if (isOpen) {
-            menuBtn.classList.add('active');
-            menu.classList.add('is-open');
-            document.body.classList.add('menu-open'); // Scroll'u engelle
-        } else {
-            menuBtn.classList.remove('active');
-            menu.classList.remove('is-open');
-            document.body.classList.remove('menu-open'); // Scroll'u aç
-        }
-    }
-
-    // Event Listener Ekleme
-    if (menuBtn && menu) {
-        menuBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation(); // Tıklamanın yukarı gitmesini engelle
-            toggleMenu();
-            console.log('Menu toggled:', isOpen);
-        });
-
-        // Menü içindeki linklere tıklayınca kapat
-        const links = menu.querySelectorAll('a, button');
-        links.forEach(link => {
-            link.addEventListener('click', function() {
-                if (isOpen) toggleMenu();
-            });
-        });
-
-        // Dışarı tıklayınca kapat (Opsiyonel ama güvenli)
-        document.addEventListener('click', function(e) {
-            if (isOpen && !menu.contains(e.target) && !menuBtn.contains(e.target)) {
-                toggleMenu();
-            }
-        });
+    const body = document.body;
+    
+    if (!btn || !menu) return;
+    
+    // Toggle classes
+    const isOpen = menu.classList.contains('is-open');
+    
+    if (isOpen) {
+        // Close
+        btn.classList.remove('active');
+        menu.classList.remove('is-open');
+        body.style.overflow = '';
     } else {
-        console.error('Mobile menu elements not found!');
+        // Open
+        btn.classList.add('active');
+        menu.classList.add('is-open');
+        body.style.overflow = 'hidden';
     }
+    
+    console.log('Menu toggled:', !isOpen);
+};
 
-    // Scroll Effect
+// Scroll Effect
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.getElementById('main-header');
+    
     window.addEventListener('scroll', () => {
         if (window.scrollY > 10) {
             header.classList.add('header-scrolled');
         } else {
             header.classList.remove('header-scrolled');
         }
-        
-        // Active Link Logic (Home only)
-        <?php if ($isHome): ?>
-        const sections = document.querySelectorAll('section[id]');
-        const links = document.querySelectorAll('.nav-link-white');
-        
-        let current = '';
-        const scrollY = window.scrollY + 150;
-        
-        sections.forEach(section => {
-            if (scrollY >= section.offsetTop) {
-                current = section.getAttribute('id');
-            }
-        });
-        
-        links.forEach(link => {
-            link.classList.remove('nav-active');
-            const href = link.getAttribute('href');
-            if (href === '/' && window.scrollY < 100) {
-                if (link.getAttribute('href') === '/') link.classList.add('nav-active');
-            } else if (href === `#${current}`) {
-                link.classList.add('nav-active');
-            }
-        });
-        <?php endif; ?>
     });
 });
 </script>
