@@ -890,6 +890,72 @@ window.toggleFaq = function(button) {
         icon.style.transform = 'rotate(180deg)';
     }
 }
+
+// ============================================
+// AUTO-FILL SERVICE DESCRIPTION
+// ============================================
+// خاصية ملء وصف الخدمة تلقائياً للعملاء الكسولين 😄
+document.addEventListener('DOMContentLoaded', function() {
+    // قاموس الرسائل الافتراضية لكل خدمة
+    const serviceMessages = {
+        'paint': 'أحتاج إلى دهان غرفة أو أكثر في المنزل',
+        'renovation': 'أحتاج إلى ترميم وتجديد',
+        'cleaning': 'أحتاج إلى تنظيف شامل للمنزل',
+        'ac': 'يوجد مشكلة في المكيف - يحتاج صيانة أو تنظيف',
+        'plumbing': 'يوجد تسريب مياه أو مشكلة في السباكة تحتاج إصلاح',
+        'electric': 'يوجد مشكلة في الكهرباء تحتاج إصلاح'
+    };
+    
+    // البحث عن جميع نماذج الخدمة في الصفحة
+    document.querySelectorAll('.service-request-form').forEach(function(form) {
+        const serviceSelect = form.querySelector('.service-type-select');
+        const descriptionTextarea = form.querySelector('textarea[name="description"]');
+        
+        // إذا لم يكن هناك حقل وصف، تجاهل هذا النموذج
+        if (!serviceSelect || !descriptionTextarea) {
+            return;
+        }
+        
+        // متابعة ما إذا كان المستخدم قد عدّل النص يدوياً
+        let userModified = false;
+        
+        // تتبع التعديلات اليدوية
+        descriptionTextarea.addEventListener('input', function() {
+            // إذا كان الحقل فارغاً، اسمح بالتعبئة التلقائية مرة أخرى
+            if (this.value.trim() === '') {
+                userModified = false;
+            } else {
+                // المستخدم كتب شيئاً، علّم أنه معدّل يدوياً
+                const currentService = serviceSelect.value;
+                const defaultMessage = serviceMessages[currentService] || '';
+                // فقط علّم كمعدّل إذا كان النص مختلفاً عن الافتراضي
+                if (this.value.trim() !== defaultMessage.trim()) {
+                    userModified = true;
+                }
+            }
+        });
+        
+        // عند تغيير نوع الخدمة
+        serviceSelect.addEventListener('change', function() {
+            const selectedService = this.value;
+            
+            // إذا لم يعدّل المستخدم النص، املأ الرسالة الافتراضية
+            if (!userModified && selectedService && serviceMessages[selectedService]) {
+                descriptionTextarea.value = serviceMessages[selectedService];
+                // أضف تأثير بسيط لجذب الانتباه
+                descriptionTextarea.classList.add('ring-2', 'ring-blue-300');
+                setTimeout(function() {
+                    descriptionTextarea.classList.remove('ring-2', 'ring-blue-300');
+                }, 1000);
+            }
+        });
+        
+        // إذا كانت الخدمة محددة مسبقاً (عند تحميل الصفحة)
+        if (serviceSelect.value && !descriptionTextarea.value && serviceMessages[serviceSelect.value]) {
+            descriptionTextarea.value = serviceMessages[serviceSelect.value];
+        }
+    });
+});
 </script>
 
 </body>
