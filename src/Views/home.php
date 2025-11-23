@@ -29,9 +29,6 @@ require_once __DIR__ . '/layouts/header.php';
 <!-- Join as Provider Section -->
 <?php require __DIR__ . '/components/join_provider_section.php'; ?>
 
-<!-- FAQ Section -->
-<?php require __DIR__ . '/components/faq_section.php'; ?>
-
 <!-- Final CTA Section -->
 <section id="request-service" class="section-padding bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
     <!-- Decorative Elements -->

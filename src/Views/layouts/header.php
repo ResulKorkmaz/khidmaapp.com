@@ -51,7 +51,6 @@ $linkPrefix = $isHome ? '' : '/';
                 <a href="/" class="nav-link-white <?= $isHome ? 'nav-active' : '' ?>" style="color: #ffffff !important;">الرئيسية</a>
                 <a href="<?= $linkPrefix ?>#services" class="nav-link-white" style="color: #ffffff !important;">الخدمات</a>
                 <a href="<?= $linkPrefix ?>#about" class="nav-link-white" style="color: #ffffff !important;">عن خدمة</a>
-                <a href="<?= $linkPrefix ?>#faq" class="nav-link-white" style="color: #ffffff !important;">الأسئلة الشائعة</a>
             </nav>
             
             <!-- Right Side Actions -->
@@ -105,10 +104,6 @@ $linkPrefix = $isHome ? '' : '/';
                 <a href="<?= $linkPrefix ?>#about" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
                     <span class="text-2xl">ℹ️</span>
                     <span class="text-xl font-bold">عن خدمة</span>
-                </a>
-                <a href="<?= $linkPrefix ?>#faq" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
-                    <span class="text-2xl">❓</span>
-                    <span class="text-xl font-bold">الأسئلة الشائعة</span>
                 </a>
             </nav>
             
