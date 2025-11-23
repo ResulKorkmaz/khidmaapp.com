@@ -21,10 +21,6 @@
         <!-- Services Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php 
-            // Define unified styling - Blue Theme Only
-            $brandColor = '#3B9DD9';
-            $brandDark = '#1E5A8A';
-            
             $serviceIcons = [
                 'paint' => [
                     'icon' => 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01',
@@ -61,43 +57,46 @@
             foreach (getServiceTypes() as $key => $service): 
                 $serviceData = $serviceIcons[$key] ?? $serviceIcons['paint'];
             ?>
-            <div class="group relative bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col h-full">
+            <!-- Service Card -->
+            <div class="group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 flex flex-col">
                 
-                <!-- Image Container -->
-                <div class="relative h-56 overflow-hidden flex-shrink-0">
-                    <div class="absolute inset-0 bg-gray-900/20 group-hover:bg-gray-900/10 transition-colors z-10"></div>
+                <!-- Image Container - Fixed Height -->
+                <div class="relative w-full h-64 overflow-hidden flex-shrink-0 bg-gray-100">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10"></div>
                     <img src="/assets/images/<?= htmlspecialchars($serviceData['image']) ?>" 
                          alt="<?= htmlspecialchars($service['ar']) ?>"
-                         class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+                         class="absolute inset-0 w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-700"
+                         loading="lazy">
                     
                     <!-- Icon Badge -->
-                    <div class="absolute bottom-4 right-4 z-20 w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg text-[#3B9DD9]">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <div class="absolute bottom-4 right-4 z-20 w-14 h-14 bg-white rounded-xl flex items-center justify-center shadow-xl">
+                        <svg class="w-7 h-7 text-[#3B9DD9]" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                             <path d="<?= $serviceData['icon'] ?>"/>
                         </svg>
                     </div>
                 </div>
                 
-                <!-- Content -->
-                <div class="p-6 md:p-8 flex flex-col flex-grow">
-                    <h3 class="text-xl font-black text-gray-900 mb-3 group-hover:text-[#3B9DD9] transition-colors flex-shrink-0">
+                <!-- Content Area - Flexible Height -->
+                <div class="p-6 flex flex-col flex-grow">
+                    <!-- Title -->
+                    <h3 class="text-2xl font-black text-gray-900 mb-3 group-hover:text-[#3B9DD9] transition-colors">
                         <?= htmlspecialchars($service['ar']) ?>
                     </h3>
                     
-                    <p class="text-gray-600 leading-relaxed text-sm mb-6 flex-grow">
+                    <!-- Description -->
+                    <p class="text-gray-600 leading-relaxed mb-6 flex-grow">
                         <?= $serviceData['desc'] ?>
                     </p>
                     
-                    <!-- Action Button - Fixed Height & Contrast -->
-                    <div class="mt-auto">
-                        <a href="/services/<?= htmlspecialchars($key) ?>" 
-                           class="flex items-center justify-between w-full px-5 py-3.5 rounded-xl font-bold transition-all duration-300 bg-[#3B9DD9] text-white hover:bg-[#2B7AB8]">
-                            <span>طلب الخدمة</span>
-                            <svg class="w-5 h-5 transform rotate-180 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
-                        </a>
-                    </div>
+                    <!-- Action Button - Always at Bottom -->
+                    <a href="/services/<?= htmlspecialchars($key) ?>" 
+                       class="flex items-center justify-between w-full px-6 py-4 rounded-xl font-bold text-base transition-all duration-300 shadow-sm" 
+                       style="background-color: #3B9DD9; color: white;">
+                        <span>طلب الخدمة</span>
+                        <svg class="w-5 h-5 transform rotate-180 group-hover:-translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
             <?php endforeach; ?>
