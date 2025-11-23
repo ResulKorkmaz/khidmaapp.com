@@ -17,7 +17,7 @@
     <link href="/assets/css/app.css" rel="stylesheet">
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#10b981">
+    <meta name="theme-color" content="#059669">
 </head>
 <body class="bg-gray-50">
 
@@ -28,15 +28,15 @@ $isHome = ($currentPath === '/' || $currentPath === '/index.php');
 $linkPrefix = $isHome ? '' : '/';
 ?>
 
-<header class="fixed top-0 w-full bg-white/95 backdrop-blur-xl border-b border-gray-100 z-50 transition-all duration-500 shadow-sm">
+<header class="fixed top-0 w-full bg-emerald-600 border-b border-emerald-500 z-50 transition-all duration-500 shadow-md">
     <div class="container-custom">
-        <div class="flex items-center justify-between h-20 md:h-24"> <!-- Yükseklik arttırıldı -->
+        <div class="flex items-center justify-between h-20 md:h-24">
             
             <!-- Logo Section -->
             <div class="flex items-center flex-shrink-0">
                 <a href="/" class="group relative block">
-                    <!-- Logo Box -->
-                    <div class="bg-emerald-600 rounded-2xl p-2 shadow-lg shadow-emerald-200/50 transition-transform duration-300 group-hover:scale-105 group-hover:shadow-emerald-300/50">
+                    <!-- Logo Box (Transparent on Green Header) -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-2 border border-white/10 transition-transform duration-300 group-hover:scale-105">
                         <img src="/assets/images/logo-new.png?v=<?= time() . rand(1000, 9999) ?>" alt="KhidmaApp" 
                              class="w-10 h-10 md:w-12 md:h-12 object-contain filter brightness-0 invert" 
                              onload="console.log('Logo loaded')"
@@ -47,34 +47,34 @@ $linkPrefix = $isHome ? '' : '/';
             </div>
             
             <!-- Desktop Navigation -->
-            <nav class="hidden lg:flex items-center gap-8 mx-auto"> <!-- space-x yerine gap-8 kullanıldı -->
-                <a href="/" class="nav-link-modern <?= $isHome ? 'nav-active' : '' ?>">الرئيسية</a>
-                <a href="<?= $linkPrefix ?>#services" class="nav-link-modern">الخدمات</a>
-                <a href="<?= $linkPrefix ?>#about" class="nav-link-modern">عن خدمة</a>
-                <a href="<?= $linkPrefix ?>#faq" class="nav-link-modern">الأسئلة الشائعة</a>
+            <nav class="hidden lg:flex items-center gap-8 mx-auto">
+                <a href="/" class="nav-link-white <?= $isHome ? 'nav-active' : '' ?>">الرئيسية</a>
+                <a href="<?= $linkPrefix ?>#services" class="nav-link-white">الخدمات</a>
+                <a href="<?= $linkPrefix ?>#about" class="nav-link-white">عن خدمة</a>
+                <a href="<?= $linkPrefix ?>#faq" class="nav-link-white">الأسئلة الشائعة</a>
             </nav>
             
             <!-- Right Side Actions -->
-            <div class="flex items-center gap-4"> <!-- space-x yerine gap-4 -->
+            <div class="flex items-center gap-4">
                 
-                <!-- Provider Login -->
-                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-100 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5">
+                <!-- Provider Login (White Text) -->
+                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-emerald-400 hover:bg-emerald-500 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
                     <span>دخول المهنيين</span>
                 </button>
                 
-                <!-- Request Service CTA -->
-                <a href="<?= $linkPrefix ?>#request-service" class="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-emerald-600 text-white font-bold text-sm shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:shadow-emerald-300 transition-all duration-300 hover:-translate-y-0.5">
+                <!-- Request Service CTA (White BG, Green Text) -->
+                <a href="<?= $linkPrefix ?>#request-service" class="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-emerald-600 font-bold text-sm shadow-lg hover:bg-gray-50 transition-all duration-300 hover:-translate-y-0.5">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
                     <span>اطلب خدمة</span>
                 </a>
                 
-                <!-- Mobile Menu Toggle -->
-                <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors">
+                <!-- Mobile Menu Toggle (White) -->
+                <button type="button" id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors">
                     <div class="w-6 h-5 flex flex-col justify-between relative">
                         <span class="w-full h-0.5 bg-current rounded-full transition-all duration-300 origin-right"></span>
                         <span class="w-full h-0.5 bg-current rounded-full transition-all duration-300"></span>
@@ -86,32 +86,32 @@ $linkPrefix = $isHome ? '' : '/';
     </div>
     
     <!-- Mobile Menu Overlay -->
-    <div id="mobile-menu" class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-white/98 backdrop-blur-xl z-40 transform translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto border-t border-gray-100">
+    <div id="mobile-menu" class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-emerald-600 z-40 transform translate-x-full transition-transform duration-300 flex flex-col overflow-y-auto border-t border-emerald-500">
         <div class="p-6 space-y-6">
             <nav class="flex flex-col gap-2">
-                <a href="/" class="mobile-link <?= $isHome ? 'active' : '' ?>">
+                <a href="/" class="mobile-link-white <?= $isHome ? 'active' : '' ?>">
                     <span class="text-2xl">🏠</span>
                     <span class="text-lg font-bold">الرئيسية</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#services" class="mobile-link">
+                <a href="<?= $linkPrefix ?>#services" class="mobile-link-white">
                     <span class="text-2xl">🛠️</span>
                     <span class="text-lg font-bold">الخدمات</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#about" class="mobile-link">
+                <a href="<?= $linkPrefix ?>#about" class="mobile-link-white">
                     <span class="text-2xl">ℹ️</span>
                     <span class="text-lg font-bold">عن خدمة</span>
                 </a>
-                <a href="<?= $linkPrefix ?>#faq" class="mobile-link">
+                <a href="<?= $linkPrefix ?>#faq" class="mobile-link-white">
                     <span class="text-2xl">❓</span>
                     <span class="text-lg font-bold">الأسئلة الشائعة</span>
                 </a>
             </nav>
             
-            <div class="pt-6 border-t border-gray-100 flex flex-col gap-3">
-                <a href="<?= $linkPrefix ?>#request-service" class="flex items-center justify-center gap-2 w-full py-4 bg-emerald-600 text-white rounded-xl font-bold text-lg shadow-lg shadow-emerald-200">
+            <div class="pt-6 border-t border-emerald-500 flex flex-col gap-3">
+                <a href="<?= $linkPrefix ?>#request-service" class="flex items-center justify-center gap-2 w-full py-4 bg-white text-emerald-600 rounded-xl font-bold text-lg shadow-lg">
                     <span>اطلب خدمة الآن</span>
                 </a>
-                <button onclick="openProviderAuthModal()" class="flex items-center justify-center gap-2 w-full py-4 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-lg border border-emerald-100">
+                <button onclick="openProviderAuthModal()" class="flex items-center justify-center gap-2 w-full py-4 bg-emerald-700 text-white rounded-xl font-bold text-lg border border-emerald-500">
                     <span>دخول المهنيين</span>
                 </button>
             </div>
@@ -120,36 +120,36 @@ $linkPrefix = $isHome ? '' : '/';
 </header>
 
 <style>
-/* Modern Clean Styles */
-.nav-link-modern {
-    @apply text-gray-600 font-bold text-base hover:text-emerald-600 transition-colors py-2 relative;
+/* White Navigation Styles */
+.nav-link-white {
+    @apply text-emerald-100 font-bold text-base hover:text-white transition-colors py-2 relative;
 }
 
-.nav-link-modern::after {
+.nav-link-white::after {
     content: '';
-    @apply absolute bottom-0 right-0 w-0 h-0.5 bg-emerald-600 transition-all duration-300;
+    @apply absolute bottom-0 right-0 w-0 h-0.5 bg-white transition-all duration-300 opacity-80;
 }
 
-.nav-link-modern:hover::after,
-.nav-link-modern.nav-active::after {
+.nav-link-white:hover::after,
+.nav-link-white.nav-active::after {
     @apply w-full;
 }
 
-.nav-link-modern.nav-active {
-    @apply text-emerald-600;
+.nav-link-white.nav-active {
+    @apply text-white;
 }
 
-.mobile-link {
-    @apply flex items-center gap-4 p-4 rounded-xl text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all;
+.mobile-link-white {
+    @apply flex items-center gap-4 p-4 rounded-xl text-emerald-100 hover:bg-emerald-500 hover:text-white transition-all;
 }
 
-.mobile-link.active {
-    @apply bg-emerald-50 text-emerald-700 border-r-4 border-emerald-600;
+.mobile-link-white.active {
+    @apply bg-emerald-700 text-white border-r-4 border-emerald-300;
 }
 
-/* Header Scroll State */
+/* Header Scroll State - Keep it Green but add shadow */
 .header-scrolled {
-    @apply shadow-md bg-white/98;
+    @apply shadow-xl bg-emerald-700 border-emerald-600;
 }
 
 /* Mobile Menu Animation Classes */
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Close on link click
-    document.querySelectorAll('.mobile-link, #mobile-menu button, #mobile-menu a').forEach(link => {
+    document.querySelectorAll('.mobile-link-white, #mobile-menu button, #mobile-menu a').forEach(link => {
         link.addEventListener('click', () => {
             if (isOpen) toggleMenu();
         });
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Active Link Logic (Home only)
         <?php if ($isHome): ?>
         const sections = document.querySelectorAll('section[id]');
-        const links = document.querySelectorAll('.nav-link-modern');
+        const links = document.querySelectorAll('.nav-link-white');
         
         let current = '';
         const scrollY = window.scrollY + 150;
