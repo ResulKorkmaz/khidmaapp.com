@@ -48,11 +48,11 @@
             <!-- RIGHT COLUMN (Desktop): Form -->
             <div class="order-2 lg:order-2">
                 <!-- Form Container (Compact) -->
-                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-2xl border-2 border-white/10 max-w-md mx-auto">
+                <div class="bg-white rounded-2xl p-4 md:p-5 shadow-2xl border-2 border-white/10 max-w-md mx-auto">
                     
-                    <div class="text-center mb-4">
-                        <h3 class="text-xl font-bold text-gray-800 mb-1">طلب خدمة سريع</h3>
-                        <p class="text-gray-500 text-xs">املأ النموذج وسيصلك أفضل العروض</p>
+                    <div class="text-center mb-3">
+                        <h3 class="text-lg font-bold text-gray-800 mb-1">طلب خدمة سريع</h3>
+                        <p class="text-gray-500 text-[11px]">املأ النموذج وسيصلك أفضل العروض</p>
                     </div>
 
                     <?php
@@ -67,12 +67,6 @@
                         'dark_theme' => false
                     ]);
                     ?>
-                    
-                    <div class="mt-3 text-center">
-                        <p class="text-[10px] text-gray-400">
-                            🔒 بياناتك آمنة ولن يتم مشاركتها
-                        </p>
-                    </div>
                 </div>
             </div>
             
