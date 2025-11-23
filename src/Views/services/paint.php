@@ -1,6 +1,6 @@
 <?php
 /**
- * Service Page: Renovation (ترميم)
+ * Service Page: Paint (دهان)
  * Business Model: Lead Generation Platform (Connecting Customers with Verified Professionals)
  * Design: Solid Green (#10b981), Professional, High Contrast
  */
@@ -9,11 +9,11 @@ $serviceKey = 'paint';
 $serviceName = 'دهان';
 $serviceNameEn = 'Painting Services';
 // Correct Business Model Description
-$serviceDescription = 'منصة خدمة تربطك بأفضل معلمين الدهان المعتمدين في منطقتك. احصل على عروض أسعار من محترفين موثوقين.';
-$serviceMetaDescription = 'ابحث عن أفضل معلم دهان في السعودية | نربطك بمحترفين معتمدين | دهان منازل وفلل | عروض أسعار تنافسية | موثوقية وضمان';
-$serviceKeywords = 'ترميم, معلم دهان, طلب مقاول, دهان منازل, دهانات خارجية, فنيين دهان, منصة خدمة';
+$serviceDescription = 'منصة خدمة تربطك بأفضل معلمين الدهان المحترفين في منطقتك. احصل على عروض أسعار لدهان المنازل، الديكورات، والواجهات.';
+$serviceMetaDescription = 'افضل معلم دهان في السعودية | دهان منازل وفلل | ديكورات ودهانات جوتن | دهان ابواب خشب | الوان عصرية | عروض أسعار فورية';
+$serviceKeywords = 'معلم دهان, دهان بويه, دهان منازل, ديكورات جدران, ورق جدران, دهانات خارجية, دهانات داخلية';
 $cities = ['الرياض', 'جدة', 'مكة المكرمة', 'المدينة المنورة', 'الدمام', 'الخبر', 'تبوك', 'أبها'];
-$pageTitle = 'اطلب أفضل معلم دهان في السعودية | خيارات موثوقة | KhidmaApp';
+$pageTitle = 'اطلب أفضل معلم دهان في السعودية | ألوان عصرية وتنفيذ متقن | KhidmaApp';
 
 $breadcrumb = [
     ['name' => 'الرئيسية', 'url' => '/'],
@@ -29,12 +29,12 @@ require_once __DIR__ . '/../layouts/header.php';
 {
   "@context": "https://schema.org",
   "@type": "Service",
-  "serviceType": "<?= $serviceName ?> Intermediary Service",
+  "serviceType": "Painting & Decoration Intermediary",
   "provider": {
     "@type": "LocalBusiness",
     "name": "KhidmaApp - خدمة",
-    "description": "منصة لربط العملاء بمقدمي خدمات الترميم المحترفين",
-    "priceRange": "$$$"
+    "description": "منصة لربط العملاء بمعلمين الدهان والديكور المحترفين",
+    "priceRange": "$$"
   },
   "areaServed": {
     "@type": "Country",
@@ -75,43 +75,43 @@ require_once __DIR__ . '/../layouts/header.php';
             <div class="text-right text-white">
                 <!-- Platform Badge -->
                 <div class="inline-flex items-center gap-2 bg-white/20 border border-white/30 px-4 py-2 rounded-full mb-6 backdrop-blur-sm">
-                    <span class="text-sm font-bold">منصة ربط معتمدة وموثوقة</span>
+                    <span class="text-sm font-bold">منصة معتمدة لخدمات الدهانات</span>
                     <svg class="w-5 h-5 text-yellow-300" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                     </svg>
                 </div>
 
-                <!-- Headline - Correct Platform Messaging -->
+                <!-- Headline - Specific Paint Messaging -->
                 <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
-                    هل تبحث عن مقاول
-                    <span class="block mt-2 text-green-100">ترميم محترف وموثوق؟</span>
+                    هل ترغب بتجديد
+                    <span class="block mt-2 text-green-100">ألوان منزلك بلمسة احترافية؟</span>
                 </h1>
 
                 <!-- Description -->
                 <p class="text-lg md:text-xl text-green-50 mb-8 leading-relaxed font-medium max-w-2xl">
-                    نحن نربطك بأفضل شركات ومعلمين الدهان في منطقتك. سجل طلبك الآن وسيقوم نخبة من المحترفين المعتمدين بالتواصل معك لتقديم عروضهم.
+                    اكتشف أحدث صيحات الديكور والألوان. نربطك بأمهر معلمين الدهان لتنفيذ جميع أنواع الدهانات الداخلية والخارجية والديكورات بدقة عالية.
                 </p>
 
                 <!-- Key Benefits -->
                 <ul class="space-y-3 mb-10">
                     <li class="flex items-center gap-3">
                         <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
-                        <span class="font-bold">محترفون تم التحقق من هويتهم وجودة أعمالهم</span>
+                        <span class="font-bold">تنفيذ دهانات جوتن والجزيرة الأصلية</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
-                        <span class="font-bold">نستبعد فوراً أي مقدم خدمة يتلقى شكاوى متكررة</span>
+                        <span class="font-bold">معالجة التشققات والرطوبة قبل الدهان</span>
                     </li>
                     <li class="flex items-center gap-3">
                         <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
-                        <span class="font-bold">توفير الوقت والجهد في البحث عن الأفضل</span>
+                        <span class="font-bold">نظافة تامة وحماية للأثاث والأرضيات</span>
                     </li>
                 </ul>
 
                 <!-- CTA Buttons -->
                 <div class="flex flex-wrap gap-4">
                     <a href="#request-service" class="inline-flex items-center justify-center px-8 py-4 text-lg font-black text-gray-900 bg-white rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                        اطلب مقاول الآن
+                        اطلب معلم دهان
                     </a>
                 </div>
             </div>
@@ -120,8 +120,8 @@ require_once __DIR__ . '/../layouts/header.php';
             <div class="hidden lg:block relative">
                 <div class="bg-white rounded-3xl p-8 shadow-2xl border-4 border-white/20">
                     <div class="text-center mb-8">
-                        <span class="text-6xl block mb-4">🤝</span>
-                        <h3 class="text-2xl font-black text-gray-900">كيف نساعدك؟</h3>
+                        <span class="text-6xl block mb-4">🎨</span>
+                        <h3 class="text-2xl font-black text-gray-900">خطوات تجديد منزلك</h3>
                     </div>
                     
                     <div class="space-y-6 relative">
@@ -129,8 +129,8 @@ require_once __DIR__ . '/../layouts/header.php';
                         <div class="flex items-start gap-4">
                             <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">1</div>
                             <div>
-                                <h4 class="font-bold text-gray-900 text-lg">أرسل طلبك</h4>
-                                <p class="text-gray-600 text-sm">حدد نوع الترميم والموقع والتفاصيل المطلوبة.</p>
+                                <h4 class="font-bold text-gray-900 text-lg">اختر الألوان</h4>
+                                <p class="text-gray-600 text-sm">حدد نوع الدهان والألوان المطلوبة أو اطلب استشارة.</p>
                             </div>
                         </div>
                         
@@ -138,8 +138,8 @@ require_once __DIR__ . '/../layouts/header.php';
                         <div class="flex items-start gap-4">
                             <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">2</div>
                             <div>
-                                <h4 class="font-bold text-gray-900 text-lg">التحقق والربط</h4>
-                                <p class="text-gray-600 text-sm">نراجع طلبك ونرسله لأفضل المقاولين المتاحين.</p>
+                                <h4 class="font-bold text-gray-900 text-lg">معاينة مجانية</h4>
+                                <p class="text-gray-600 text-sm">يرسل لك المعلم عرض سعر دقيق بعد المعاينة.</p>
                             </div>
                         </div>
 
@@ -147,8 +147,8 @@ require_once __DIR__ . '/../layouts/header.php';
                         <div class="flex items-start gap-4">
                             <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">3</div>
                             <div>
-                                <h4 class="font-bold text-gray-900 text-lg">قارن واختر</h4>
-                                <p class="text-gray-600 text-sm">تتلقى عروضاً وتختار العرض الأنسب لك.</p>
+                                <h4 class="font-bold text-gray-900 text-lg">تنفيذ متقن</h4>
+                                <p class="text-gray-600 text-sm">بدء العمل وتسليم المكان نظيفاً وجاهزاً.</p>
                             </div>
                         </div>
                     </div>
@@ -162,19 +162,19 @@ require_once __DIR__ . '/../layouts/header.php';
 <section class="py-20 bg-gray-50">
     <div class="container-custom">
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">ما هي خدمات الترميم التي نوفرها؟</h2>
-            <p class="text-xl text-gray-600">نساعدك في العثور على محترفين لجميع أنواع أعمال الترميم</p>
+            <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">خدمات الدهان والديكور</h2>
+            <p class="text-xl text-gray-600">لمسات فنية تحول منزلك إلى تحفة</p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php
             $services = [
-                ['title' => 'ترميم شامل للمنازل', 'icon' => '🏠', 'desc' => 'نربطك بمقاولين متخصصين في أحدث ألوان الدهانات والديكورات الداخلية للمنازل.'],
-                ['title' => 'دهان المكاتب والشركات', 'icon' => '🏢', 'desc' => 'شركات متخصصة في خدمات دهان سريعة واحترافية للمكاتب والمتاجر.'],
-                ['title' => 'دهان الواجهات', 'icon' => '🏛️', 'desc' => 'خبراء في دهانات خارجية مقاومة للعوامل الجوية للواجهات بأحدث المواد.'],
-                ['title' => 'دهان وديكور داخلي', 'icon' => '🔨', 'desc' => 'فنيون متخصصون في تنفيذ أحدث ديكورات الدهان والتعتيق والروشن.'],
-                ['title' => 'ورق جدران', 'icon' => '💧', 'desc' => 'متخصصون في تركيب ورق الجدران بجميع أنواعه باحترافية.'],
-                ['title' => 'دهان أبواب وأخشاب', 'icon' => '📐', 'desc' => 'مقاولون معتمدون لدهان ومعالجة الأبواب الخشبية والحديدية.']
+                ['title' => 'دهانات داخلية', 'icon' => '🏠', 'desc' => 'تنفيذ جميع أنواع الدهانات الداخلية (بلاستيك، زيتي، مطفي، ربع لمعة) بألوان عصرية.'],
+                ['title' => 'ديكورات جدران', 'icon' => '🖼️', 'desc' => 'تنفيذ أحدث الديكورات: بديل الرخام، بديل الخشب، الفوم، والاستيل الذهبي.'],
+                ['title' => 'دهانات خارجية', 'icon' => '🏛️', 'desc' => 'دهان واجهات بروفايل وجرافيت وكسر رخام مقاوم للشمس والرطوبة.'],
+                ['title' => 'ورق جدران', 'icon' => '📜', 'desc' => 'توريد وتركيب ورق جدران كلاسيك ومودرن وثلاثي الأبعاد (3D).'],
+                ['title' => 'دهان أبواب', 'icon' => '🚪', 'desc' => 'دهان وتجديد الأبواب الخشبية والحديدية والدواليب بأجود أنواع الطلاء.'],
+                ['title' => 'معالجة الجدران', 'icon' => '🔧', 'desc' => 'صنفرة ومعجون ومعالجة الشروخ والرطوبة لضمان سطح ناعم ومثالي.']
             ];
             
             foreach ($services as $service):
@@ -195,25 +195,25 @@ require_once __DIR__ . '/../layouts/header.php';
 <section class="py-20 bg-white border-t border-gray-100">
     <div class="container-custom">
         <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">لماذا تطلب عبر منصة خدمة؟</h2>
-            <p class="text-xl text-gray-600">نحن لا نقدم الخدمة فحسب، بل نضمن لك الوصول للأفضل</p>
+            <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">لماذا تختار معلمي منصة خدمة؟</h2>
+            <p class="text-xl text-gray-600">نضمن لك الجودة والالتزام بالمواعيد</p>
         </div>
 
         <div class="grid md:grid-cols-3 gap-8">
             <div class="text-center p-6">
-                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🛡️</div>
-                <h3 class="text-xl font-black text-gray-900 mb-3">تحقق صارم</h3>
-                <p class="text-gray-600">لا نقبل أي مقدم خدمة. نتحقق من السمعة، الخبرة، وجودة العمل قبل ضمهم لمنصتنا.</p>
+                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🎨</div>
+                <h3 class="text-xl font-black text-gray-900 mb-3">تناسق الألوان</h3>
+                <p class="text-gray-600">نساعدك في اختيار وتنسيق الألوان المناسبة لأثاث وإضاءة منزلك.</p>
             </div>
             <div class="text-center p-6">
-                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⭐</div>
-                <h3 class="text-xl font-black text-gray-900 mb-3">مراقبة الجودة</h3>
-                <p class="text-gray-600">نراقب تقييمات العملاء باستمرار. أي مقدم خدمة يتلقى شكاوى متكررة يتم استبعاده فوراً.</p>
+                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🧹</div>
+                <h3 class="text-xl font-black text-gray-900 mb-3">نظافة العمل</h3>
+                <p class="text-gray-600">تغطية كاملة للأرضيات والأثاث قبل البدء، وتسليم المكان نظيفاً تماماً.</p>
             </div>
             <div class="text-center p-6">
                 <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⚡</div>
-                <h3 class="text-xl font-black text-gray-900 mb-3">سرعة وسهولة</h3>
-                <p class="text-gray-600">بدلاً من البحث العشوائي، طلب واحد يصلك بنخبة المحترفين الجاهزين لخدمتك.</p>
+                <h3 class="text-xl font-black text-gray-900 mb-3">إنجاز سريع</h3>
+                <p class="text-gray-600">فريق عمل متكامل لإنجاز دهان الشقق والفلل في وقت قياسي.</p>
             </div>
         </div>
     </div>
@@ -224,26 +224,26 @@ require_once __DIR__ . '/../layouts/header.php';
     <div class="container-custom">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div class="text-white">
-                <h2 class="text-3xl md:text-5xl font-black mb-6">سجل طلبك الآن</h2>
+                <h2 class="text-3xl md:text-5xl font-black mb-6">اطلب معلم دهان الآن</h2>
                 <p class="text-xl text-green-50 mb-8 leading-relaxed">
-                    املأ النموذج أدناه بتفاصيل مشروعك. سيقوم فريقنا بمراجعة طلبك وإيصاله لأفضل المقاولين المختصين في منطقتك للتواصل معك.
+                    سجل طلبك في ثوانٍ. حدد نوع الدهان والمساحة التقريبية، وسيتواصل معك أفضل المعلمين لتقديم عروض الأسعار والمعاينة.
                 </p>
                 
                 <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-                    <p class="font-bold text-lg mb-2">💡 نصيحة لخدمة أفضل:</p>
-                    <p class="text-green-50">كلما كانت تفاصيل طلبك واضحة (المساحة، نوع العمل، الموقع)، حصلت على عروض أسعار أدق وأسرع.</p>
+                    <p class="font-bold text-lg mb-2">💡 نصيحة ديكور:</p>
+                    <p class="text-green-50">استخدم الألوان الفاتحة للغرف الصغيرة لتعطي شعوراً بالاتساع، والألوان الدافئة للصالات الكبيرة.</p>
                 </div>
             </div>
 
             <div class="bg-white rounded-3xl p-8 shadow-2xl">
-                <h3 class="text-2xl font-black text-gray-900 mb-2 text-center">طلب خدمة ترميم</h3>
-                <p class="text-center text-gray-500 mb-8 text-sm">خدمة مجانية 100% للعملاء</p>
+                <h3 class="text-2xl font-black text-gray-900 mb-2 text-center">طلب خدمة دهان</h3>
+                <p class="text-center text-gray-500 mb-8 text-sm">معاينة مجانية وأسعار تنافسية</p>
                 <?php
                 require_once __DIR__ . '/../helpers/form_helper.php';
-                render_service_request_form('renovation-request-form', 'paint', [
-                    'button_text' => 'إرسال الطلب وانتظار العروض',
+                render_service_request_form('paint-request-form', 'paint', [
+                    'button_text' => 'طلب عرض سعر',
                     'preselected_service' => 'paint',
-                    'form_origin' => 'renovation_page',
+                    'form_origin' => 'paint_page',
                     'compact' => false
                 ]);
                 ?>
@@ -255,11 +255,11 @@ require_once __DIR__ . '/../layouts/header.php';
 <!-- CITIES SECTION -->
 <section class="py-16 bg-white border-t border-gray-100">
     <div class="container-custom text-center">
-        <h2 class="text-2xl font-black text-gray-900 mb-8">نصلك بالمحترفين في جميع المدن</h2>
+        <h2 class="text-2xl font-black text-gray-900 mb-8">معلمين دهان في جميع المدن</h2>
         <div class="flex flex-wrap justify-center gap-3">
             <?php foreach ($cities as $city): ?>
                 <span class="px-6 py-3 bg-gray-50 rounded-full text-gray-700 font-bold border border-gray-200 cursor-default hover:border-[#10b981] hover:text-[#10b981] transition-colors">
-                    مقاولين في <?= $city ?>
+                    معلم دهان في <?= $city ?>
                 </span>
             <?php endforeach; ?>
         </div>
