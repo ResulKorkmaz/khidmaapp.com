@@ -29,7 +29,7 @@ $linkPrefix = $isHome ? '' : '/';
 ?>
 
 <!-- Header -->
-<header id="main-header" class="fixed top-0 w-full z-[100] shadow-md transition-colors duration-300" style="background-color: #059669;">
+<header id="main-header" class="fixed top-0 w-full z-[100] shadow-md transition-colors duration-300" style="background-color: #3B9DD9;">
     <div class="container-custom">
         <div class="flex items-center justify-between h-20 md:h-24">
             
@@ -66,7 +66,7 @@ $linkPrefix = $isHome ? '' : '/';
                 </button>
                 
                 <!-- Request Service CTA -->
-                <a href="<?= $linkPrefix ?>#request-service" class="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-emerald-700 font-bold text-sm shadow-lg hover:bg-gray-50 transition-all duration-300 hover:-translate-y-0.5">
+                <a href="<?= $linkPrefix ?>#request-service" class="hidden md:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white font-bold text-sm shadow-lg hover:bg-gray-50 transition-all duration-300 hover:-translate-y-0.5" style="color: #3B9DD9;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -90,8 +90,8 @@ $linkPrefix = $isHome ? '' : '/';
     
     <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" 
-         class="lg:hidden fixed inset-0 top-[80px] bg-emerald-700 z-[90] transform translate-x-full opacity-0 pointer-events-none transition-all duration-500 ease-in-out flex flex-col overflow-y-auto border-t border-emerald-600" 
-         style="height: calc(100vh - 80px); background-color: #047857 !important; will-change: transform, opacity;">
+         class="lg:hidden fixed inset-0 top-[80px] z-[90] transform translate-x-full opacity-0 pointer-events-none transition-all duration-500 ease-in-out flex flex-col overflow-y-auto border-t" 
+         style="height: calc(100vh - 80px); background-color: #2B7AB8 !important; border-top-color: #1E5A8A; will-change: transform, opacity;">
         <div class="p-6 space-y-8 min-h-full flex flex-col">
             <nav class="flex flex-col gap-4">
                 <a href="/" onclick="toggleMobileMenu(event)" class="mobile-link-white <?= $isHome ? 'active' : '' ?>" style="color: #ffffff !important;">
@@ -112,12 +112,12 @@ $linkPrefix = $isHome ? '' : '/';
                 </a>
             </nav>
             
-            <div class="mt-auto pt-8 border-t border-emerald-600 flex flex-col gap-4 pb-8">
-                <a href="<?= $linkPrefix ?>#request-service" onclick="toggleMobileMenu(event)" class="flex items-center justify-center gap-3 w-full py-4 bg-white text-emerald-700 rounded-2xl font-bold text-xl shadow-lg">
+            <div class="mt-auto pt-8 flex flex-col gap-4 pb-8" style="border-top: 1px solid #1E5A8A;">
+                <a href="<?= $linkPrefix ?>#request-service" onclick="toggleMobileMenu(event)" class="flex items-center justify-center gap-3 w-full py-4 bg-white rounded-2xl font-bold text-xl shadow-lg" style="color: #3B9DD9;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     <span>اطلب خدمة الآن</span>
                 </a>
-                <button onclick="openProviderAuthModal(); toggleMobileMenu(event);" class="flex items-center justify-center gap-3 w-full py-4 bg-emerald-800 text-white rounded-2xl font-bold text-xl border border-emerald-600" style="color: #ffffff !important;">
+                <button onclick="openProviderAuthModal(); toggleMobileMenu(event);" class="flex items-center justify-center gap-3 w-full py-4 text-white rounded-2xl font-bold text-xl border" style="background-color: #2B7AB8; border-color: #1E5A8A; color: #ffffff !important;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                     <span>دخول المهنيين</span>
                 </button>
@@ -144,18 +144,24 @@ $linkPrefix = $isHome ? '' : '/';
 }
 
 .mobile-link-white {
-    @apply flex items-center gap-4 p-4 rounded-2xl text-white hover:bg-emerald-600 transition-all cursor-pointer select-none;
+    @apply flex items-center gap-4 p-4 rounded-2xl text-white transition-all cursor-pointer select-none;
     color: #ffffff !important;
 }
+.mobile-link-white:hover {
+    background-color: #1E5A8A !important;
+}
 .mobile-link-white:active {
-    @apply bg-emerald-800 transform scale-[0.98];
+    background-color: #165080 !important;
+    transform: scale(0.98);
 }
 .mobile-link-white.active {
-    @apply bg-emerald-800 text-white border-r-4 border-emerald-400;
+    background-color: #165080 !important;
+    color: #ffffff !important;
+    border-right: 4px solid #3B9DD9;
 }
 
 .header-scrolled {
-    background-color: #047857 !important; /* emerald-700 */
+    background-color: #2B7AB8 !important; /* Koyu mavi ton */
     @apply shadow-xl;
 }
 
