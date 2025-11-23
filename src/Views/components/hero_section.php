@@ -1,14 +1,14 @@
 <!-- Hero Section -->
-<section id="hero" class="relative overflow-hidden min-h-[90vh] flex items-center" style="background: linear-gradient(135deg, #1E5A8A 0%, #2B7AB8 50%, #3B9DD9 100%);">
+<section id="hero" class="relative overflow-hidden min-h-[90vh] flex items-center pt-32 md:pt-40" style="background: linear-gradient(135deg, #1E5A8A 0%, #2B7AB8 50%, #3B9DD9 100%);">
     
     <!-- Pattern Overlay (Optional) -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
-    <div class="container-custom relative z-10 py-20">
+    <div class="container-custom relative z-10 py-12 md:py-16">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
             <!-- LEFT COLUMN (Desktop): Text Content -->
-            <div class="text-center lg:text-right order-2 lg:order-1">
+            <div class="text-center lg:text-right order-1 lg:order-1">
                 
                 <!-- Trust Badge -->
                 <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 mb-6 mx-auto lg:mx-0">
@@ -46,30 +46,31 @@
             </div>
 
             <!-- RIGHT COLUMN (Desktop): Form -->
-            <div class="order-1 lg:order-2">
-                <!-- Form Container -->
-                <div class="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-white/10">
+            <div class="order-2 lg:order-2">
+                <!-- Form Container (Compact) -->
+                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-2xl border-2 border-white/10 max-w-md mx-auto">
                     
-                    <div class="text-center mb-6">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">طلب خدمة سريع</h3>
-                        <p class="text-gray-500 text-sm">املأ النموذج وسيصلك أفضل العروض</p>
+                    <div class="text-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-1">طلب خدمة سريع</h3>
+                        <p class="text-gray-500 text-xs">املأ النموذج وسيصلك أفضل العروض</p>
                     </div>
 
                     <?php
-                    // Form Helper çağrısı - 'dark_theme' => false yaptık çünkü form arka planı beyaz
+                    // Form Helper çağrısı - ultra_compact mode
                     render_service_request_form('hero-service-form', 'hero', [
                         'compact' => true,
                         'ultra_compact' => true,
-                        'button_text' => 'إرسال الطلب مجاناً',
-                        'button_classes' => 'w-full bg-[#1E5A8A] text-white hover:bg-[#165080] font-bold py-4 rounded-xl shadow-lg transition-all duration-300',
+                        'include_description' => false, // Açıklama alanını kaldır (daha kısa form)
+                        'button_text' => 'إرسال الطلب',
+                        'button_classes' => 'w-full bg-[#1E5A8A] text-white hover:bg-[#165080] font-bold py-3 rounded-xl shadow-lg transition-all duration-300 text-sm',
                         'form_origin' => 'hero',
-                        'dark_theme' => false // Form içi beyaz zemin olduğu için siyah yazı istiyoruz
+                        'dark_theme' => false
                     ]);
                     ?>
                     
-                    <div class="mt-4 text-center">
-                        <p class="text-xs text-gray-400">
-                            🔒 بياناتك آمنة 100% ولن يتم مشاركتها
+                    <div class="mt-3 text-center">
+                        <p class="text-[10px] text-gray-400">
+                            🔒 بياناتك آمنة ولن يتم مشاركتها
                         </p>
                     </div>
                 </div>
