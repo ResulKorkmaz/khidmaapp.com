@@ -2,7 +2,7 @@
 /**
  * Service Page: Renovation (ترميم)
  * Business Model: Lead Generation Platform (Connecting Customers with Verified Professionals)
- * Design: Solid Green (#10b981), Professional, High Contrast
+ * Design: Solid Blue (#3B9DD9), Professional, High Contrast
  */
 
 $serviceKey = 'renovation';
@@ -44,7 +44,7 @@ require_once __DIR__ . '/../layouts/header.php';
 </script>
 
 <!-- HERO SECTION -->
-<section class="relative py-20 md:py-32 overflow-hidden" style="background-color: #10b981;">
+<section class="relative py-20 md:py-32 overflow-hidden" style="background-color: #3B9DD9;">
     <!-- Pattern Overlay -->
     <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'0 0 2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
@@ -55,7 +55,7 @@ require_once __DIR__ . '/../layouts/header.php';
                 <?php foreach ($breadcrumb as $index => $item): ?>
                     <li class="inline-flex items-center">
                         <?php if ($item['url']): ?>
-                            <a href="<?= htmlspecialchars($item['url']) ?>" class="text-white hover:text-green-100 transition-colors text-sm font-bold">
+                            <a href="<?= htmlspecialchars($item['url']) ?>" class="text-white hover:text-blue-100 transition-colors text-sm font-bold">
                                 <?= htmlspecialchars($item['name']) ?>
                             </a>
                         <?php else: ?>
@@ -84,33 +84,33 @@ require_once __DIR__ . '/../layouts/header.php';
                 <!-- Headline - Correct Platform Messaging -->
                 <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">
                     هل تبحث عن مقاول
-                    <span class="block mt-2 text-green-100">ترميم محترف وموثوق؟</span>
+                    <span class="block mt-2 text-blue-100">ترميم محترف وموثوق؟</span>
                 </h1>
 
                 <!-- Description -->
-                <p class="text-lg md:text-xl text-green-50 mb-8 leading-relaxed font-medium max-w-2xl">
+                <p class="text-lg md:text-xl text-blue-50 mb-8 leading-relaxed font-medium max-w-2xl">
                     نحن نربطك بأفضل شركات ومقاولين الترميم في منطقتك. سجل طلبك الآن وسيقوم نخبة من المحترفين المعتمدين بالتواصل معك لتقديم عروضهم.
                 </p>
 
                 <!-- Key Benefits -->
                 <ul class="space-y-3 mb-10">
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
+                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#3B9DD9] font-bold text-xs">✓</div>
                         <span class="font-bold">محترفون تم التحقق من هويتهم وجودة أعمالهم</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
+                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#3B9DD9] font-bold text-xs">✓</div>
                         <span class="font-bold">نستبعد فوراً أي مقدم خدمة يتلقى شكاوى متكررة</span>
                     </li>
                     <li class="flex items-center gap-3">
-                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#10b981] font-bold text-xs">✓</div>
+                        <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center text-[#3B9DD9] font-bold text-xs">✓</div>
                         <span class="font-bold">توفير الوقت والجهد في البحث عن الأفضل</span>
                     </li>
                 </ul>
 
                 <!-- CTA Buttons -->
                 <div class="flex flex-wrap gap-4">
-                    <a href="#request-service" class="inline-flex items-center justify-center px-8 py-4 text-lg font-black text-gray-900 bg-white rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    <a href="#request-service" class="inline-flex items-center justify-center px-8 py-4 text-lg font-black text-[#1E5A8A] bg-white rounded-xl hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                         اطلب مقاول الآن
                     </a>
                 </div>
@@ -127,7 +127,7 @@ require_once __DIR__ . '/../layouts/header.php';
                     <div class="space-y-6 relative">
                         <!-- Step 1 -->
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">1</div>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#3B9DD9] font-black text-xl shrink-0">1</div>
                             <div>
                                 <h4 class="font-bold text-gray-900 text-lg">أرسل طلبك</h4>
                                 <p class="text-gray-600 text-sm">حدد نوع الترميم والموقع والتفاصيل المطلوبة.</p>
@@ -136,7 +136,7 @@ require_once __DIR__ . '/../layouts/header.php';
                         
                         <!-- Step 2 -->
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">2</div>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#3B9DD9] font-black text-xl shrink-0">2</div>
                             <div>
                                 <h4 class="font-bold text-gray-900 text-lg">التحقق والربط</h4>
                                 <p class="text-gray-600 text-sm">نراجع طلبك ونرسله لأفضل المقاولين المتاحين.</p>
@@ -145,7 +145,7 @@ require_once __DIR__ . '/../layouts/header.php';
 
                         <!-- Step 3 -->
                         <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-[#10b981] font-black text-xl shrink-0">3</div>
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-[#3B9DD9] font-black text-xl shrink-0">3</div>
                             <div>
                                 <h4 class="font-bold text-gray-900 text-lg">قارن واختر</h4>
                                 <p class="text-gray-600 text-sm">تتلقى عروضاً وتختار العرض الأنسب لك.</p>
@@ -179,8 +179,8 @@ require_once __DIR__ . '/../layouts/header.php';
             
             foreach ($services as $service):
             ?>
-                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 hover:border-green-500 group cursor-default">
-                    <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:bg-[#10b981] group-hover:text-white transition-colors">
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all border border-gray-100 hover:border-[#3B9DD9] group cursor-default">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-4xl mb-6 group-hover:bg-[#3B9DD9] group-hover:text-white transition-colors">
                         <?= $service['icon'] ?>
                     </div>
                     <h3 class="text-xl font-black text-gray-900 mb-3"><?= $service['title'] ?></h3>
@@ -201,17 +201,17 @@ require_once __DIR__ . '/../layouts/header.php';
 
         <div class="grid md:grid-cols-3 gap-8">
             <div class="text-center p-6">
-                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🛡️</div>
+                <div class="w-20 h-20 bg-[#3B9DD9]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">🛡️</div>
                 <h3 class="text-xl font-black text-gray-900 mb-3">تحقق صارم</h3>
                 <p class="text-gray-600">لا نقبل أي مقدم خدمة. نتحقق من السمعة، الخبرة، وجودة العمل قبل ضمهم لمنصتنا.</p>
             </div>
             <div class="text-center p-6">
-                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⭐</div>
+                <div class="w-20 h-20 bg-[#3B9DD9]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⭐</div>
                 <h3 class="text-xl font-black text-gray-900 mb-3">مراقبة الجودة</h3>
                 <p class="text-gray-600">نراقب تقييمات العملاء باستمرار. أي مقدم خدمة يتلقى شكاوى متكررة يتم استبعاده فوراً.</p>
             </div>
             <div class="text-center p-6">
-                <div class="w-20 h-20 bg-[#10b981]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⚡</div>
+                <div class="w-20 h-20 bg-[#3B9DD9]/10 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">⚡</div>
                 <h3 class="text-xl font-black text-gray-900 mb-3">سرعة وسهولة</h3>
                 <p class="text-gray-600">بدلاً من البحث العشوائي، طلب واحد يصلك بنخبة المحترفين الجاهزين لخدمتك.</p>
             </div>
@@ -220,18 +220,18 @@ require_once __DIR__ . '/../layouts/header.php';
 </section>
 
 <!-- CTA / FORM SECTION -->
-<section id="request-service" class="py-20" style="background-color: #10b981;">
+<section id="request-service" class="py-20" style="background-color: #3B9DD9;">
     <div class="container-custom">
         <div class="grid lg:grid-cols-2 gap-12 items-center">
             <div class="text-white">
                 <h2 class="text-3xl md:text-5xl font-black mb-6">سجل طلبك الآن</h2>
-                <p class="text-xl text-green-50 mb-8 leading-relaxed">
+                <p class="text-xl text-blue-50 mb-8 leading-relaxed">
                     املأ النموذج أدناه بتفاصيل مشروعك. سيقوم فريقنا بمراجعة طلبك وإيصاله لأفضل المقاولين المختصين في منطقتك للتواصل معك.
                 </p>
                 
                 <div class="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
                     <p class="font-bold text-lg mb-2">💡 نصيحة لخدمة أفضل:</p>
-                    <p class="text-green-50">كلما كانت تفاصيل طلبك واضحة (المساحة، نوع العمل، الموقع)، حصلت على عروض أسعار أدق وأسرع.</p>
+                    <p class="text-blue-50">كلما كانت تفاصيل طلبك واضحة (المساحة، نوع العمل، الموقع)، حصلت على عروض أسعار أدق وأسرع.</p>
                 </div>
             </div>
 
@@ -244,7 +244,8 @@ require_once __DIR__ . '/../layouts/header.php';
                     'button_text' => 'إرسال الطلب وانتظار العروض',
                     'preselected_service' => 'renovation',
                     'form_origin' => 'renovation_page',
-                    'compact' => false
+                    'compact' => false,
+                    'button_classes' => 'btn-primary w-full text-lg py-4 relative bg-[#3B9DD9] hover:bg-[#2B7AB8] text-white font-bold rounded-xl'
                 ]);
                 ?>
             </div>
@@ -258,7 +259,7 @@ require_once __DIR__ . '/../layouts/header.php';
         <h2 class="text-2xl font-black text-gray-900 mb-8">نصلك بالمحترفين في جميع المدن</h2>
         <div class="flex flex-wrap justify-center gap-3">
             <?php foreach ($cities as $city): ?>
-                <span class="px-6 py-3 bg-gray-50 rounded-full text-gray-700 font-bold border border-gray-200 cursor-default hover:border-[#10b981] hover:text-[#10b981] transition-colors">
+                <span class="px-6 py-3 bg-gray-50 rounded-full text-gray-700 font-bold border border-gray-200 cursor-default hover:border-[#3B9DD9] hover:text-[#3B9DD9] transition-colors">
                     مقاولين في <?= $city ?>
                 </span>
             <?php endforeach; ?>
