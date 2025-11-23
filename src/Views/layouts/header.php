@@ -180,50 +180,37 @@ $linkPrefix = $isHome ? '' : '/';
 </style>
 
 <script>
-// Define globally to ensure availability - GUARANTEED TO WORK
+// Mobile Menu Toggle - Clean & Professional
 window.toggleMobileMenu = function(e) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
     }
     
-    console.log('Toggle function called!'); // Debug
-    
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
     const body = document.body;
     
-    if (!btn || !menu) {
-        console.error('Elements not found!', {btn, menu});
-        alert('Menü elementleri bulunamadı!'); // Debug alert
-        return;
-    }
+    if (!btn || !menu) return;
     
     // Toggle classes
     const isOpen = menu.classList.contains('is-open');
-    
-    console.log('Current state:', isOpen ? 'OPEN' : 'CLOSED');
     
     if (isOpen) {
         // Close
         btn.classList.remove('active');
         menu.classList.remove('is-open');
         body.style.overflow = '';
-        console.log('Menu CLOSED');
     } else {
         // Open
         btn.classList.add('active');
         menu.classList.add('is-open');
         body.style.overflow = 'hidden';
-        console.log('Menu OPENED');
-        alert('Menü açıldı!'); // Debug alert - remove after testing
     }
 };
 
 // Scroll Effect
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM Loaded - Script is working!');
-    
     const header = document.getElementById('main-header');
     
     window.addEventListener('scroll', () => {
