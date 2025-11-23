@@ -1,5 +1,5 @@
 <!-- Join as Provider Section -->
-<section id="join-provider" class="section-padding bg-gradient-to-r from-green-50 to-emerald-50 relative overflow-hidden">
+<section id="join-provider" class="py-16 md:py-24 bg-gradient-to-r from-green-50 to-emerald-50 relative overflow-hidden">
     <!-- Decorative Elements -->
     <div class="absolute inset-0 overflow-hidden">
         <div class="absolute -top-40 -right-40 w-64 md:w-96 h-64 md:h-96 bg-green-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>

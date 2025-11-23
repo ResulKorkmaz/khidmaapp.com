@@ -1,5 +1,5 @@
 <!-- About Section -->
-<section id="about" class="py-20 md:py-32 relative overflow-hidden bg-gray-50">
+<section id="about" class="py-16 md:py-24 relative overflow-hidden bg-gray-50">
     <!-- Simple Decorative Elements -->
     <div class="absolute inset-0 overflow-hidden opacity-20">
         <div class="absolute top-20 -right-40 w-64 md:w-80 h-64 md:h-80 bg-blue-100 rounded-full blur-3xl"></div>

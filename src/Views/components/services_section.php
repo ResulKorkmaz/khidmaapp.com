@@ -1,5 +1,5 @@
 <!-- Services Section -->
-<section id="services" class="py-20 md:py-32 bg-gray-50 relative overflow-hidden">
+<section id="services" class="py-16 md:py-24 bg-gray-50 relative overflow-hidden">
     
     <div class="container-custom relative z-10">
         <!-- Section Header -->

@@ -1,5 +1,5 @@
 <!-- FAQ Section -->
-<section id="faq" class="section-padding bg-white">
+<section id="faq" class="py-16 md:py-24 bg-white">
     <div class="container-custom max-w-4xl px-4">
         <!-- Section Header -->
         <div class="text-center mb-12 md:mb-16">
