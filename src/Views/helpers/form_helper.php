@@ -113,13 +113,13 @@ if (!function_exists('render_service_request_form')) {
                            id="<?= $fieldPrefix ?>_phone"
                            name="phone"
                            required
-                           class="<?= $inputClasses ?> py-3 phone-input phone-input-primary ltr-input pl-3 pr-10"
+                           class="<?= $inputClasses ?> py-3 phone-input phone-input-primary text-right pr-3 pl-10"
                            placeholder="05xxxxxxxx"
                            inputmode="numeric"
-                           dir="ltr"
+                           dir="rtl"
                            maxlength="12"
                            pattern="[0-9]*">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3">
                         <span class="text-gray-500">📱</span>
                     </div>
                 </div>
@@ -135,13 +135,13 @@ if (!function_exists('render_service_request_form')) {
                            id="<?= $fieldPrefix ?>_phone_confirm"
                            name="phone_confirm"
                            required
-                           class="<?= $inputClasses ?> py-3 phone-input phone-input-confirm ltr-input pl-3 pr-10"
+                           class="<?= $inputClasses ?> py-3 phone-input phone-input-confirm text-right pr-3 pl-10"
                            placeholder="أعد كتابة الرقم"
                            inputmode="numeric"
-                           dir="ltr"
+                           dir="rtl"
                            maxlength="12"
                            pattern="[0-9]*">
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center px-3">
                         <span class="text-gray-500">✔️</span>
                     </div>
                 </div>
