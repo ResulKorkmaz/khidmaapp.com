@@ -5,10 +5,10 @@
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
     <div class="container-custom relative z-10 py-20">
-        <div class="grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
+        <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
-            <!-- RIGHT COLUMN: Text Content (In RTL, this is the first column visually) -->
-            <div class="lg:col-span-7 text-center lg:text-right order-1 lg:order-1">
+            <!-- LEFT COLUMN (Desktop): Text Content -->
+            <div class="text-center lg:text-right order-2 lg:order-1">
                 
                 <!-- Trust Badge -->
                 <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 mb-6 mx-auto lg:mx-0">
@@ -45,8 +45,8 @@
                 </div>
             </div>
 
-            <!-- LEFT COLUMN: Form (In RTL, this is the second column visually) -->
-            <div class="lg:col-span-5 order-2 lg:order-2">
+            <!-- RIGHT COLUMN (Desktop): Form -->
+            <div class="order-1 lg:order-2">
                 <!-- Form Container -->
                 <div class="bg-white rounded-3xl p-6 md:p-8 shadow-2xl border-4 border-white/10">
                     
