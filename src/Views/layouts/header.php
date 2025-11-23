@@ -78,10 +78,10 @@ $linkPrefix = $isHome ? '' : '/';
                         id="mobile-menu-btn" 
                         onclick="toggleMobileMenu(event)"
                         class="lg:hidden p-3 rounded-xl hover:bg-white/10 transition-colors focus:outline-none touch-manipulation cursor-pointer relative z-[9999]">
-                    <div class="w-6 h-5 flex flex-col justify-between pointer-events-none">
-                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
-                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300" style="background-color: #ffffff !important;"></span>
-                        <span class="menu-line w-full h-0.5 bg-white rounded-full transition-all duration-300 origin-right" style="background-color: #ffffff !important;"></span>
+                    <div class="w-7 h-6 flex flex-col justify-between pointer-events-none">
+                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 origin-center shadow-lg" style="background-color: #ffffff !important;"></span>
+                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 shadow-lg" style="background-color: #ffffff !important;"></span>
+                        <span class="menu-line w-full h-1 bg-white rounded-full transition-all duration-300 origin-center shadow-lg" style="background-color: #ffffff !important;"></span>
                     </div>
                 </button>
             </div>
@@ -167,18 +167,20 @@ $linkPrefix = $isHome ? '' : '/';
     visibility: visible !important;
 }
 
-/* Hamburger Animation - Keep White Color */
+/* Hamburger Animation - Bold White X */
 #mobile-menu-btn.active span:nth-child(1) {
-    @apply -rotate-45 -translate-y-[7px];
+    transform: rotate(-45deg) translateY(10px) !important;
     background-color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
 }
 #mobile-menu-btn.active span:nth-child(2) {
-    @apply opacity-0;
+    opacity: 0 !important;
     background-color: #ffffff !important;
 }
 #mobile-menu-btn.active span:nth-child(3) {
-    @apply rotate-45 translate-y-[7px];
+    transform: rotate(45deg) translateY(-10px) !important;
     background-color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
 }
 </style>
 
