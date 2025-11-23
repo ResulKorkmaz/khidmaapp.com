@@ -21,14 +21,14 @@
 
                 <!-- Main Headline -->
                 <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 drop-shadow-md">
-                    خدمات منزلك <br>
-                    <span class="text-blue-200">بأيدي أمينة</span>
+                    صيانة منشأتك <br>
+                    <span class="text-blue-200">بأعلى معايير الجودة</span>
                 </h1>
 
                 <!-- Subheadline -->
                 <p class="text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                    نربطك بأفضل المهنيين المعتمدين لجميع خدمات الصيانة المنزلية. 
-                    جودة مضمونة، أسعار شفافة، وراحة بال تامة.
+                    نربطك بأفضل الخبراء المعتمدين لجميع خدمات الصيانة للمنازل والمكاتب والشركات.
+                    احترافية، سرعة، وضمان شامل.
                 </p>
 
                 <!-- Stats -->
