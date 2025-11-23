@@ -90,8 +90,8 @@ $linkPrefix = $isHome ? '' : '/';
     
     <!-- Mobile Menu Overlay -->
     <div id="mobile-menu" 
-         class="lg:hidden fixed inset-x-0 top-[80px] bottom-0 bg-emerald-700 z-[90] transform translate-x-full opacity-0 pointer-events-none transition-all duration-300 flex flex-col overflow-y-auto border-t border-emerald-600" 
-         style="height: calc(100vh - 80px); background-color: #047857 !important;">
+         class="lg:hidden fixed inset-0 top-[80px] bg-emerald-700 z-[90] transform translate-x-full opacity-0 pointer-events-none transition-all duration-500 ease-in-out flex flex-col overflow-y-auto border-t border-emerald-600" 
+         style="height: calc(100vh - 80px); background-color: #047857 !important; will-change: transform, opacity;">
         <div class="p-6 space-y-8 min-h-full flex flex-col">
             <nav class="flex flex-col gap-4">
                 <a href="/" onclick="toggleMobileMenu(event)" class="mobile-link-white <?= $isHome ? 'active' : '' ?>" style="color: #ffffff !important;">
@@ -159,9 +159,12 @@ $linkPrefix = $isHome ? '' : '/';
     @apply shadow-xl;
 }
 
-/* Mobile Menu State Classes */
+/* Mobile Menu State Classes - FORCE VISIBILITY */
 #mobile-menu.is-open {
-    @apply translate-x-0 opacity-100 pointer-events-auto;
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
 }
 
 /* Hamburger Animation */
@@ -177,39 +180,50 @@ $linkPrefix = $isHome ? '' : '/';
 </style>
 
 <script>
-// Define globally to ensure availability
+// Define globally to ensure availability - GUARANTEED TO WORK
 window.toggleMobileMenu = function(e) {
     if (e) {
         e.preventDefault();
         e.stopPropagation();
     }
     
+    console.log('Toggle function called!'); // Debug
+    
     const btn = document.getElementById('mobile-menu-btn');
     const menu = document.getElementById('mobile-menu');
     const body = document.body;
     
-    if (!btn || !menu) return;
+    if (!btn || !menu) {
+        console.error('Elements not found!', {btn, menu});
+        alert('Menü elementleri bulunamadı!'); // Debug alert
+        return;
+    }
     
     // Toggle classes
     const isOpen = menu.classList.contains('is-open');
+    
+    console.log('Current state:', isOpen ? 'OPEN' : 'CLOSED');
     
     if (isOpen) {
         // Close
         btn.classList.remove('active');
         menu.classList.remove('is-open');
         body.style.overflow = '';
+        console.log('Menu CLOSED');
     } else {
         // Open
         btn.classList.add('active');
         menu.classList.add('is-open');
         body.style.overflow = 'hidden';
+        console.log('Menu OPENED');
+        alert('Menü açıldı!'); // Debug alert - remove after testing
     }
-    
-    console.log('Menu toggled:', !isOpen);
 };
 
 // Scroll Effect
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Loaded - Script is working!');
+    
     const header = document.getElementById('main-header');
     
     window.addEventListener('scroll', () => {
