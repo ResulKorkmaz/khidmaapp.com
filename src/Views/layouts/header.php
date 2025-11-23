@@ -73,11 +73,11 @@ $linkPrefix = $isHome ? '' : '/';
                     <span>اطلب خدمة</span>
                 </a>
                 
-                <!-- Mobile Menu Toggle Button -->
+                <!-- Mobile Menu Toggle Button (Hidden on Desktop) -->
                 <button type="button" 
                         id="mobile-menu-btn" 
                         onclick="toggleMobileMenu(event)"
-                        style="display: block; padding: 12px; border-radius: 12px; background: transparent; border: none; cursor: pointer; position: relative; z-index: 9999;">
+                        style="padding: 12px; border-radius: 12px; background: transparent; border: none; cursor: pointer; position: relative; z-index: 9999;">
                     <div style="width: 28px; height: 24px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none;">
                         <span class="menu-line" style="display: block; width: 100%; height: 3px; background-color: #ffffff; border-radius: 3px; transition: all 0.3s ease;"></span>
                         <span class="menu-line" style="display: block; width: 100%; height: 3px; background-color: #ffffff; border-radius: 3px; transition: all 0.3s ease;"></span>
@@ -171,6 +171,13 @@ $linkPrefix = $isHome ? '' : '/';
     opacity: 1 !important;
     pointer-events: auto !important;
     visibility: visible !important;
+}
+
+/* Hide Hamburger on Desktop */
+@media (min-width: 1024px) {
+    #mobile-menu-btn {
+        display: none !important;
+    }
 }
 
 /* Hamburger X Animation - Pure White */
