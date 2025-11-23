@@ -11,7 +11,7 @@
                 </span>
             </div>
             <h2 class="text-3xl md:text-5xl font-black text-gray-900 mb-6">
-                كل ما يحتاجه منزلك في مكان واحد
+                كل ما تحتاجه في مكان واحد
             </h2>
             <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
                 نقدم مجموعة شاملة من الخدمات المنزلية بأعلى معايير الجودة. اختر الخدمة التي تحتاجها واترك الباقي علينا.
