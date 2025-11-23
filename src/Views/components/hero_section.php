@@ -1,10 +1,10 @@
 <!-- Hero Section -->
-<section id="hero" class="relative overflow-hidden min-h-[90vh] flex items-center pt-32 md:pt-40" style="background: linear-gradient(135deg, #1E5A8A 0%, #2B7AB8 50%, #3B9DD9 100%);">
+<section id="hero" class="relative overflow-hidden min-h-[85vh] flex items-center pt-24 md:pt-28" style="background: linear-gradient(135deg, #1E5A8A 0%, #2B7AB8 50%, #3B9DD9 100%);">
     
     <!-- Pattern Overlay (Optional) -->
     <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
 
-    <div class="container-custom relative z-10 py-12 md:py-16">
+    <div class="container-custom relative z-10 py-8 md:py-12">
         <div class="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             
             <!-- LEFT COLUMN (Desktop): Text Content -->
