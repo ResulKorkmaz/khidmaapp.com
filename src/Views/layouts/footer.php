@@ -15,10 +15,10 @@ if (session_status() === PHP_SESSION_NONE) {
     <div class="relative z-10">
         <!-- Main Footer Content -->
         <div class="container-custom py-16 md:py-20 px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                 
                 <!-- 1. Brand & Description -->
-                <div class="col-span-1 md:col-span-2 lg:col-span-1">
+                <div class="col-span-2 lg:col-span-1">
                     <!-- Logo -->
                     <div class="flex items-center mb-6">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/10">
