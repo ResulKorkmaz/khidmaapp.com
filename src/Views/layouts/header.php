@@ -51,17 +51,18 @@ $linkPrefix = $isHome ? '' : '/';
                 <a href="/" class="nav-link-white <?= $isHome ? 'nav-active' : '' ?>" style="color: #ffffff !important;">الرئيسية</a>
                 <a href="<?= $linkPrefix ?>#services" class="nav-link-white" style="color: #ffffff !important;">الخدمات</a>
                 <a href="<?= $linkPrefix ?>#about" class="nav-link-white" style="color: #ffffff !important;">عن خدمة</a>
+                <a href="<?= $linkPrefix ?>#faq" class="nav-link-white" style="color: #ffffff !important;">الأسئلة الشائعة</a>
             </nav>
             
             <!-- Right Side Actions -->
             <div class="flex items-center gap-4 z-[101]">
                 
                 <!-- Provider Login -->
-                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-white hover:bg-white/10 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5" style="color: #ffffff !important; border-color: #ffffff !important;">
+                <button onclick="openProviderAuthModal()" class="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-white border border-white/30 hover:bg-white/10 font-bold text-sm transition-all duration-300 hover:-translate-y-0.5 backdrop-blur-sm" style="color: #ffffff !important; border-color: rgba(255,255,255,0.3) !important;">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    <span>دخول المهنيين</span>
+                    <span>دخول مقدم خدمة</span>
                 </button>
                 
                 <!-- Request Service CTA -->
@@ -105,6 +106,10 @@ $linkPrefix = $isHome ? '' : '/';
                     <span class="text-2xl">ℹ️</span>
                     <span class="text-xl font-bold">عن خدمة</span>
                 </a>
+                <a href="<?= $linkPrefix ?>#faq" onclick="toggleMobileMenu(event)" class="mobile-link-white" style="color: #ffffff !important;">
+                    <span class="text-2xl">❓</span>
+                    <span class="text-xl font-bold">الأسئلة الشائعة</span>
+                </a>
             </nav>
             
             <div class="mt-auto pt-8 flex flex-col gap-4 pb-8" style="border-top: 1px solid #1E5A8A;">
@@ -112,9 +117,9 @@ $linkPrefix = $isHome ? '' : '/';
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                     <span>اطلب خدمة الآن</span>
                 </a>
-                <button onclick="openProviderAuthModal(); toggleMobileMenu(event);" class="flex items-center justify-center gap-3 w-full py-4 text-white rounded-2xl font-bold text-xl border" style="background-color: #2B7AB8; border-color: #1E5A8A; color: #ffffff !important;">
+                <button onclick="openProviderAuthModal(); toggleMobileMenu(event);" class="flex items-center justify-center gap-3 w-full py-4 text-white rounded-2xl font-bold text-xl border border-white/20 bg-white/10 hover:bg-white/20" style="color: #ffffff !important;">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                    <span>دخول المهنيين</span>
+                    <span>دخول مقدم خدمة</span>
                 </button>
             </div>
         </div>

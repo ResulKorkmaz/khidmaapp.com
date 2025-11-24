@@ -185,7 +185,6 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 </footer>
 
-<!-- Modals and Scripts remain the same -->
 <!-- Complaint Modal -->
 <div id="complaintModal" class="fixed inset-0 z-[9999] hidden items-center justify-center p-4 transition-opacity duration-300" style="background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);">
     <div class="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="complaintModalContent">
@@ -319,327 +318,123 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 </div>
 
-<script>
-// Complaint Modal Functions
-function openComplaintModal() {
-    const modal = document.getElementById('complaintModal');
-    const modalContent = document.getElementById('complaintModalContent');
-    if (modal && modalContent) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-        
-        // Trigger animation
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-}
-
-function closeComplaintModal() {
-    const modal = document.getElementById('complaintModal');
-    const modalContent = document.getElementById('complaintModalContent');
-    if (modal && modalContent) {
-        modalContent.classList.remove('scale-100', 'opacity-100');
-        modalContent.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = '';
-            // Reset form
-            document.getElementById('complaintForm')?.reset();
-        }, 300);
-    }
-}
-
-// Close modal when clicking outside
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('complaintModal');
-    if (modal && event.target === modal) {
-        closeComplaintModal();
-    }
-});
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeComplaintModal();
-    }
-});
-
-// Phone Input Formatting for Complaint Form
-document.addEventListener('DOMContentLoaded', function() {
-    const complaintPhone = document.getElementById('complaint_phone');
-    if (complaintPhone) {
-        complaintPhone.addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            
-            // Auto-format to 05xxxxxxxx
-            if (value.length > 0 && !value.startsWith('0')) {
-                if (value.startsWith('5')) {
-                    value = '0' + value;
-                }
-            }
-            
-            // Limit to 12 characters
-            if (value.length > 12) {
-                value = value.substring(0, 12);
-            }
-            
-            e.target.value = value;
-        });
-        
-        // Prevent paste
-        complaintPhone.addEventListener('paste', function(e) {
-            e.preventDefault();
-        });
-    }
-    
-    // Complaint Form Submission
-    const complaintForm = document.getElementById('complaintForm');
-    if (complaintForm) {
-        complaintForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Get form data
-            const formData = new FormData(complaintForm);
-            const name = formData.get('name').trim();
-            const phone = formData.get('phone').trim();
-            const email = formData.get('email')?.trim() || '';
-            const type = formData.get('type');
-            const details = formData.get('details').trim();
-            
-            // Validate phone (Saudi format)
-            const phoneRegex = /^(05|5)[0-9]{8,9}$/;
-            const cleanPhone = phone.replace(/\D/g, '');
-            
-            if (!phoneRegex.test(cleanPhone)) {
-                alert('يرجى إدخال رقم هاتف سعودي صحيح (مثال: 0501234567)');
-                return;
-            }
-            
-            // Complaint type labels
-            const typeLabels = {
-                'service_quality': 'جودة الخدمة',
-                'provider_issue': 'مشكلة مع مقدم الخدمة',
-                'payment': 'مشكلة في الدفع',
-                'website': 'مشكلة تقنية في الموقع',
-                'other': 'أخرى'
-            };
-            
-            // Format message for WhatsApp
-            const whatsappMessage = `*شكوى من موقع خدمة*\n\n` +
-                `*الاسم:* ${name}\n` +
-                `*رقم الهاتف:* ${phone}\n` +
-                (email ? `*البريد الإلكتروني:* ${email}\n` : '') +
-                `*نوع الشكوى:* ${typeLabels[type] || type}\n\n` +
-                `*تفاصيل الشكوى:*\n${details}`;
-            
-            // WhatsApp number: +1 628 800 68 18
-            const whatsappNumber = '16288006818';
-            const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-            
-            // Open WhatsApp
-            window.open(whatsappUrl, '_blank');
-            
-            // Close modal after a short delay
-            setTimeout(() => {
-                closeComplaintModal();
-            }, 500);
-        });
-    }
-    
-    // ============================================
-    // PROVIDER AUTHENTICATION MODAL
-    // ============================================
-    window.openProviderAuthModal = function() {
-        const modal = document.getElementById('providerAuthModal');
-        const overlay = document.getElementById('providerAuthOverlay');
-        
-        if (modal && overlay) {
-            overlay.classList.remove('hidden');
-            overlay.classList.add('flex');
-            
-            // Animate in
-            setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                modal.classList.remove('scale-95', 'opacity-0');
-                modal.classList.add('scale-100', 'opacity-100');
-            }, 10);
-            
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
-        }
-    };
-    
-    window.closeProviderAuthModal = function() {
-        const modal = document.getElementById('providerAuthModal');
-        const overlay = document.getElementById('providerAuthOverlay');
-        
-        if (modal && overlay) {
-            // Animate out
-            overlay.classList.add('opacity-0');
-            modal.classList.remove('scale-100', 'opacity-100');
-            modal.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                overlay.classList.remove('flex');
-                overlay.classList.add('hidden');
-            }, 300);
-            
-            // Restore body scroll
-            document.body.style.overflow = '';
-        }
-    };
-    
-    window.switchProviderAuthTab = function(tab) {
-        const loginForm = document.getElementById('providerLoginForm');
-        const registerForm = document.getElementById('providerRegisterForm');
-        const loginTab = document.getElementById('providerLoginTab');
-        const registerTab = document.getElementById('providerRegisterTab');
-        
-        if (tab === 'login') {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            loginTab.classList.add('bg-blue-600', 'text-white');
-            loginTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
-            registerTab.classList.remove('bg-blue-600', 'text-white');
-            registerTab.classList.add('text-gray-600', 'hover:bg-gray-100');
-        } else {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-            registerTab.classList.add('bg-blue-600', 'text-white');
-            registerTab.classList.remove('text-gray-600', 'hover:bg-gray-100');
-            loginTab.classList.remove('bg-blue-600', 'text-white');
-            loginTab.classList.add('text-gray-600', 'hover:bg-gray-100');
-        }
-    };
-    
-    // Close modal on overlay click
-    const providerAuthOverlay = document.getElementById('providerAuthOverlay');
-    if (providerAuthOverlay) {
-        providerAuthOverlay.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeProviderAuthModal();
-            }
-        });
-    }
-    
-    // Close modal on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const overlay = document.getElementById('providerAuthOverlay');
-            if (overlay && !overlay.classList.contains('hidden')) {
-                closeProviderAuthModal();
-            }
-        }
-    });
-});
-</script>
-
 <!-- Provider Authentication Modal -->
-<div id="providerAuthOverlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 opacity-0 transition-opacity duration-300 justify-center items-center p-4">
-    <div id="providerAuthModal" class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-all duration-300">
+<div id="providerAuthOverlay" class="hidden fixed inset-0 bg-black/70 backdrop-blur-md z-[9999] opacity-0 transition-opacity duration-300 justify-center items-center p-4">
+    <div id="providerAuthModal" class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto transform scale-95 opacity-0 transition-all duration-300 border border-gray-100">
         <!-- Close Button -->
-        <button onclick="closeProviderAuthModal()" class="absolute top-4 left-4 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-900 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <button onclick="closeProviderAuthModal()" class="absolute top-4 left-4 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors backdrop-blur-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
         
         <!-- Header -->
-        <div class="bg-blue-600 text-white px-8 py-8 rounded-t-3xl text-center">
-            <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
+        <div class="relative bg-gradient-to-br from-[#1E5A8A] to-[#3B9DD9] text-white px-8 pt-10 pb-8 rounded-t-3xl text-center overflow-hidden">
+            <!-- Decorative Circles -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            
+            <div class="relative z-10">
+                <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-white/20">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-black tracking-tight">حساب مقدم الخدمة</h2>
+                <p class="text-blue-100 mt-2 text-sm font-medium">انضم إلينا واعرض خدماتك للعملاء</p>
             </div>
-            <h2 class="text-2xl font-bold">حساب الأُستاذ (مقدم الخدمة)</h2>
-            <p class="text-blue-100 mt-2">سجل دخولك أو أنشئ حساباً جديداً</p>
         </div>
         
         <!-- Tabs -->
-        <div class="flex border-b border-gray-200 px-8 pt-6">
-            <button id="providerLoginTab" onclick="switchProviderAuthTab('login')" class="flex-1 py-3 text-center font-semibold rounded-t-lg transition-colors bg-blue-600 text-white">
+        <div class="flex p-2 bg-gray-50 mx-6 -mt-6 mb-6 rounded-xl relative z-20 shadow-sm border border-gray-100">
+            <button id="providerLoginTab" onclick="switchProviderAuthTab('login')" class="flex-1 py-2.5 text-center font-bold rounded-lg transition-all shadow-sm bg-white text-[#1E5A8A] text-sm">
                 تسجيل الدخول
             </button>
-            <button id="providerRegisterTab" onclick="switchProviderAuthTab('register')" class="flex-1 py-3 text-center font-semibold rounded-t-lg transition-colors text-gray-600 hover:bg-gray-100">
-                إنشاء حساب
+            <button id="providerRegisterTab" onclick="switchProviderAuthTab('register')" class="flex-1 py-2.5 text-center font-bold rounded-lg transition-all text-gray-500 hover:text-gray-700 hover:bg-gray-100 text-sm">
+                إنشاء حساب جديد
             </button>
         </div>
         
         <!-- Login Form -->
-        <div id="providerLoginForm" class="p-8">
+        <div id="providerLoginForm" class="px-8 pb-8">
             <form action="/provider/login" method="POST" class="space-y-5">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 
                 <!-- Email or Phone -->
                 <div>
-                    <label for="login_identifier" class="block text-sm font-semibold text-gray-900 mb-2">
+                    <label for="login_identifier" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">
                         البريد الإلكتروني أو رقم الهاتف
                     </label>
-                <input type="text" id="login_identifier" name="identifier" required
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                       placeholder="example@mail.com أو 0501234567">
+                    <div class="relative">
+                        <input type="text" id="login_identifier" name="identifier" required
+                               class="w-full pl-4 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-all outline-none font-medium text-gray-800"
+                               placeholder="example@mail.com">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Password -->
                 <div>
-                    <label for="login_password" class="block text-sm font-semibold text-gray-900 mb-2">
+                    <label for="login_password" class="block text-xs font-bold text-gray-700 mb-2 uppercase tracking-wider">
                         كلمة المرور
                     </label>
-                    <input type="password" id="login_password" name="password" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                           placeholder="••••••••">
+                    <div class="relative">
+                        <input type="password" id="login_password" name="password" required
+                               class="w-full pl-4 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-all outline-none font-medium text-gray-800"
+                               placeholder="••••••••">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Remember Me & Forgot Password -->
                 <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center text-gray-700">
-                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 ml-2">
-                        تذكرني
+                    <label class="flex items-center text-gray-600 cursor-pointer group">
+                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-[#3B9DD9] focus:ring-[#3B9DD9] ml-2 w-4 h-4">
+                        <span class="group-hover:text-gray-800 transition-colors">تذكرني</span>
                     </label>
-                    <a href="/provider/forgot-password" class="text-blue-600 hover:text-blue-700 font-medium">
+                    <a href="/provider/forgot-password" class="text-[#3B9DD9] hover:text-[#1E5A8A] font-bold text-xs transition-colors">
                         نسيت كلمة المرور؟
                     </a>
                 </div>
                 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg hover:shadow-xl">
+                <button type="submit" class="w-full bg-[#3B9DD9] hover:bg-[#1E5A8A] text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-600/40 active:scale-[0.98] text-base">
                     تسجيل الدخول
                 </button>
             </form>
         </div>
         
         <!-- Register Form -->
-        <div id="providerRegisterForm" class="hidden p-8">
+        <div id="providerRegisterForm" class="hidden px-8 pb-8">
             <form action="/provider/register" method="POST" class="space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 
                 <!-- WhatsApp Channel Alert -->
-                <div class="bg-green-50 border-2 border-green-200 rounded-xl p-4 mb-4">
+                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-4">
                     <div class="flex items-start gap-3">
-                        <div class="flex-shrink-0">
-                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                        <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0 text-emerald-600">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
                             </svg>
                         </div>
                         <div class="flex-1">
-                            <h4 class="font-bold text-green-900 mb-2">⚠️ مهم! يجب الانضمام إلى قناتنا على WhatsApp</h4>
-                            <p class="text-sm text-green-800 leading-relaxed mb-3">
-                                قبل التسجيل، يرجى الانضمام إلى قناة WhatsApp الخاصة بنا لتلقي طلبات العملاء. 
-                                بدون الانضمام، لن تتمكن من استلام الطلبات.
+                            <h4 class="font-bold text-emerald-900 mb-1 text-sm">شرط أساسي: قناة WhatsApp</h4>
+                            <p class="text-xs text-emerald-700 leading-relaxed mb-3">
+                                لتلقي طلبات العملاء، يجب عليك الانضمام إلى قناتنا أولاً.
                             </p>
                             <a href="https://whatsapp.com/channel/0029VbCCqZoI1rcjIn9IWV2l" 
                                target="_blank"
                                rel="noopener noreferrer"
-                               class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-md hover:shadow-lg">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24">
-                                    <path fill="#FFFFFF" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
-                                </svg>
-                                انضم إلى القناة الآن
+                               class="inline-flex items-center gap-2 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors shadow-sm">
+                                انضم للقناة الآن
                             </a>
                         </div>
                     </div>
@@ -647,109 +442,82 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <!-- Full Name -->
                 <div>
-                    <label for="register_name" class="block text-sm font-semibold text-gray-900 mb-2">
-                        الاسم الكامل *
-                    </label>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5">الاسم الكامل *</label>
                     <input type="text" id="register_name" name="name" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm"
                            placeholder="محمد أحمد">
                 </div>
                 
-                <!-- Email -->
-                <div>
-                    <label for="register_email" class="block text-sm font-semibold text-gray-900 mb-2">
-                        البريد الإلكتروني *
-                    </label>
-                    <input type="email" id="register_email" name="email" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                           placeholder="example@mail.com">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Phone -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">رقم الهاتف *</label>
+                        <input type="tel" id="register_phone" name="phone" required
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm text-right"
+                               placeholder="05xxxxxxxx" dir="ltr">
+                    </div>
+                    
+                    <!-- Email -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">البريد *</label>
+                        <input type="email" id="register_email" name="email" required
+                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm text-right"
+                               placeholder="mail@example.com" dir="ltr">
+                    </div>
                 </div>
                 
-                <!-- Phone -->
-                <div>
-                    <label for="register_phone" class="block text-sm font-semibold text-gray-900 mb-2">
-                        رقم الهاتف *
-                    </label>
-                    <input type="tel" id="register_phone" name="phone" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                           placeholder="05xxxxxxxx"
-                           pattern="[0-9]+"
-                           maxlength="10">
-                </div>
-                
-                <!-- Service Type -->
-                <div>
-                    <label for="register_service_type" class="block text-sm font-semibold text-gray-900 mb-2">
-                        نوع الخدمة *
-                    </label>
-                    <select id="register_service_type" name="service_type" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <option value="">اختر التخصص</option>
-                        <?php foreach (getServiceTypes() as $key => $service): ?>
-                            <option value="<?= htmlspecialchars($key) ?>"><?= htmlspecialchars($service['ar']) ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                
-                <!-- City -->
-                <div>
-                    <label for="register_city" class="block text-sm font-semibold text-gray-900 mb-2">
-                        المدينة *
-                    </label>
-                    <select id="register_city" name="city" required
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <option value="">اختر المدينة</option>
-                        <option value="riyadh">الرياض (Riyadh)</option>
-                        <option value="jeddah">جدة (Jeddah)</option>
-                        <option value="dammam">الدمام / الخبر / الظهران (Dammam / Khobar / Dhahran)</option>
-                    </select>
+                <!-- Service Type & City -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">التخصص *</label>
+                        <select id="register_service_type" name="service_type" required
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm appearance-none">
+                            <option value="">اختر...</option>
+                            <?php foreach (getServiceTypes() as $key => $service): ?>
+                                <option value="<?= htmlspecialchars($key) ?>"><?= htmlspecialchars($service['ar']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1.5">المدينة *</label>
+                        <select id="register_city" name="city" required
+                                class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm appearance-none">
+                            <option value="">اختر...</option>
+                            <option value="riyadh">الرياض</option>
+                            <option value="jeddah">جدة</option>
+                            <option value="dammam">الدمام</option>
+                        </select>
+                    </div>
                 </div>
                 
                 <!-- Password -->
                 <div>
-                    <label for="register_password" class="block text-sm font-semibold text-gray-900 mb-2">
-                        كلمة المرور *
-                    </label>
+                    <label class="block text-xs font-bold text-gray-700 mb-1.5">كلمة المرور *</label>
                     <input type="password" id="register_password" name="password" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                           placeholder="••••••••"
-                           minlength="6">
-                    <p class="text-xs text-gray-500 mt-1">6 أحرف على الأقل</p>
+                           class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#3B9DD9] focus:border-[#3B9DD9] transition-colors text-sm"
+                           placeholder="••••••••" minlength="6">
                 </div>
                 
-                <!-- Password Confirm -->
-                <div>
-                    <label for="register_password_confirm" class="block text-sm font-semibold text-gray-900 mb-2">
-                        تأكيد كلمة المرور *
-                    </label>
-                    <input type="password" id="register_password_confirm" name="password_confirm" required
-                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                           placeholder="••••••••">
-                </div>
-                
-                <!-- WhatsApp Channel Confirmation -->
-                <div class="flex items-start p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <input type="checkbox" name="channel_joined" required
-                           class="rounded border-green-300 text-green-600 focus:ring-green-500 mt-1 ml-2">
-                    <label class="text-sm text-gray-900 font-medium">
-                        <span class="text-green-700">✅</span> لقد انضممت إلى قناة WhatsApp وأؤكد أنني عضو
-                        <span class="text-red-600">*</span>
-                    </label>
-                </div>
-                
-                <!-- Terms -->
-                <div class="flex items-start">
-                    <input type="checkbox" name="terms" required
-                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-1 ml-2">
-                    <label class="text-sm text-gray-700">
-                        أوافق على <a href="/terms" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">شروط الاستخدام</a> و
-                        <a href="/privacy" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">سياسة الخصوصية</a>
-                    </label>
+                <!-- Checkboxes -->
+                <div class="space-y-2 pt-1">
+                    <div class="flex items-center p-2.5 bg-emerald-50/50 border border-emerald-100 rounded-lg">
+                        <input type="checkbox" name="channel_joined" required class="rounded border-emerald-300 text-emerald-600 focus:ring-emerald-500 ml-2 w-4 h-4">
+                        <label class="text-xs text-gray-800 font-medium">
+                            أؤكد انضمامي لقناة WhatsApp <span class="text-emerald-600">(شرط إلزامي)</span>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="terms" required class="rounded border-gray-300 text-[#3B9DD9] focus:ring-[#3B9DD9] ml-2 w-4 h-4">
+                        <label class="text-xs text-gray-600">
+                            أوافق على <a href="/terms" class="text-[#3B9DD9] font-bold hover:underline">شروط الاستخدام</a>
+                        </label>
+                    </div>
                 </div>
                 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-colors shadow-lg hover:shadow-xl">
-                    إنشاء حساب
+                <button type="submit" class="w-full bg-[#3B9DD9] hover:bg-[#1E5A8A] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/30 hover:shadow-blue-600/40 active:scale-[0.98] text-sm mt-2">
+                    إنشاء حساب مقدم خدمة
                 </button>
             </form>
         </div>
@@ -757,6 +525,229 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <script>
+    // Complaint Modal Functions
+    function openComplaintModal() {
+        const modal = document.getElementById('complaintModal');
+        const modalContent = document.getElementById('complaintModalContent');
+        if (modal && modalContent) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            // Trigger animation
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+    }
+
+    function closeComplaintModal() {
+        const modal = document.getElementById('complaintModal');
+        const modalContent = document.getElementById('complaintModalContent');
+        if (modal && modalContent) {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.style.overflow = '';
+                // Reset form
+                document.getElementById('complaintForm')?.reset();
+            }, 300);
+        }
+    }
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(event) {
+        const modal = document.getElementById('complaintModal');
+        if (modal && event.target === modal) {
+            closeComplaintModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeComplaintModal();
+        }
+    });
+
+    // Phone Input Formatting for Complaint Form
+    document.addEventListener('DOMContentLoaded', function() {
+        const complaintPhone = document.getElementById('complaint_phone');
+        if (complaintPhone) {
+            complaintPhone.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                
+                // Auto-format to 05xxxxxxxx
+                if (value.length > 0 && !value.startsWith('0')) {
+                    if (value.startsWith('5')) {
+                        value = '0' + value;
+                    }
+                }
+                
+                // Limit to 12 characters
+                if (value.length > 12) {
+                    value = value.substring(0, 12);
+                }
+                
+                e.target.value = value;
+            });
+            
+            // Prevent paste
+            complaintPhone.addEventListener('paste', function(e) {
+                e.preventDefault();
+            });
+        }
+        
+        // Complaint Form Submission
+        const complaintForm = document.getElementById('complaintForm');
+        if (complaintForm) {
+            complaintForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const formData = new FormData(complaintForm);
+                const name = formData.get('name').trim();
+                const phone = formData.get('phone').trim();
+                const email = formData.get('email')?.trim() || '';
+                const type = formData.get('type');
+                const details = formData.get('details').trim();
+                
+                // Validate phone (Saudi format)
+                const phoneRegex = /^(05|5)[0-9]{8,9}$/;
+                const cleanPhone = phone.replace(/\D/g, '');
+                
+                if (!phoneRegex.test(cleanPhone)) {
+                    alert('يرجى إدخال رقم هاتف سعودي صحيح (مثال: 0501234567)');
+                    return;
+                }
+                
+                // Complaint type labels
+                const typeLabels = {
+                    'service_quality': 'جودة الخدمة',
+                    'provider_issue': 'مشكلة مع مقدم الخدمة',
+                    'payment': 'مشكلة في الدفع',
+                    'website': 'مشكلة تقنية في الموقع',
+                    'other': 'أخرى'
+                };
+                
+                // Format message for WhatsApp
+                const whatsappMessage = `*شكوى من موقع خدمة*\n\n` +
+                    `*الاسم:* ${name}\n` +
+                    `*رقم الهاتف:* ${phone}\n` +
+                    (email ? `*البريد الإلكتروني:* ${email}\n` : '') +
+                    `*نوع الشكوى:* ${typeLabels[type] || type}\n\n` +
+                    `*تفاصيل الشكوى:*\n${details}`;
+                
+                // WhatsApp number: +1 628 800 68 18
+                const whatsappNumber = '16288006818';
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+                
+                // Open WhatsApp
+                window.open(whatsappUrl, '_blank');
+                
+                // Close modal after a short delay
+                setTimeout(() => {
+                    closeComplaintModal();
+                }, 500);
+            });
+        }
+        
+        // ============================================
+        // PROVIDER AUTHENTICATION MODAL
+        // ============================================
+        window.openProviderAuthModal = function() {
+            const modal = document.getElementById('providerAuthModal');
+            const overlay = document.getElementById('providerAuthOverlay');
+            
+            if (modal && overlay) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+                
+                // Animate in
+                setTimeout(() => {
+                    overlay.classList.remove('opacity-0');
+                    modal.classList.remove('scale-95', 'opacity-0');
+                    modal.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                
+                // Prevent body scroll
+                document.body.style.overflow = 'hidden';
+            }
+        };
+        
+        window.closeProviderAuthModal = function() {
+            const modal = document.getElementById('providerAuthModal');
+            const overlay = document.getElementById('providerAuthOverlay');
+            
+            if (modal && overlay) {
+                // Animate out
+                overlay.classList.add('opacity-0');
+                modal.classList.remove('scale-100', 'opacity-100');
+                modal.classList.add('scale-95', 'opacity-0');
+                
+                setTimeout(() => {
+                    overlay.classList.remove('flex');
+                    overlay.classList.add('hidden');
+                }, 300);
+                
+                // Restore body scroll
+                document.body.style.overflow = '';
+            }
+        };
+        
+        // Provider Auth Tab Switcher - Updated Style
+        window.switchProviderAuthTab = function(tab) {
+            const loginForm = document.getElementById('providerLoginForm');
+            const registerForm = document.getElementById('providerRegisterForm');
+            const loginTab = document.getElementById('providerLoginTab');
+            const registerTab = document.getElementById('providerRegisterTab');
+            
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                registerForm.classList.add('hidden');
+                
+                loginTab.classList.add('bg-white', 'text-[#1E5A8A]', 'shadow-sm');
+                loginTab.classList.remove('text-gray-500', 'hover:bg-gray-100');
+                
+                registerTab.classList.remove('bg-white', 'text-[#1E5A8A]', 'shadow-sm');
+                registerTab.classList.add('text-gray-500', 'hover:bg-gray-100');
+            } else {
+                loginForm.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+                
+                registerTab.classList.add('bg-white', 'text-[#1E5A8A]', 'shadow-sm');
+                registerTab.classList.remove('text-gray-500', 'hover:bg-gray-100');
+                
+                loginTab.classList.remove('bg-white', 'text-[#1E5A8A]', 'shadow-sm');
+                loginTab.classList.add('text-gray-500', 'hover:bg-gray-100');
+            }
+        };
+        
+        // Close modal on overlay click
+        const providerAuthOverlay = document.getElementById('providerAuthOverlay');
+        if (providerAuthOverlay) {
+            providerAuthOverlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeProviderAuthModal();
+                }
+            });
+        }
+        
+        // Close modal on ESC key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const overlay = document.getElementById('providerAuthOverlay');
+                if (overlay && !overlay.classList.contains('hidden')) {
+                    closeProviderAuthModal();
+                }
+            }
+        });
+    });
+    
     // ============================================
     // FAQ ACCORDION
     // ============================================
@@ -784,9 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ============================================
     // AUTO-FILL SERVICE DESCRIPTION
     // ============================================
-    // خاصية ملء وصف الخدمة تلقائياً للعملاء الكسولين 😄
     document.addEventListener('DOMContentLoaded', function() {
-        // قاموس الرسائل الافتراضية لكل خدمة
         const serviceMessages = {
             'paint': 'أحتاج إلى دهان غرفة أو أكثر في المنزل',
             'renovation': 'أحتاج إلى ترميم وتجديد',
@@ -796,43 +785,32 @@ document.addEventListener('DOMContentLoaded', function() {
             'electric': 'يوجد مشكلة في الكهرباء تحتاج إصلاح'
         };
         
-        // البحث عن جميع نماذج الخدمة في الصفحة
         document.querySelectorAll('.service-request-form').forEach(function(form) {
             const serviceSelect = form.querySelector('.service-type-select');
             const descriptionTextarea = form.querySelector('textarea[name="description"]');
             
-            // إذا لم يكن هناك حقل وصف، تجاهل هذا النموذج
             if (!serviceSelect || !descriptionTextarea) {
                 return;
             }
             
-            // متابعة ما إذا كان المستخدم قد عدّل النص يدوياً
             let userModified = false;
             
-            // تتبع التعديلات اليدوية
             descriptionTextarea.addEventListener('input', function() {
-                // إذا كان الحقل فارغاً، اسمح بالتعبئة التلقائية مرة أخرى
                 if (this.value.trim() === '') {
                     userModified = false;
                 } else {
-                    // المستخدم كتب شيئاً، علّم أنه معدّل يدوياً
                     const currentService = serviceSelect.value;
                     const defaultMessage = serviceMessages[currentService] || '';
-                    // فقط علّم كمعدّل إذا كان النص مختلفاً عن الافتراضي
                     if (this.value.trim() !== defaultMessage.trim()) {
                         userModified = true;
                     }
                 }
             });
             
-            // عند تغيير نوع الخدمة
             serviceSelect.addEventListener('change', function() {
                 const selectedService = this.value;
-                
-                // إذا لم يعدّل المستخدم النص، املأ الرسالة الافتراضية
                 if (!userModified && selectedService && serviceMessages[selectedService]) {
                     descriptionTextarea.value = serviceMessages[selectedService];
-                    // أضف تأثير بسيط لجذب الانتباه
                     descriptionTextarea.classList.add('ring-2', 'ring-blue-300');
                     setTimeout(function() {
                         descriptionTextarea.classList.remove('ring-2', 'ring-blue-300');
@@ -840,7 +818,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // إذا كانت الخدمة محددة مسبقاً (عند تحميل الصفحة)
             if (serviceSelect.value && !descriptionTextarea.value && serviceMessages[serviceSelect.value]) {
                 descriptionTextarea.value = serviceMessages[serviceSelect.value];
             }
