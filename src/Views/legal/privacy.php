@@ -357,26 +357,26 @@ ob_start();
                 </div>
             </div>
             
-            <!-- Contact -->
-            <div class="mb-10 p-8 bg-gradient-to-br from-[#1E5A8A] to-[#3B9DD9] rounded-2xl text-white shadow-xl">
-                <h2 class="text-2xl font-bold mb-4 flex items-center">
-                    <span class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center me-3">📧</span>
+            <!-- Contact - Inline styles for reliability -->
+            <div class="mb-10 p-8 rounded-2xl shadow-xl" style="background: linear-gradient(135deg, #1E5A8A 0%, #3B9DD9 100%);">
+                <h2 class="text-2xl font-bold mb-4 flex items-center" style="color: #ffffff;">
+                    <span class="w-12 h-12 rounded-xl flex items-center justify-center me-4 text-2xl" style="background: rgba(255,255,255,0.2);">📧</span>
                     تواصل معنا
                 </h2>
-                <p class="text-blue-100 mb-6">
+                <p class="mb-6 text-lg" style="color: rgba(255,255,255,0.9);">
                     إذا كان لديك أي أسئلة حول سياسة الخصوصية أو بياناتك الشخصية، يسعدنا مساعدتك.
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <a href="mailto:privacy@khidmaapp.com" class="inline-flex items-center bg-white/20 hover:bg-white/30 text-white font-bold px-6 py-3 rounded-xl transition-all">
-                        <svg class="w-5 h-5 me-2" fill="currentColor" viewBox="0 0 20 20">
+                    <a href="mailto:privacy@khidmaapp.com" class="inline-flex items-center font-bold px-6 py-3 rounded-xl transition-all hover:opacity-90" style="background: rgba(255,255,255,0.2); color: #ffffff;">
+                        <svg class="w-5 h-5 me-2" fill="#ffffff" viewBox="0 0 20 20">
                             <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                             <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
                         </svg>
                         privacy@khidmaapp.com
                     </a>
-                    <button onclick="openComplaintModal()" class="inline-flex items-center bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-xl transition-all shadow-lg">
-                        <svg class="w-5 h-5 me-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <button onclick="openComplaintModal()" class="inline-flex items-center font-bold px-6 py-3 rounded-xl transition-all shadow-lg hover:opacity-90" style="background: #ef4444; color: #ffffff;">
+                        <svg class="w-5 h-5 me-2" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                         </svg>
                         تقديم شكوى
