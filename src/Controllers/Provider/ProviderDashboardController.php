@@ -128,8 +128,12 @@ class ProviderDashboardController extends BaseProviderController
     private function getActivePackages(int $providerId): array
     {
         try {
+            // lead_packages tablosunda name_ar/name_tr yok, service_type ve lead_count kullanılıyor
             $stmt = $this->db->prepare("
-                SELECT pp.*, lp.name_ar, lp.name_tr,
+                SELECT pp.*, 
+                       lp.service_type as package_service_type,
+                       lp.lead_count as package_lead_count,
+                       CONCAT(lp.service_type, ' - ', lp.lead_count, ' Lead') as package_name,
                        (pp.leads_count - pp.used_leads) as remaining_leads
                 FROM provider_purchases pp
                 LEFT JOIN lead_packages lp ON pp.package_id = lp.id

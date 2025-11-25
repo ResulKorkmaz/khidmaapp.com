@@ -7,14 +7,34 @@
 // Layout için içerik yakalama başlat
 ob_start();
 
-// Sayfa verilerini al
-$provider = $pageData['provider'] ?? [];
-$packages = $pageData['packages'] ?? [];
+// Sayfa verilerini al (extract ile gelen değişkenler)
+$provider = $provider ?? [];
+$packages = $packages ?? [];
 $serviceTypes = getServiceTypes();
-$serviceName = $serviceTypes[$provider['service_type']]['ar'] ?? $provider['service_type'];
+$serviceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? ($provider['service_type'] ?? '');
+$isActive = ($provider['status'] ?? '') === 'active';
 ?>
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+    <?php if (!$isActive): ?>
+    <!-- Hesap Aktif Değil Uyarısı -->
+    <div class="mb-6 bg-yellow-50 border-2 border-yellow-300 rounded-2xl p-6 text-center">
+        <div class="flex items-center justify-center gap-3 mb-3">
+            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <h3 class="text-xl font-bold text-yellow-800">حسابك غير مفعّل</h3>
+        </div>
+        <p class="text-yellow-700 mb-4">يجب أن يكون حسابك مفعّلاً لشراء حزم الطلبات. يرجى الانتظار حتى يتم مراجعة حسابك من قبل الإدارة.</p>
+        <a href="/provider/dashboard" class="inline-flex items-center gap-2 px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-xl transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            العودة للوحة التحكم
+        </a>
+    </div>
+    <?php endif; ?>
+    
     <!-- Sayfa Başlığı -->
     <div class="mb-6 sm:mb-8 text-center lg:text-right">
         <div class="flex items-center justify-center lg:justify-start gap-3 mb-4">
@@ -120,6 +140,7 @@ $serviceName = $serviceTypes[$provider['service_type']]['ar'] ?? $provider['serv
                         </ul>
                         
                         <!-- Satın Al Butonu -->
+                        <?php if ($isActive): ?>
                         <button onclick="showTermsModal(<?= $package['id'] ?>)" 
                                 id="buy-btn-<?= $package['id'] ?>"
                                 class="group relative w-full py-3 sm:py-4 px-4 sm:px-6 font-black text-base sm:text-lg rounded-xl transition-all shadow-lg hover:shadow-2xl overflow-hidden"
@@ -135,6 +156,19 @@ $serviceName = $serviceTypes[$provider['service_type']]['ar'] ?? $provider['serv
                                 </svg>
                             </span>
                         </button>
+                        <?php else: ?>
+                        <button disabled
+                                class="group relative w-full py-3 sm:py-4 px-4 sm:px-6 font-black text-base sm:text-lg rounded-xl overflow-hidden cursor-not-allowed opacity-60"
+                                style="background-color: #9ca3af !important; color: #ffffff !important; border: none !important;">
+                            
+                            <span class="relative z-20 flex items-center justify-center gap-2 sm:gap-3" style="color: #ffffff !important;">
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="#ffffff" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                                <span style="color: #ffffff !important;">الحساب غير مفعّل</span>
+                            </span>
+                        </button>
+                        <?php endif; ?>
                         
                         <!-- Güven Badge -->
                         <div class="mt-3 sm:mt-4 text-center">
@@ -449,6 +483,6 @@ function buyPackage(packageId) {
 $content = ob_get_clean();
 
 // Layout'u yükle
-$pageTitle = $pageData['pageTitle'] ?? 'شراء حزمة';
+$pageTitle = $pageTitle ?? 'شراء حزمة';
 $currentPage = 'browse-packages';
 require __DIR__ . '/layout.php';

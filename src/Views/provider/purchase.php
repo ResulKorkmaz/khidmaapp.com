@@ -10,7 +10,7 @@ ob_start();
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900">تأكيد الشراء</h1>
-            <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($pageData['provider']['name']) ?></p>
+            <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($provider['name'] ?? 'مقدم الخدمة') ?></p>
         </div>
         <a href="/provider/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,28 +40,28 @@ ob_start();
         <!-- Package Details -->
         <div class="p-8">
             <div class="border-2 border-green-100 rounded-xl p-6 mb-6 bg-green-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($pageData['package']['name_ar']) ?></h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($package['name_ar']) ?></h3>
                 
                 <div class="space-y-3 mb-6">
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
                         <span class="text-gray-700">عدد الطلبات:</span>
-                        <span class="font-bold text-gray-900"><?= $pageData['package']['lead_count'] ?> طلبات</span>
+                        <span class="font-bold text-gray-900"><?= $package['lead_count'] ?> طلبات</span>
                     </div>
                     
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
                         <span class="text-gray-700">السعر:</span>
-                        <span class="font-bold text-gray-900"><?= number_format($pageData['package']['price'], 2) ?> ريال</span>
+                        <span class="font-bold text-gray-900"><?= number_format($package['price'], 2) ?> ريال</span>
                     </div>
                     
                     <div class="flex items-center justify-between py-2">
                         <span class="text-gray-700">سعر الطلب الواحد:</span>
-                        <span class="font-bold text-green-600"><?= number_format($pageData['package']['price'] / $pageData['package']['lead_count'], 2) ?> ريال</span>
+                        <span class="font-bold text-green-600"><?= number_format($package['price'] / $package['lead_count'], 2) ?> ريال</span>
                     </div>
                 </div>
                 
                 <div class="bg-white rounded-lg p-4 border border-green-200">
                     <p class="text-sm text-gray-700 leading-relaxed">
-                        <?= htmlspecialchars($pageData['package']['description_ar']) ?>
+                        <?= htmlspecialchars($package['description_ar']) ?>
                     </p>
                 </div>
             </div>
@@ -134,13 +134,13 @@ ob_start();
             <div class="border-t-2 border-gray-200 pt-6 mb-6">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-lg font-semibold text-gray-700">المبلغ الإجمالي:</span>
-                    <span class="text-3xl font-bold text-green-600"><?= number_format($pageData['package']['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
+                    <span class="text-3xl font-bold text-green-600"><?= number_format($package['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
                 </div>
                 <p class="text-sm text-gray-500 text-left">شامل ضريبة القيمة المضافة</p>
             </div>
             
             <!-- Confirm Purchase Form -->
-            <form method="POST" action="/provider/purchase/<?= $pageData['package']['id'] ?>">
+            <form method="POST" action="/provider/purchase/<?= $package['id'] ?>">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 
                 <div class="flex flex-col gap-3">
@@ -192,7 +192,7 @@ ob_start();
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900">تأكيد الشراء</h1>
-            <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($pageData['provider']['name']) ?></p>
+            <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($provider['name'] ?? 'مقدم الخدمة') ?></p>
         </div>
         <a href="/provider/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,28 +222,28 @@ ob_start();
         <!-- Package Details -->
         <div class="p-8">
             <div class="border-2 border-green-100 rounded-xl p-6 mb-6 bg-green-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($pageData['package']['name_ar']) ?></h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($package['name_ar']) ?></h3>
                 
                 <div class="space-y-3 mb-6">
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
                         <span class="text-gray-700">عدد الطلبات:</span>
-                        <span class="font-bold text-gray-900"><?= $pageData['package']['lead_count'] ?> طلبات</span>
+                        <span class="font-bold text-gray-900"><?= $package['lead_count'] ?> طلبات</span>
                     </div>
                     
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
                         <span class="text-gray-700">السعر:</span>
-                        <span class="font-bold text-gray-900"><?= number_format($pageData['package']['price'], 2) ?> ريال</span>
+                        <span class="font-bold text-gray-900"><?= number_format($package['price'], 2) ?> ريال</span>
                     </div>
                     
                     <div class="flex items-center justify-between py-2">
                         <span class="text-gray-700">سعر الطلب الواحد:</span>
-                        <span class="font-bold text-green-600"><?= number_format($pageData['package']['price'] / $pageData['package']['lead_count'], 2) ?> ريال</span>
+                        <span class="font-bold text-green-600"><?= number_format($package['price'] / $package['lead_count'], 2) ?> ريال</span>
                     </div>
                 </div>
                 
                 <div class="bg-white rounded-lg p-4 border border-green-200">
                     <p class="text-sm text-gray-700 leading-relaxed">
-                        <?= htmlspecialchars($pageData['package']['description_ar']) ?>
+                        <?= htmlspecialchars($package['description_ar']) ?>
                     </p>
                 </div>
             </div>
@@ -316,13 +316,13 @@ ob_start();
             <div class="border-t-2 border-gray-200 pt-6 mb-6">
                 <div class="flex items-center justify-between mb-2">
                     <span class="text-lg font-semibold text-gray-700">المبلغ الإجمالي:</span>
-                    <span class="text-3xl font-bold text-green-600"><?= number_format($pageData['package']['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
+                    <span class="text-3xl font-bold text-green-600"><?= number_format($package['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
                 </div>
                 <p class="text-sm text-gray-500 text-left">شامل ضريبة القيمة المضافة</p>
             </div>
             
             <!-- Confirm Purchase Form -->
-            <form method="POST" action="/provider/purchase/<?= $pageData['package']['id'] ?>">
+            <form method="POST" action="/provider/purchase/<?= $package['id'] ?>">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 
                 <div class="flex flex-col gap-3">

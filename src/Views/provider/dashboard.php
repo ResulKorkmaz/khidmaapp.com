@@ -7,11 +7,11 @@
 // Layout için içerik yakalama başlat
 ob_start();
 
-// Sayfa verilerini al
-$provider = $pageData['provider'] ?? [];
-$deliveredLeads = $pageData['deliveredLeads'] ?? [];
-$purchases = $pageData['purchases'] ?? [];
-$stats = $pageData['stats'] ?? [];
+// Sayfa verilerini al (extract ile gelen değişkenler)
+$provider = $provider ?? [];
+$recentLeads = $recentLeads ?? [];
+$activePackages = $activePackages ?? [];
+$stats = $stats ?? [];
 ?>
 
 <!-- Hoş Geldin Kartı -->
@@ -19,7 +19,7 @@ $stats = $pageData['stats'] ?? [];
     <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
             <h1 class="text-3xl font-bold text-gray-900 mb-2">
-                مرحباً <?= htmlspecialchars($provider['name']) ?> 👋
+                مرحباً <?= htmlspecialchars($provider['name'] ?? 'مقدم الخدمة') ?> 👋
             </h1>
             <p class="text-gray-600">نتمنى لك يوماً موفقاً في العمل</p>
         </div>
