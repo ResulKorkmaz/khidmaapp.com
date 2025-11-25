@@ -11,6 +11,7 @@ ob_start();
 $provider = $provider ?? [];
 $recentLeads = $recentLeads ?? [];
 $activePackages = $activePackages ?? [];
+$purchases = $activePackages; // Eski view kodları için uyumluluk
 $stats = $stats ?? [];
 ?>
 
