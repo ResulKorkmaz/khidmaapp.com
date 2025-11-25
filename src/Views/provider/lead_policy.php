@@ -63,10 +63,46 @@ ob_start();
                 </div>
             </section>
 
-            <!-- Bölüm 3: Geçersiz Lead Bildirimi -->
+            <!-- ⭐ Bölüm 3: YENİ - İlk Satın Alma vs Sonraki -->
             <section>
                 <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #22c55e;">3</span>
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #8b5cf6;">3</span>
+                    سياسة استبدال الطلبات غير الصالحة ⭐
+                </h2>
+                <div class="rounded-lg p-4 text-sm border" style="background-color: #f5f3ff; border-color: #c4b5fd;">
+                    
+                    <!-- İlk Satın Alma -->
+                    <div class="mb-4 p-3 rounded-lg border" style="background-color: #ffffff; border-color: #a78bfa;">
+                        <p class="font-bold mb-2" style="color: #5b21b6;">🎁 الشراء الأول (مرة واحدة فقط):</p>
+                        <p style="color: #6d28d9;">إذا كان هذا <strong>أول شراء لك</strong>، سيتم <strong>استبدال الطلبات غير الصالحة</strong> بطلبات جديدة.</p>
+                        <p class="text-xs mt-2" style="color: #7c3aed;">✓ هذه الميزة متاحة مرة واحدة فقط للعملاء الجدد</p>
+                    </div>
+                    
+                    <!-- Sonraki Satın Almalar -->
+                    <div class="p-3 rounded-lg border" style="background-color: #ffffff; border-color: #a78bfa;">
+                        <p class="font-bold mb-2" style="color: #5b21b6;">📦 الشراء الثاني وما بعده:</p>
+                        <p style="color: #6d28d9;">في حالة الإبلاغ عن طلب غير صالح، ستحصل على <strong>+1 طلب إضافي</strong> كتعويض.</p>
+                        <ul class="text-xs mt-2 space-y-1" style="color: #7c3aed;">
+                            <li>• هذا التعويض <strong>مرة واحدة فقط</strong> لكل حزمة</li>
+                            <li>• لا يمكن المطالبة بأكثر من طلب إضافي واحد</li>
+                            <li>• يجب الإبلاغ خلال 48 ساعة من استلام الطلب</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Önemli Uyarı -->
+                    <div class="mt-4 p-3 rounded-lg" style="background-color: #fef2f2; border: 1px solid #fca5a5;">
+                        <p class="font-bold text-sm" style="color: #991b1b;">⚠️ تنبيه مهم:</p>
+                        <p class="text-xs mt-1" style="color: #b91c1c;">
+                            بشرائك للحزمة الثانية، فإنك تقر بأنك على علم بهذه السياسة ولا يحق لك تقديم شكوى أو المطالبة بأكثر من التعويض المحدد.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bölüm 4: Geçersiz Lead Bildirimi -->
+            <section>
+                <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #22c55e;">4</span>
                     ماذا أفعل إذا كان الطلب غير صالح؟
                 </h2>
                 <div class="rounded-lg p-4 text-sm space-y-3 border" style="background-color: #f0fdf4; border-color: #86efac;">
@@ -88,15 +124,15 @@ ob_start();
                     </div>
                     
                     <p class="text-xs mt-2" style="color: #15803d;">
-                        * سيتم مراجعة الإبلاغ من قبل الإدارة. إذا تم قبوله، سيتم إضافة طلب بديل لحسابك.
+                        * سيتم مراجعة الإبلاغ من قبل الإدارة. إذا تم قبوله، سيتم تطبيق سياسة التعويض المناسبة.
                     </p>
                 </div>
             </section>
 
-            <!-- Bölüm 4: Kurallar -->
+            <!-- Bölüm 5: Kurallar -->
             <section>
                 <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #ef4444;">4</span>
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #ef4444;">5</span>
                     قواعد مهمة
                 </h2>
                 <div class="rounded-lg p-4 text-sm space-y-2 border" style="background-color: #fef2f2; border-color: #fca5a5;">
@@ -107,27 +143,30 @@ ob_start();
                         <li>العميل لا يرد على الهاتف (قد يكون مشغولاً)</li>
                         <li>الإبلاغ بدون سبب واضح</li>
                         <li>تجاوز نسبة الإبلاغات 30% من طلباتك</li>
+                        <li>المطالبة بأكثر من +1 طلب تعويض (للشراء الثاني وما بعده)</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- Bölüm 5: İade Politikası -->
+            <!-- Bölüm 6: İade Politikası -->
             <section>
                 <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #a855f7;">5</span>
+                    <span class="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold" style="background-color: #6b7280;">6</span>
                     سياسة الاسترداد
                 </h2>
-                <div class="rounded-lg p-4 text-sm border" style="background-color: #faf5ff; border-color: #d8b4fe;">
-                    <p style="color: #581c87;">💰 <strong>لا يمكن استرداد المبلغ المدفوع</strong> بعد شراء الحزمة.</p>
-                    <p class="mt-2" style="color: #6b21a8;">بدلاً من ذلك، نقدم نظام "استبدال الطلب" للطلبات غير الصالحة المؤكدة.</p>
+                <div class="rounded-lg p-4 text-sm border" style="background-color: #f9fafb; border-color: #d1d5db;">
+                    <p style="color: #374151;">💰 <strong>لا يمكن استرداد المبلغ المدفوع</strong> بعد شراء الحزمة.</p>
+                    <p class="mt-2" style="color: #4b5563;">بدلاً من ذلك، نقدم نظام التعويض المذكور أعلاه حسب نوع الشراء (أول مرة أو تكرار).</p>
                 </div>
             </section>
 
             <!-- Kabul Butonu -->
             <div class="pt-4 border-t border-gray-200">
-                <p class="text-center text-gray-600 text-sm mb-4">
-                    بشرائك لأي حزمة، فإنك توافق على جميع الشروط والسياسات المذكورة أعلاه
-                </p>
+                <div class="p-4 rounded-lg mb-4" style="background-color: #ecfdf5; border: 2px solid #10b981;">
+                    <p class="text-center text-sm font-bold" style="color: #065f46;">
+                        ✅ بشرائك لأي حزمة، فإنك توافق على جميع الشروط والسياسات المذكورة أعلاه
+                    </p>
+                </div>
                 <a href="/provider/browse-packages" class="block w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg text-center transition-all">
                     فهمت، العودة للحزم
                 </a>

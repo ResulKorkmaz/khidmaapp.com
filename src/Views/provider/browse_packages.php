@@ -113,10 +113,11 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
                             <?php endif; ?>
                         </ul>
                         
-                        <!-- Buton -->
+                        <!-- Buton - Başlangıçta Pasif -->
                         <?php if ($isActive): ?>
                         <a href="/provider/purchase/<?= $package['id'] ?>" 
-                           class="block w-full py-3 <?= $btnColor ?> text-white font-bold rounded-lg text-center transition-all hover:shadow-lg">
+                           id="buy-btn-<?= $package['id'] ?>"
+                           class="buy-button block w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-lg text-center cursor-not-allowed pointer-events-none transition-all">
                             اشترِ الآن
                         </a>
                         <?php else: ?>
@@ -160,16 +161,58 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
                         <li><strong>لا نضمن صحة 100% لبيانات العملاء</strong></li>
                         <li>يمكنك الإبلاغ عن طلب غير صالح خلال 48 ساعة</li>
                     </ul>
-                    <div class="mt-3 pt-3 border-t border-amber-200">
-                        <p class="text-amber-800 font-medium text-xs">
-                            📋 بشرائك للحزمة، فإنك توافق على <a href="/provider/lead-policy" class="underline hover:text-amber-900">سياسة جودة الطلبات</a>
-                        </p>
-                    </div>
                 </div>
             </div>
         </div>
+        
+        <!-- ✅ Onay Kutusu -->
+        <div class="mt-4 bg-green-50 border-2 border-green-300 rounded-lg p-4">
+            <label class="flex items-start gap-3 cursor-pointer select-none">
+                <input type="checkbox" id="policy-accept" class="w-5 h-5 mt-0.5 text-green-600 border-2 border-green-400 rounded focus:ring-green-500 cursor-pointer">
+                <div class="text-sm">
+                    <p class="font-bold text-green-800">
+                        ✅ قرأت وفهمت <a href="/provider/lead-policy" target="_blank" class="underline hover:text-green-900">سياسة جودة الطلبات</a> وأوافق عليها
+                    </p>
+                    <p class="text-green-700 mt-1 text-xs">
+                        أفهم أن الطلبات غير الصالحة في <strong>الشراء الأول</strong> سيتم استبدالها، وفي الشراء التالي سأحصل على <strong>+1 طلب إضافي</strong> (مرة واحدة فقط).
+                    </p>
+                </div>
+            </label>
+        </div>
     <?php endif; ?>
 </div>
+
+<script>
+// Onay kutusu kontrolü
+document.addEventListener('DOMContentLoaded', function() {
+    const checkbox = document.getElementById('policy-accept');
+    const buyButtons = document.querySelectorAll('.buy-button');
+    
+    if (checkbox && buyButtons.length > 0) {
+        checkbox.addEventListener('change', function() {
+            buyButtons.forEach(btn => {
+                if (this.checked) {
+                    // Aktif yap
+                    btn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
+                    
+                    // Butonun paket ID'sine göre renk belirle
+                    const packageId = btn.id.replace('buy-btn-', '');
+                    // 3'lü paket yeşil, diğerleri mavi
+                    if (btn.closest('.border-green-400')) {
+                        btn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'hover:shadow-lg');
+                    } else {
+                        btn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'text-white', 'hover:shadow-lg');
+                    }
+                } else {
+                    // Pasif yap
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700', 'bg-blue-600', 'hover:bg-blue-700', 'text-white', 'hover:shadow-lg');
+                    btn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
+                }
+            });
+        });
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();
