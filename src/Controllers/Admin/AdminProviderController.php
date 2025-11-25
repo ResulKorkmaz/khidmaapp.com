@@ -195,34 +195,83 @@ class AdminProviderController extends BaseAdminController
         
         $data = $this->getJsonInput();
         $providerId = intval($data['provider_id'] ?? 0);
+        $confirmation = $data['confirmation'] ?? '';
         
         if ($providerId <= 0) {
             $this->errorResponse('Geçersiz usta ID', 400);
+            return;
+        }
+        
+        if ($confirmation !== 'SIL') {
+            $this->errorResponse('Silme onayı geçersiz. "SIL" yazmalısınız.', 400);
+            return;
         }
         
         try {
-            // Önce ilişkili kayıtları kontrol et
-            $stmt = $this->pdo->prepare("SELECT COUNT(*) as count FROM provider_purchases WHERE provider_id = ?");
+            // Önce provider'ı kontrol et
+            $stmt = $this->pdo->prepare("SELECT name FROM service_providers WHERE id = ?");
             $stmt->execute([$providerId]);
-            $purchaseCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+            $provider = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            if ($purchaseCount > 0) {
-                $this->errorResponse('Bu ustanın satın almaları var, silinemez', 400);
-            }
-            
-            // Provider'ı sil
-            $stmt = $this->pdo->prepare("DELETE FROM service_providers WHERE id = ?");
-            $success = $stmt->execute([$providerId]);
-            
-            if ($success && $stmt->rowCount() > 0) {
-                error_log("Admin deleted provider ID: $providerId");
-                $this->successResponse('Usta başarıyla silindi');
-            } else {
+            if (!$provider) {
                 $this->errorResponse('Usta bulunamadı', 404);
+                return;
             }
+            
+            $providerName = $provider['name'];
+            
+            // Transaction başlat
+            $this->pdo->beginTransaction();
+            
+            // 1. Önce provider_lead_deliveries tablosundaki kayıtları sil
+            $stmt = $this->pdo->prepare("DELETE FROM provider_lead_deliveries WHERE provider_id = ?");
+            $stmt->execute([$providerId]);
+            $deletedDeliveries = $stmt->rowCount();
+            
+            // 2. provider_purchases tablosundaki kayıtları sil
+            $stmt = $this->pdo->prepare("DELETE FROM provider_purchases WHERE provider_id = ?");
+            $stmt->execute([$providerId]);
+            $deletedPurchases = $stmt->rowCount();
+            
+            // 3. provider_messages tablosundaki kayıtları sil (varsa)
+            try {
+                $stmt = $this->pdo->prepare("DELETE FROM provider_messages WHERE provider_id = ?");
+                $stmt->execute([$providerId]);
+            } catch (PDOException $e) {
+                // Tablo yoksa devam et
+            }
+            
+            // 4. lead_requests tablosundaki kayıtları sil (varsa)
+            try {
+                $stmt = $this->pdo->prepare("DELETE FROM lead_requests WHERE provider_id = ?");
+                $stmt->execute([$providerId]);
+            } catch (PDOException $e) {
+                // Tablo yoksa devam et
+            }
+            
+            // 5. Son olarak provider'ı sil
+            $stmt = $this->pdo->prepare("DELETE FROM service_providers WHERE id = ?");
+            $stmt->execute([$providerId]);
+            
+            if ($stmt->rowCount() > 0) {
+                $this->pdo->commit();
+                error_log("Admin deleted provider ID: $providerId (Name: $providerName, Deliveries: $deletedDeliveries, Purchases: $deletedPurchases)");
+                $this->successResponse('Usta ve ilişkili tüm kayıtlar başarıyla silindi', [
+                    'deleted_provider' => $providerName,
+                    'deleted_deliveries' => $deletedDeliveries,
+                    'deleted_purchases' => $deletedPurchases
+                ]);
+            } else {
+                $this->pdo->rollBack();
+                $this->errorResponse('Usta silinemedi', 500);
+            }
+            
         } catch (PDOException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
             error_log("Delete provider error: " . $e->getMessage());
-            $this->errorResponse('Veritabanı hatası', 500);
+            $this->errorResponse('Veritabanı hatası: ' . $e->getMessage(), 500);
         }
     }
     
