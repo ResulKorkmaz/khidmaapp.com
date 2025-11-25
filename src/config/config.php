@@ -15,7 +15,7 @@ if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
     ini_set('log_errors', 1);
     ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
 } else {
-    ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 }
 
 // Karakter kodlaması

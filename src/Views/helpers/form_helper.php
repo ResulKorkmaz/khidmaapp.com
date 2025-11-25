@@ -116,11 +116,13 @@ if (!function_exists('render_service_request_form')) {
                            required
                            class="<?= $inputClasses ?> py-3 phone-input phone-input-primary text-right pr-3 pl-12"
                            placeholder="05xxxxxxxx"
-                           inputmode="numeric"
-                           dir="rtl"
+                           inputmode="tel"
+                           dir="ltr"
                            maxlength="10"
-                           pattern="05[0-9]{8}"
-                           autocomplete="tel">
+                           pattern="[0-9]*"
+                           autocomplete="tel"
+                           enterkeyhint="next"
+                           x-inputmode="numeric">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#3B9DD9] to-[#2B7AB8] flex items-center justify-center shadow-sm">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,11 +155,13 @@ if (!function_exists('render_service_request_form')) {
                            required
                            class="<?= $inputClasses ?> py-3 phone-input phone-input-confirm text-right pr-3 pl-12"
                            placeholder="أعد كتابة الرقم"
-                           inputmode="numeric"
-                           dir="rtl"
+                           inputmode="tel"
+                           dir="ltr"
                            maxlength="10"
-                           pattern="05[0-9]{8}"
-                           autocomplete="tel">
+                           pattern="[0-9]*"
+                           autocomplete="tel"
+                           enterkeyhint="next"
+                           x-inputmode="numeric">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <div id="<?= $fieldPrefix ?>_confirm_icon" class="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center shadow-sm transition-all duration-300">
                             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
