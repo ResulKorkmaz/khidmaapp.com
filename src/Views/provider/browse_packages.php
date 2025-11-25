@@ -254,25 +254,29 @@ function showNotification(message, type = 'info') {
     const existing = document.getElementById('toast-notification');
     if (existing) existing.remove();
     
-    // Renk ayarları
-    const colors = {
-        warning: 'bg-amber-500',
-        error: 'bg-red-500',
-        success: 'bg-green-500',
-        info: 'bg-blue-500'
-    };
-    
     // Bildirim oluştur
     const toast = document.createElement('div');
     toast.id = 'toast-notification';
-    toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 animate-bounce`;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #f59e0b;
+        color: #000;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: bold;
+        font-size: 16px;
+    `;
     toast.innerHTML = `
-        <span class="text-lg">${message}</span>
-        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-            </svg>
-        </button>
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#000;font-size:20px;line-height:1;">&times;</button>
     `;
     
     document.body.appendChild(toast);
