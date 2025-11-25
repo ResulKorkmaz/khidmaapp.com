@@ -33,7 +33,7 @@ class ProviderPurchaseController extends BaseProviderController
             $stmt->execute();
             $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
-            $this->render('packages', [
+            $this->render('browse_packages', [
                 'packages' => $packages,
                 'provider' => $provider
             ]);
