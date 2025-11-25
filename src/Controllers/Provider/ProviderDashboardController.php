@@ -129,8 +129,10 @@ class ProviderDashboardController extends BaseProviderController
     {
         try {
             // lead_packages tablosunda name_ar/name_tr yok, service_type ve lead_count kullanılıyor
+            // status kolonunu payment_status olarak alias yapıyoruz (view uyumluluğu için)
             $stmt = $this->db->prepare("
                 SELECT pp.*, 
+                       pp.status as payment_status,
                        lp.service_type as package_service_type,
                        lp.lead_count as package_lead_count,
                        CONCAT(lp.service_type, ' - ', lp.lead_count, ' Lead') as package_name,
