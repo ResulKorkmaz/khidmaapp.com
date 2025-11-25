@@ -3,6 +3,10 @@
 $pageTitle = 'تأكيد الشراء';
 $currentPage = 'browse-packages';
 ob_start();
+
+// Service type adını al
+$serviceTypes = getServiceTypes();
+$packageServiceName = $serviceTypes[$package['service_type'] ?? '']['ar'] ?? $package['service_type'] ?? '';
 ?>
 
 <!-- Sayfa Başlığı -->
@@ -12,7 +16,7 @@ ob_start();
             <h1 class="text-2xl md:text-3xl font-bold text-gray-900">تأكيد الشراء</h1>
             <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($provider['name'] ?? 'مقدم الخدمة') ?></p>
         </div>
-        <a href="/provider/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
+        <a href="/provider/browse-packages" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
@@ -40,7 +44,7 @@ ob_start();
         <!-- Package Details -->
         <div class="p-8">
             <div class="border-2 border-green-100 rounded-xl p-6 mb-6 bg-green-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($package['name_ar']) ?></h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($packageServiceName) ?> - <?= $package['lead_count'] ?> طلب</h3>
                 
                 <div class="space-y-3 mb-6">
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
@@ -50,18 +54,18 @@ ob_start();
                     
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
                         <span class="text-gray-700">السعر:</span>
-                        <span class="font-bold text-gray-900"><?= number_format($package['price'], 2) ?> ريال</span>
+                        <span class="font-bold text-gray-900"><?= number_format($package['price_sar'], 2) ?> ريال</span>
                     </div>
                     
                     <div class="flex items-center justify-between py-2">
                         <span class="text-gray-700">سعر الطلب الواحد:</span>
-                        <span class="font-bold text-green-600"><?= number_format($package['price'] / $package['lead_count'], 2) ?> ريال</span>
+                        <span class="font-bold text-green-600"><?= number_format($package['price_per_lead'] ?? ($package['price_sar'] / $package['lead_count']), 2) ?> ريال</span>
                     </div>
                 </div>
                 
                 <div class="bg-white rounded-lg p-4 border border-green-200">
                     <p class="text-sm text-gray-700 leading-relaxed">
-                        <?= htmlspecialchars($package['description_ar']) ?>
+                        حزمة <?= $package['lead_count'] ?> طلب من خدمة <?= htmlspecialchars($packageServiceName) ?>
                     </p>
                 </div>
             </div>
@@ -78,290 +82,97 @@ ob_start();
                         <h4 class="font-bold text-gray-900 text-lg mb-2">📋 كيف يعمل النظام؟</h4>
                         <div class="bg-white rounded-lg p-4 border border-blue-200">
                             <p class="text-sm text-gray-800 leading-relaxed mb-3">
-                                <strong class="text-blue-600">⚠️ مهم جداً:</strong> عندما يتقدم عميل جديد بطلب يتطابق مع <strong>نفس نوع الخدمة ونفس المدينة</strong> التي تقدمها، سيتم إرسال الطلبات للأساتذة <strong class="text-blue-600">حسب ترتيب الشراء</strong>.
+                                بعد شراء الحزمة، يمكنك طلب العملاء المحتملين من لوحة التحكم. سيتم إرسال طلبات العملاء إليك من قبل الإدارة.
                             </p>
-                            <div class="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <p class="text-sm text-blue-900">
-                                    <strong>مثال:</strong> إذا اشتريت حزمة اليوم، وزميلك اشترى غداً، ستحصل أنت على الطلبات الجديدة أولاً حتى تنتهي حزمتك، ثم يبدأ دوره.
-                                </p>
-                            </div>
+                            <ul class="text-sm text-gray-700 space-y-2">
+                                <li class="flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">1</span>
+                                    اشترِ الحزمة المناسبة
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">2</span>
+                                    اطلب عملاء من لوحة التحكم
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-xs font-bold">3</span>
+                                    ستصلك بيانات العملاء من الإدارة
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Features -->
-            <div class="mb-6">
-                <h4 class="font-bold text-gray-900 mb-3">ما الذي ستحصل عليه:</h4>
-                <ul class="space-y-2">
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        معلومات العميل الكاملة (الاسم، الهاتف، العنوان)
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        تفاصيل الخدمة المطلوبة بالكامل
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        طلبات في تخصصك ومدينتك فقط
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        توزيع تلقائي حسب أولوية الشراء
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        صلاحية الحزمة: 90 يوماً
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Total -->
-            <div class="border-t-2 border-gray-200 pt-6 mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-lg font-semibold text-gray-700">المبلغ الإجمالي:</span>
-                    <span class="text-3xl font-bold text-green-600"><?= number_format($package['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
-                </div>
-                <p class="text-sm text-gray-500 text-left">شامل ضريبة القيمة المضافة</p>
-            </div>
-            
-            <!-- Confirm Purchase Form -->
-            <form method="POST" action="/provider/purchase/<?= $package['id'] ?>">
+            <!-- Purchase Button -->
+            <form id="purchaseForm" class="space-y-4">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+                <input type="hidden" name="package_id" value="<?= $package['id'] ?>">
                 
-                <div class="flex flex-col gap-3">
-                    <button type="submit" 
-                            class="w-full py-4 bg-green-600 hover:bg-green-700 text-white text-lg font-bold rounded-xl transition-colors shadow-lg hover:shadow-xl">
-                        تأكيد الشراء الآن 🎉
-                    </button>
-                    
-                    <a href="/provider/dashboard" 
-                       class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-center font-semibold rounded-xl transition-colors">
-                        إلغاء
-                    </a>
-                </div>
+                <button type="submit" id="purchaseBtn"
+                        class="w-full py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition-all transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-3">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    <span>إتمام الشراء - <?= number_format($package['price_sar'], 2) ?> ريال</span>
+                </button>
             </form>
             
-            <!-- Note -->
-            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                    </svg>
-                    <div class="flex-1">
-                        <h5 class="font-semibold text-yellow-900 mb-1">ملاحظة هامة:</h5>
-                        <p class="text-sm text-yellow-800">
-                            بالنقر على "تأكيد الشراء"، أنت توافق على شراء هذه الحزمة. سيتم خصم المبلغ وإضافة الطلبات إلى حسابك فوراً.
-                        </p>
-                    </div>
-                </div>
+            <!-- Security Note -->
+            <div class="mt-6 flex items-center justify-center gap-2 text-sm text-gray-500">
+                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                <span>الدفع آمن ومشفر بالكامل عبر Stripe</span>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-// Layout'a içeriği gönder
-$content = ob_get_clean();
-
-// Provider layout'u yükle
-require __DIR__ . '/layout.php';
-?>
-
-$pageTitle = 'تأكيد الشراء';
-$currentPage = 'browse-packages';
-ob_start();
-?>
-
-<!-- Sayfa Başlığı -->
-<div class="mb-6">
-    <div class="flex items-center justify-between">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">تأكيد الشراء</h1>
-            <p class="text-gray-600 mt-1">مرحباً، <?= htmlspecialchars($provider['name'] ?? 'مقدم الخدمة') ?></p>
-        </div>
-        <a href="/provider/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors">
-            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
-            العودة
-        </a>
-    </div>
-</div>
-
-<!-- Main Content -->
-<div class="max-w-2xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-        <!-- Header -->
-        <div class="bg-green-600 px-8 py-6">
-            <div class="flex items-center justify-center mb-4">
-                <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                    </svg>
-                </div>
-            </div>
-            <h2 class="text-2xl font-bold text-white text-center">تأكيد شراء الحزمة</h2>
-            <p class="text-green-100 text-center mt-2">يرجى مراجعة تفاصيل الشراء</p>
-        </div>
+<script>
+document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('purchaseBtn');
+    const originalText = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = `
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>جاري التحويل للدفع...</span>
+    `;
+    
+    try {
+        const formData = new FormData(this);
         
-        <!-- Package Details -->
-        <div class="p-8">
-            <div class="border-2 border-green-100 rounded-xl p-6 mb-6 bg-green-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($package['name_ar']) ?></h3>
-                
-                <div class="space-y-3 mb-6">
-                    <div class="flex items-center justify-between py-2 border-b border-green-200">
-                        <span class="text-gray-700">عدد الطلبات:</span>
-                        <span class="font-bold text-gray-900"><?= $package['lead_count'] ?> طلبات</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between py-2 border-b border-green-200">
-                        <span class="text-gray-700">السعر:</span>
-                        <span class="font-bold text-gray-900"><?= number_format($package['price'], 2) ?> ريال</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between py-2">
-                        <span class="text-gray-700">سعر الطلب الواحد:</span>
-                        <span class="font-bold text-green-600"><?= number_format($package['price'] / $package['lead_count'], 2) ?> ريال</span>
-                    </div>
-                </div>
-                
-                <div class="bg-white rounded-lg p-4 border border-green-200">
-                    <p class="text-sm text-gray-700 leading-relaxed">
-                        <?= htmlspecialchars($package['description_ar']) ?>
-                    </p>
-                </div>
-            </div>
-            
-            <!-- How it Works - IMPORTANT -->
-            <div class="mb-6 p-5 bg-blue-50 border-2 border-blue-200 rounded-xl">
-                <div class="flex items-start gap-3 mb-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-gray-900 text-lg mb-2">📋 كيف يعمل النظام؟</h4>
-                        <div class="bg-white rounded-lg p-4 border border-blue-200">
-                            <p class="text-sm text-gray-800 leading-relaxed mb-3">
-                                <strong class="text-blue-600">⚠️ مهم جداً:</strong> عندما يتقدم عميل جديد بطلب يتطابق مع <strong>نفس نوع الخدمة ونفس المدينة</strong> التي تقدمها، سيتم إرسال الطلبات للأساتذة <strong class="text-blue-600">حسب ترتيب الشراء</strong>.
-                            </p>
-                            <div class="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-                                <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                </svg>
-                                <p class="text-sm text-blue-900">
-                                    <strong>مثال:</strong> إذا اشتريت حزمة اليوم، وزميلك اشترى غداً، ستحصل أنت على الطلبات الجديدة أولاً حتى تنتهي حزمتك، ثم يبدأ دوره.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Features -->
-            <div class="mb-6">
-                <h4 class="font-bold text-gray-900 mb-3">ما الذي ستحصل عليه:</h4>
-                <ul class="space-y-2">
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        معلومات العميل الكاملة (الاسم، الهاتف، العنوان)
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        تفاصيل الخدمة المطلوبة بالكامل
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        طلبات في تخصصك ومدينتك فقط
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        توزيع تلقائي حسب أولوية الشراء
-                    </li>
-                    <li class="flex items-center text-sm text-gray-700">
-                        <svg class="w-5 h-5 text-green-500 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        صلاحية الحزمة: 90 يوماً
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Total -->
-            <div class="border-t-2 border-gray-200 pt-6 mb-6">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-lg font-semibold text-gray-700">المبلغ الإجمالي:</span>
-                    <span class="text-3xl font-bold text-green-600"><?= number_format($package['price'], 2) ?> <span class="text-lg text-gray-500">ريال</span></span>
-                </div>
-                <p class="text-sm text-gray-500 text-left">شامل ضريبة القيمة المضافة</p>
-            </div>
-            
-            <!-- Confirm Purchase Form -->
-            <form method="POST" action="/provider/purchase/<?= $package['id'] ?>">
-                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
-                
-                <div class="flex flex-col gap-3">
-                    <button type="submit" 
-                            class="w-full py-4 bg-green-600 hover:bg-green-700 text-white text-lg font-bold rounded-xl transition-colors shadow-lg hover:shadow-xl">
-                        تأكيد الشراء الآن 🎉
-                    </button>
-                    
-                    <a href="/provider/dashboard" 
-                       class="w-full py-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-center font-semibold rounded-xl transition-colors">
-                        إلغاء
-                    </a>
-                </div>
-            </form>
-            
-            <!-- Note -->
-            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                    </svg>
-                    <div class="flex-1">
-                        <h5 class="font-semibold text-yellow-900 mb-1">ملاحظة هامة:</h5>
-                        <p class="text-sm text-yellow-800">
-                            بالنقر على "تأكيد الشراء"، أنت توافق على شراء هذه الحزمة. سيتم خصم المبلغ وإضافة الطلبات إلى حسابك فوراً.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        const response = await fetch('/provider/create-checkout-session', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success && result.url) {
+            window.location.href = result.url;
+        } else {
+            alert(result.message || 'حدث خطأ أثناء إنشاء جلسة الدفع');
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.');
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    }
+});
+</script>
 
 <?php
-// Layout'a içeriği gönder
 $content = ob_get_clean();
 
 // Provider layout'u yükle
 require __DIR__ . '/layout.php';
 ?>
-
-

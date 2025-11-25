@@ -85,7 +85,10 @@ $isActive = ($provider['status'] ?? '') === 'active';
                             <div class="text-5xl sm:text-6xl font-black mb-2"><?= $package['lead_count'] ?></div>
                             <div class="text-xl sm:text-2xl font-bold opacity-95">طلب</div>
                             <div class="mt-2 sm:mt-3 text-blue-100 text-xs sm:text-sm font-medium">
-                                <?= htmlspecialchars($package['name_ar'] ?? '') ?>
+                                <?php 
+                                $packageServiceName = $serviceTypes[$package['service_type'] ?? '']['ar'] ?? $package['service_type'] ?? '';
+                                echo htmlspecialchars($packageServiceName);
+                                ?>
                             </div>
                         </div>
                     </div>

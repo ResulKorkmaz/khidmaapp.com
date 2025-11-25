@@ -28,7 +28,7 @@ class ProviderPurchaseController extends BaseProviderController
             $stmt = $this->db->prepare("
                 SELECT * FROM lead_packages 
                 WHERE is_active = 1 
-                ORDER BY leads_count ASC
+                ORDER BY lead_count ASC
             ");
             $stmt->execute();
             $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,16 +119,19 @@ class ProviderPurchaseController extends BaseProviderController
             $stripe = new \Stripe\StripeClient(STRIPE_SECRET_KEY);
             
             // Checkout session oluştur
+            $serviceTypes = getServiceTypes();
+            $packageName = ($serviceTypes[$package['service_type']]['ar'] ?? $package['service_type']) . ' - ' . $package['lead_count'] . ' طلب';
+            
             $session = $stripe->checkout->sessions->create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
                         'currency' => 'aed',
                         'product_data' => [
-                            'name' => $package['name_ar'] ?? $package['name_tr'],
-                            'description' => $package['leads_count'] . ' lead paketi',
+                            'name' => $packageName,
+                            'description' => $package['lead_count'] . ' lead paketi',
                         ],
-                        'unit_amount' => intval($package['price'] * 100), // Kuruş cinsinden
+                        'unit_amount' => intval($package['price_sar'] * 100), // Kuruş cinsinden
                     ],
                     'quantity' => 1,
                 ]],
@@ -203,9 +206,9 @@ class ProviderPurchaseController extends BaseProviderController
                     $stmt->execute([
                         $providerId,
                         $packageId,
-                        $package['leads_count'],
-                        $package['leads_count'],
-                        $package['price'],
+                        $package['lead_count'],
+                        $package['lead_count'],
+                        $package['price_sar'],
                         $sessionId
                     ]);
                     
