@@ -206,32 +206,45 @@ class ProviderPurchaseController extends BaseProviderController
             $stmt = $this->db->prepare("SELECT id FROM provider_purchases WHERE stripe_session_id = ?");
             $stmt->execute([$sessionId]);
             
-            if (!$stmt->fetch()) {
+            $purchaseId = null;
+            $existingPurchase = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$existingPurchase) {
                 // Paketi getir
                 $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ?");
                 $stmt->execute([$packageId]);
                 $package = $stmt->fetch(PDO::FETCH_ASSOC);
                 
                 if ($package) {
+                    // Paket adını oluştur
+                    $packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
+                    
                     $stmt = $this->db->prepare("
                         INSERT INTO provider_purchases 
-                        (provider_id, package_id, leads_count, remaining_leads, price, payment_status, stripe_session_id, purchased_at)
-                        VALUES (?, ?, ?, ?, ?, 'completed', ?, NOW())
+                        (provider_id, package_id, package_name, leads_count, remaining_leads, price_paid, payment_status, status, stripe_session_id, currency, purchased_at)
+                        VALUES (?, ?, ?, ?, ?, ?, 'completed', 'active', ?, 'SAR', NOW())
                     ");
                     $stmt->execute([
                         $providerId,
                         $packageId,
+                        $packageName,
                         $package['lead_count'],
                         $package['lead_count'],
                         $package['price_sar'],
                         $sessionId
                     ]);
                     
-                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}");
+                    $purchaseId = $this->db->lastInsertId();
+                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}, purchase #{$purchaseId}");
+                    
+                    // 🔥 Otomatik ilk lead talebi gönder
+                    $this->createAutoLeadRequest($providerId, $purchaseId);
                 }
+            } else {
+                $purchaseId = $existingPurchase['id'];
             }
             
-            $_SESSION['success'] = 'تم الشراء بنجاح! يمكنك الآن طلب العملاء المحتملين';
+            $_SESSION['success'] = 'تم الشراء بنجاح! تم إرسال طلب العميل الأول تلقائياً.';
             $this->redirect('/provider/leads');
             
         } catch (\Stripe\Exception\ApiErrorException $e) {
@@ -254,6 +267,24 @@ class ProviderPurchaseController extends BaseProviderController
         
         $_SESSION['info'] = 'تم إلغاء عملية الشراء';
         $this->redirect('/provider/packages');
+    }
+    
+    /**
+     * Otomatik ilk lead talebi oluştur
+     */
+    private function createAutoLeadRequest(int $providerId, int $purchaseId): void
+    {
+        try {
+            $stmt = $this->db->prepare("
+                INSERT INTO lead_requests (provider_id, purchase_id, request_status, requested_at, notes)
+                VALUES (?, ?, 'pending', NOW(), 'تم إرسال الطلب تلقائياً بعد الشراء')
+            ");
+            $stmt->execute([$providerId, $purchaseId]);
+            
+            error_log("✅ Auto lead request created for provider #{$providerId}, purchase #{$purchaseId}");
+        } catch (PDOException $e) {
+            error_log("Auto lead request error: " . $e->getMessage());
+        }
     }
 }
 

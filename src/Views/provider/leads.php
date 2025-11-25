@@ -72,15 +72,47 @@
     </div>
 </div>
 
+<!-- 90 Dakika Bekleme Uyarısı -->
+<?php if (!empty($lastRequestInfo) && !$lastRequestInfo['canRequest']): ?>
+<div class="bg-orange-50 border border-orange-300 rounded-2xl p-4 mb-6">
+    <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <div class="flex-1">
+            <p class="font-bold text-orange-800">⏳ يرجى الانتظار قبل طلب عميل جديد</p>
+            <p class="text-sm text-orange-700">
+                يمكنك طلب عميل جديد بعد <strong id="countdown"><?= $lastRequestInfo['remainingMinutes'] ?></strong> دقيقة
+            </p>
+            <p class="text-xs text-orange-600 mt-1">
+                آخر طلب: <?= date('H:i - Y/m/d', strtotime($lastRequestInfo['lastRequestTime'])) ?>
+            </p>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Satın Alınan Paketler -->
 <?php if (!empty($purchases)): ?>
+<?php 
+    $canRequest = $lastRequestInfo['canRequest'] ?? true;
+    $totalRemainingLeads = array_sum(array_column($purchases, 'remaining_leads'));
+?>
 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
-    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-        </svg>
-        الحزم المشتراة
-    </h2>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            الحزم المشتراة
+        </h2>
+        <div class="flex items-center gap-2 px-3 py-1 bg-green-100 rounded-lg">
+            <span class="text-sm text-green-800">إجمالي المتبقي:</span>
+            <span class="font-bold text-green-600 text-lg"><?= $totalRemainingLeads ?></span>
+        </div>
+    </div>
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <?php foreach ($purchases as $purchase): ?>
@@ -89,46 +121,85 @@
             $totalLeads = $purchase['leads_count'] ?? $purchase['package_lead_count'] ?? 0;
             $usedLeads = $totalLeads - $remainingLeads;
             $percentage = $totalLeads > 0 ? ($usedLeads / $totalLeads) * 100 : 0;
+            $packageDisplayName = $purchase['package_name'] ?? $purchase['lp_name'] ?? ($totalLeads == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $totalLeads . ' طلبات');
             ?>
-            <div class="border border-gray-200 rounded-xl p-4 <?= $remainingLeads > 0 ? 'bg-green-50 border-green-200' : 'bg-gray-50' ?>">
+            <div class="border-2 rounded-xl p-4 <?= $remainingLeads > 0 ? 'bg-green-50 border-green-300' : 'bg-gray-50 border-gray-200' ?>">
                 <div class="flex items-center justify-between mb-3">
                     <span class="font-bold text-gray-900">
-                        <?= htmlspecialchars($purchase['package_name'] ?? ($totalLeads . ' طلب')) ?>
+                        <?= htmlspecialchars($packageDisplayName) ?>
                     </span>
                     <?php if ($remainingLeads > 0): ?>
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">نشط</span>
+                        <span class="px-2 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">نشط</span>
                     <?php else: ?>
-                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded-full">مكتمل</span>
+                        <span class="px-2 py-1 bg-gray-400 text-white text-xs font-semibold rounded-full">مكتمل</span>
                     <?php endif; ?>
                 </div>
                 
                 <div class="mb-3">
                     <div class="flex justify-between text-sm text-gray-600 mb-1">
                         <span>الطلبات المتبقية</span>
-                        <span class="font-bold <?= $remainingLeads > 0 ? 'text-green-600' : 'text-gray-500' ?>"><?= $remainingLeads ?> / <?= $totalLeads ?></span>
+                        <span class="font-bold text-xl <?= $remainingLeads > 0 ? 'text-green-600' : 'text-gray-500' ?>"><?= $remainingLeads ?> / <?= $totalLeads ?></span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="<?= $remainingLeads > 0 ? 'bg-green-500' : 'bg-gray-400' ?> h-2 rounded-full transition-all" style="width: <?= $percentage ?>%"></div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="<?= $remainingLeads > 0 ? 'bg-green-500' : 'bg-gray-400' ?> h-3 rounded-full transition-all" style="width: <?= $percentage ?>%"></div>
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-between text-xs text-gray-500">
-                    <span>تاريخ الشراء: <?= date('Y-m-d', strtotime($purchase['purchased_at'] ?? $purchase['created_at'] ?? 'now')) ?></span>
-                    <span><?= number_format($purchase['price'] ?? 0, 0) ?> ريال</span>
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-3">
+                    <span>📅 <?= date('Y-m-d', strtotime($purchase['purchased_at'] ?? $purchase['created_at'] ?? 'now')) ?></span>
+                    <span class="font-semibold"><?= number_format($purchase['price_paid'] ?? $purchase['price'] ?? 0, 0) ?> ريال</span>
                 </div>
                 
                 <?php if ($remainingLeads > 0): ?>
-                    <button onclick="requestLead(<?= $purchase['id'] ?>)" 
-                            class="w-full mt-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        اطلب عميل
-                    </button>
+                    <?php if ($canRequest): ?>
+                        <button onclick="requestLead(<?= $purchase['id'] ?>)" 
+                                class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            اطلب عميل الآن
+                        </button>
+                    <?php else: ?>
+                        <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-lg cursor-not-allowed flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            انتظر <?= $lastRequestInfo['remainingMinutes'] ?? 0 ?> دقيقة
+                        </button>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="w-full py-2 bg-gray-100 text-gray-500 text-center text-sm rounded-lg">
+                        ✅ تم استخدام جميع الطلبات
+                    </div>
                 <?php endif; ?>
             </div>
         <?php endforeach; ?>
     </div>
+    
+    <div class="mt-4 pt-4 border-t border-gray-200 text-center">
+        <a href="/provider/browse-packages" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            شراء حزمة جديدة
+        </a>
+    </div>
+</div>
+<?php elseif (empty($purchases)): ?>
+<div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-6 text-center">
+    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+    </div>
+    <h3 class="text-lg font-bold text-blue-900 mb-2">لم تشترِ أي حزمة بعد</h3>
+    <p class="text-blue-700 mb-4">اشترِ حزمة للحصول على طلبات العملاء</p>
+    <a href="/provider/browse-packages" class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        شراء حزمة الآن
+    </a>
 </div>
 <?php endif; ?>
 

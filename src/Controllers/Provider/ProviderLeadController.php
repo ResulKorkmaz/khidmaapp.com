@@ -76,10 +76,14 @@ class ProviderLeadController extends BaseProviderController
             // Satın alınan paketler
             $purchases = $this->getProviderPurchases($providerId);
             
+            // Son talep zamanı ve bekleme durumu
+            $lastRequestInfo = $this->getLastRequestInfo($providerId);
+            
             $this->render('leads', [
                 'leads' => $leads,
                 'stats' => $stats,
                 'purchases' => $purchases,
+                'lastRequestInfo' => $lastRequestInfo,
                 'statusFilter' => $statusFilter,
                 'page' => $page,
                 'totalPages' => $totalPages,
@@ -169,9 +173,31 @@ class ProviderLeadController extends BaseProviderController
                 $this->errorResponse('لا توجد طلبات متبقية في هذه الحزمة', 400);
             }
             
+            // 🔥 90 dakika bekleme kontrolü - Son talebin üzerinden 90 dk geçmiş mi?
+            $stmt = $this->db->prepare("
+                SELECT requested_at FROM lead_requests 
+                WHERE provider_id = ? 
+                ORDER BY requested_at DESC 
+                LIMIT 1
+            ");
+            $stmt->execute([$providerId]);
+            $lastRequest = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($lastRequest) {
+                $lastRequestTime = strtotime($lastRequest['requested_at']);
+                $cooldownMinutes = 90;
+                $cooldownSeconds = $cooldownMinutes * 60;
+                $timePassed = time() - $lastRequestTime;
+                
+                if ($timePassed < $cooldownSeconds) {
+                    $remainingMinutes = ceil(($cooldownSeconds - $timePassed) / 60);
+                    $this->errorResponse("يرجى الانتظار {$remainingMinutes} دقيقة قبل طلب عميل جديد", 429);
+                }
+            }
+            
             // Lead talebi oluştur (admin'in göndermesi için)
             $stmt = $this->db->prepare("
-                INSERT INTO lead_requests (provider_id, purchase_id, status, created_at)
+                INSERT INTO lead_requests (provider_id, purchase_id, request_status, requested_at)
                 VALUES (?, ?, 'pending', NOW())
             ");
             $stmt->execute([$providerId, $purchaseId]);
@@ -296,7 +322,7 @@ class ProviderLeadController extends BaseProviderController
     {
         try {
             $stmt = $this->db->prepare("
-                SELECT pp.*, lp.name_ar as package_name, lp.lead_count as package_lead_count
+                SELECT pp.*, lp.name_ar as lp_name, lp.lead_count as package_lead_count
                 FROM provider_purchases pp
                 LEFT JOIN lead_packages lp ON pp.package_id = lp.id
                 WHERE pp.provider_id = ? AND pp.payment_status = 'completed'
@@ -307,6 +333,46 @@ class ProviderLeadController extends BaseProviderController
         } catch (PDOException $e) {
             error_log("Get provider purchases error: " . $e->getMessage());
             return [];
+        }
+    }
+    
+    /**
+     * Son lead talep bilgisi
+     */
+    private function getLastRequestInfo(int $providerId): array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT requested_at FROM lead_requests 
+                WHERE provider_id = ? 
+                ORDER BY requested_at DESC 
+                LIMIT 1
+            ");
+            $stmt->execute([$providerId]);
+            $lastRequest = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$lastRequest) {
+                return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => null];
+            }
+            
+            $lastRequestTime = strtotime($lastRequest['requested_at']);
+            $cooldownMinutes = 90;
+            $cooldownSeconds = $cooldownMinutes * 60;
+            $timePassed = time() - $lastRequestTime;
+            
+            if ($timePassed >= $cooldownSeconds) {
+                return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => $lastRequest['requested_at']];
+            }
+            
+            $remainingMinutes = ceil(($cooldownSeconds - $timePassed) / 60);
+            return [
+                'canRequest' => false, 
+                'remainingMinutes' => $remainingMinutes, 
+                'lastRequestTime' => $lastRequest['requested_at']
+            ];
+        } catch (PDOException $e) {
+            error_log("Get last request info error: " . $e->getMessage());
+            return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => null];
         }
     }
     
