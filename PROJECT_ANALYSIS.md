@@ -393,5 +393,3 @@ Proje **MVP seviyesinde başarılı**, ancak **ölçeklenebilir ve sürdürüleb
 **Versiyon:** 1.0
 
 
-
-

@@ -11,7 +11,7 @@ require_once __DIR__ . '/../config/config.php';
 class ServiceController 
 {
     /**
-     * Hizmet detay sayfası (SEO-Optimized)
+     * Hizmet detay sayfası
      */
     public function show($serviceKey) 
     {
@@ -25,20 +25,29 @@ class ServiceController
                 return;
             }
             
-            // Hizmet sayfası dosya yolu
-            $servicePage = __DIR__ . '/../Views/services/' . $serviceKey . '.php';
-            
-            // Sayfa yoksa ana sayfaya yönlendir
-            if (!file_exists($servicePage)) {
+            // Servis detaylarını al
+            $serviceDetails = getServiceDetails($serviceKey);
+            if (!$serviceDetails) {
+                // Detay bulunamadı - ana sayfaya yönlendir
                 header('Location: /#services');
                 exit;
             }
             
+            // Servis bilgileri
+            $serviceName = $services[$serviceKey]['ar'];
+            $serviceNameEn = $services[$serviceKey]['en'];
+            $serviceContent = $serviceDetails['content'] ?? [];
+            
+            // SEO bilgileri
+            $pageTitle = $serviceDetails['title'];
+            $pageDescription = $serviceDetails['description'];
+            $pageKeywords = $serviceDetails['keywords'];
+            
             // Analytics
             $this->logServiceView($serviceKey);
             
-            // SEO-optimized view'i yükle
-            include $servicePage;
+            // View'i yükle
+            include __DIR__ . '/../Views/service_detail.php';
             
         } catch (Exception $e) {
             error_log("Service detail error: " . $e->getMessage());
