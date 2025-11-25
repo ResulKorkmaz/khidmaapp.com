@@ -132,7 +132,7 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
                         <?php if ($isActive): ?>
                         <a href="/provider/purchase/<?= $package['id'] ?>" 
                            id="buy-btn-<?= $package['id'] ?>"
-                           class="buy-button block w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-lg text-center cursor-not-allowed pointer-events-none transition-all">
+                           class="buy-button block w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-lg text-center cursor-not-allowed transition-all">
                             اشترِ الآن
                         </a>
                         <?php else: ?>
@@ -186,14 +186,17 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
 // Onay kutusu kontrolü
 document.addEventListener('DOMContentLoaded', function() {
     const checkbox = document.getElementById('policy-accept');
+    const policyBox = checkbox ? checkbox.closest('.bg-green-50') : null;
     const buyButtons = document.querySelectorAll('.buy-button');
     
     if (checkbox && buyButtons.length > 0) {
+        // Checkbox değiştiğinde butonları güncelle
         checkbox.addEventListener('change', function() {
             buyButtons.forEach(btn => {
                 if (this.checked) {
                     // Aktif yap
-                    btn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
+                    btn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                    btn.removeAttribute('data-disabled');
                     
                     // Butonun paket ID'sine göre renk belirle
                     // 3'lü paket yeşil, diğerleri mavi
@@ -205,12 +208,84 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Pasif yap
                     btn.classList.remove('bg-green-600', 'hover:bg-green-700', 'bg-blue-600', 'hover:bg-blue-700', 'text-white', 'hover:shadow-lg');
-                    btn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
+                    btn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                    btn.setAttribute('data-disabled', 'true');
+                }
+            });
+            
+            // Onay kutusu işaretlendiğinde vurguyu kaldır
+            if (this.checked && policyBox) {
+                policyBox.classList.remove('ring-4', 'ring-red-400', 'animate-pulse');
+            }
+        });
+        
+        // Pasif butona tıklandığında uyarı göster ve onay kutusuna yönlendir
+        buyButtons.forEach(btn => {
+            btn.setAttribute('data-disabled', 'true');
+            btn.addEventListener('click', function(e) {
+                if (this.getAttribute('data-disabled') === 'true') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Bildirim göster
+                    showNotification('⚠️ يرجى الموافقة على شروط الشراء أولاً', 'warning');
+                    
+                    // Onay kutusunu vurgula ve kaydır
+                    if (policyBox) {
+                        policyBox.classList.add('ring-4', 'ring-red-400', 'animate-pulse');
+                        policyBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        
+                        // 3 saniye sonra vurguyu kaldır
+                        setTimeout(() => {
+                            policyBox.classList.remove('ring-4', 'ring-red-400', 'animate-pulse');
+                        }, 3000);
+                    }
+                    
+                    return false;
                 }
             });
         });
     }
 });
+
+// Bildirim gösterme fonksiyonu
+function showNotification(message, type = 'info') {
+    // Mevcut bildirimi kaldır
+    const existing = document.getElementById('toast-notification');
+    if (existing) existing.remove();
+    
+    // Renk ayarları
+    const colors = {
+        warning: 'bg-amber-500',
+        error: 'bg-red-500',
+        success: 'bg-green-500',
+        info: 'bg-blue-500'
+    };
+    
+    // Bildirim oluştur
+    const toast = document.createElement('div');
+    toast.id = 'toast-notification';
+    toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 ${colors[type]} text-white px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center gap-3 animate-bounce`;
+    toast.innerHTML = `
+        <span class="text-lg">${message}</span>
+        <button onclick="this.parentElement.remove()" class="text-white/80 hover:text-white">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // 4 saniye sonra otomatik kapat
+    setTimeout(() => {
+        if (toast.parentElement) {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 4000);
+}
 </script>
 
 <?php
