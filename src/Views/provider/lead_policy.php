@@ -174,12 +174,6 @@ ob_start();
         </div>
     </div>
 
-    <!-- İletişim -->
-    <div class="mt-4 text-center text-sm text-gray-500">
-        <p>لديك سؤال؟ تواصل معنا عبر 
-            <a href="https://wa.me/966500000000" target="_blank" class="text-green-600 hover:underline">واتساب</a>
-        </p>
-    </div>
 </div>
 
 <?php
