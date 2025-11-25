@@ -11,7 +11,7 @@ require_once __DIR__ . '/BaseAdminController.php';
 class AdminPackageController extends BaseAdminController 
 {
     /**
-     * Paketler listesi
+     * Paketler listesi (sadece 2 paket: 1 ve 3 lead)
      */
     public function index(): void
     {
@@ -20,31 +20,19 @@ class AdminPackageController extends BaseAdminController
         try {
             $stmt = $this->pdo->prepare("
                 SELECT * FROM lead_packages 
-                ORDER BY service_type, display_order, lead_count
+                ORDER BY display_order ASC, lead_count ASC
             ");
             $stmt->execute();
             $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            // Hizmet türüne göre grupla
-            $packagesByService = [];
-            foreach ($packages as $package) {
-                $serviceType = $package['service_type'];
-                if (!isset($packagesByService[$serviceType])) {
-                    $packagesByService[$serviceType] = [];
-                }
-                $packagesByService[$serviceType][] = $package;
-            }
             
             $activeCount = count(array_filter($packages, fn($p) => $p['is_active'] == 1));
             $inactiveCount = count($packages) - $activeCount;
             
             $this->render('lead_packages', [
                 'packages' => $packages,
-                'packagesByService' => $packagesByService,
                 'totalPackages' => count($packages),
                 'activeCount' => $activeCount,
                 'inactiveCount' => $inactiveCount,
-                'services' => getServiceTypes(),
                 'pageTitle' => 'Lead Paket Yönetimi'
             ]);
             
@@ -71,53 +59,74 @@ class AdminPackageController extends BaseAdminController
         }
         
         try {
-            $serviceType = trim($this->postParam('service_type', ''));
             $leadCount = $this->intPost('lead_count');
             $priceSar = floatval($this->postParam('price_sar', 0));
             $nameAr = trim($this->postParam('name_ar', ''));
             $nameTr = trim($this->postParam('name_tr', ''));
             $descriptionAr = trim($this->postParam('description_ar', ''));
             $descriptionTr = trim($this->postParam('description_tr', ''));
+            $discountPercentage = floatval($this->postParam('discount_percentage', 0));
+            $displayOrder = $this->intPost('display_order', 0);
             $isActive = $this->intPost('is_active', 1);
             
-            if (empty($serviceType) || $leadCount <= 0 || $priceSar <= 0) {
-                $this->errorResponse('Tüm zorunlu alanları doldurun', 400);
+            if ($leadCount <= 0 || $priceSar <= 0) {
+                $this->errorResponse('Lead sayısı ve fiyat zorunludur', 400);
+            }
+            
+            // Aynı lead sayısına sahip paket var mı kontrol et
+            $stmt = $this->pdo->prepare("SELECT id FROM lead_packages WHERE lead_count = ?");
+            $stmt->execute([$leadCount]);
+            if ($stmt->fetch()) {
+                $this->errorResponse('Bu lead sayısına sahip bir paket zaten mevcut', 400);
             }
             
             $pricePerLead = $priceSar / $leadCount;
             
-            // Stripe entegrasyonu
-            require_once __DIR__ . '/../../config/stripe.php';
-            initStripe();
+            // Stripe entegrasyonu (opsiyonel)
+            $stripeProductId = null;
+            $stripePriceId = null;
             
-            $stripeProduct = \Stripe\Product::create([
-                'name' => $nameTr,
-                'description' => $descriptionTr,
-                'metadata' => [
-                    'service_type' => $serviceType,
-                    'lead_count' => $leadCount,
-                    'name_ar' => $nameAr,
-                ]
-            ]);
-            
-            $stripePrice = \Stripe\Price::create([
-                'product' => $stripeProduct->id,
-                'unit_amount' => intval($priceSar * 100),
-                'currency' => 'sar',
-            ]);
+            try {
+                require_once __DIR__ . '/../../config/stripe.php';
+                if (defined('STRIPE_SECRET_KEY') && STRIPE_SECRET_KEY) {
+                    initStripe();
+                    
+                    $stripeProduct = \Stripe\Product::create([
+                        'name' => $nameTr ?: ($leadCount . ' Lead Paketi'),
+                        'description' => $descriptionTr,
+                        'metadata' => [
+                            'lead_count' => $leadCount,
+                            'name_ar' => $nameAr,
+                        ]
+                    ]);
+                    
+                    $stripePrice = \Stripe\Price::create([
+                        'product' => $stripeProduct->id,
+                        'unit_amount' => intval($priceSar * 100),
+                        'currency' => 'sar',
+                    ]);
+                    
+                    $stripeProductId = $stripeProduct->id;
+                    $stripePriceId = $stripePrice->id;
+                }
+            } catch (\Exception $e) {
+                error_log("Stripe integration skipped: " . $e->getMessage());
+            }
             
             $stmt = $this->pdo->prepare("
                 INSERT INTO lead_packages (
-                    service_type, lead_count, price_sar, price_per_lead, 
+                    lead_count, price_sar, price_per_lead, 
                     name_ar, name_tr, description_ar, description_tr,
+                    discount_percentage, display_order,
                     stripe_product_id, stripe_price_id, is_active
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             
             $stmt->execute([
-                $serviceType, $leadCount, $priceSar, $pricePerLead,
+                $leadCount, $priceSar, $pricePerLead,
                 $nameAr, $nameTr, $descriptionAr, $descriptionTr,
-                $stripeProduct->id, $stripePrice->id, $isActive
+                $discountPercentage, $displayOrder,
+                $stripeProductId, $stripePriceId, $isActive
             ]);
             
             $this->successResponse('Paket başarıyla oluşturuldu', [
@@ -129,7 +138,7 @@ class AdminPackageController extends BaseAdminController
             $this->errorResponse('Stripe hatası: ' . $e->getMessage(), 500);
         } catch (PDOException $e) {
             error_log("Create lead package error: " . $e->getMessage());
-            $this->errorResponse('Veritabanı hatası', 500);
+            $this->errorResponse('Veritabanı hatası: ' . $e->getMessage(), 500);
         }
     }
     

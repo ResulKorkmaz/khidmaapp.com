@@ -4,9 +4,8 @@ $pageTitle = 'تأكيد الشراء';
 $currentPage = 'browse-packages';
 ob_start();
 
-// Service type adını al
-$serviceTypes = getServiceTypes();
-$packageServiceName = $serviceTypes[$package['service_type'] ?? '']['ar'] ?? $package['service_type'] ?? '';
+// Paket adını al
+$packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
 ?>
 
 <!-- Sayfa Başlığı -->
@@ -44,7 +43,7 @@ $packageServiceName = $serviceTypes[$package['service_type'] ?? '']['ar'] ?? $pa
         <!-- Package Details -->
         <div class="p-8">
             <div class="border-2 border-green-100 rounded-xl p-6 mb-6 bg-green-50">
-                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($packageServiceName) ?> - <?= $package['lead_count'] ?> طلب</h3>
+                <h3 class="text-xl font-bold text-gray-900 mb-4"><?= htmlspecialchars($packageName) ?></h3>
                 
                 <div class="space-y-3 mb-6">
                     <div class="flex items-center justify-between py-2 border-b border-green-200">
@@ -63,11 +62,13 @@ $packageServiceName = $serviceTypes[$package['service_type'] ?? '']['ar'] ?? $pa
                     </div>
                 </div>
                 
+                <?php if (!empty($package['description_ar'])): ?>
                 <div class="bg-white rounded-lg p-4 border border-green-200">
                     <p class="text-sm text-gray-700 leading-relaxed">
-                        حزمة <?= $package['lead_count'] ?> طلب من خدمة <?= htmlspecialchars($packageServiceName) ?>
+                        <?= htmlspecialchars($package['description_ar']) ?>
                     </p>
                 </div>
+                <?php endif; ?>
             </div>
             
             <!-- How it Works - IMPORTANT -->

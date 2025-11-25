@@ -24,11 +24,11 @@ class ProviderPurchaseController extends BaseProviderController
         }
         
         try {
-            // Aktif paketleri getir
+            // Aktif paketleri getir (sadece 2 paket: 1 ve 3 lead)
             $stmt = $this->db->prepare("
                 SELECT * FROM lead_packages 
                 WHERE is_active = 1 
-                ORDER BY lead_count ASC
+                ORDER BY display_order ASC, lead_count ASC
             ");
             $stmt->execute();
             $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,17 +119,17 @@ class ProviderPurchaseController extends BaseProviderController
             $stripe = new \Stripe\StripeClient(STRIPE_SECRET_KEY);
             
             // Checkout session oluştur
-            $serviceTypes = getServiceTypes();
-            $packageName = ($serviceTypes[$package['service_type']]['ar'] ?? $package['service_type']) . ' - ' . $package['lead_count'] . ' طلب';
+            $packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
+            $packageDescription = $package['description_ar'] ?? $package['lead_count'] . ' lead paketi';
             
             $session = $stripe->checkout->sessions->create([
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                     'price_data' => [
-                        'currency' => 'aed',
+                        'currency' => 'sar', // SAR - Suudi Riyali
                         'product_data' => [
                             'name' => $packageName,
-                            'description' => $package['lead_count'] . ' lead paketi',
+                            'description' => $packageDescription,
                         ],
                         'unit_amount' => intval($package['price_sar'] * 100), // Kuruş cinsinden
                     ],
