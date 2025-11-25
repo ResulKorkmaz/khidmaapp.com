@@ -124,8 +124,8 @@ class ProviderPurchaseController extends BaseProviderController
                 $this->errorResponse('Bu paket sizin hizmet türünüz için uygun değil', 404);
             }
             
-            // Stripe yapılandırması
-            require_once __DIR__ . '/../../config/stripe.php';
+            // Stripe SDK yükle
+            require_once __DIR__ . '/../../../vendor/autoload.php';
             
             $stripe = new \Stripe\StripeClient(STRIPE_SECRET_KEY);
             
@@ -162,10 +162,13 @@ class ProviderPurchaseController extends BaseProviderController
             
         } catch (\Stripe\Exception\ApiErrorException $e) {
             error_log("Stripe error: " . $e->getMessage());
-            $this->errorResponse('Ödeme sistemi hatası', 500);
+            $this->errorResponse('Ödeme sistemi hatası: ' . $e->getMessage(), 500);
         } catch (PDOException $e) {
             error_log("Create checkout session error: " . $e->getMessage());
             $this->errorResponse('İşlem başarısız', 500);
+        } catch (\Exception $e) {
+            error_log("General error in checkout: " . $e->getMessage());
+            $this->errorResponse('Bir hata oluştu: ' . $e->getMessage(), 500);
         }
     }
     
@@ -185,7 +188,8 @@ class ProviderPurchaseController extends BaseProviderController
         }
         
         try {
-            require_once __DIR__ . '/../../config/stripe.php';
+            // Stripe SDK yükle
+            require_once __DIR__ . '/../../../vendor/autoload.php';
             
             $stripe = new \Stripe\StripeClient(STRIPE_SECRET_KEY);
             $session = $stripe->checkout->sessions->retrieve($sessionId);

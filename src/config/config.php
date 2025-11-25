@@ -9,13 +9,22 @@
 // Hata raporlama ayarları - Environment'a göre ayarla
 error_reporting(E_ALL);
 
-// Production'da hataları gösterme, sadece logla
-if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
+// JSON API isteklerinde hataları gösterme (response'u bozar)
+$isApiRequest = (
+    isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false
+) || (
+    isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false
+) || (
+    isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest'
+);
+
+// Production'da veya API isteklerinde hataları gösterme, sadece logla
+if ((isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') || $isApiRequest) {
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+    ini_set('error_log', __DIR__ . '/../../storage/logs/php_errors.log');
 } else {
-ini_set('display_errors', 1);
+    ini_set('display_errors', 1);
 }
 
 // Karakter kodlaması
@@ -89,8 +98,10 @@ define('SESSION_LIFETIME', env('SESSION_LIFETIME', 120) * 60); // dakika * 60
 define('CSRF_TOKEN_EXPIRE', env('CSRF_TOKEN_EXPIRE', 3600));
 
 // Stripe Ayarları
-// NOTE: Stripe constant'ları src/config/stripe.php dosyasında tanımlanıyor
-// O dosyayı include ettiğinde otomatik yüklenecekler
+define('STRIPE_SECRET_KEY', env('STRIPE_SECRET_KEY', ''));
+define('STRIPE_PUBLISHABLE_KEY', env('STRIPE_PUBLISHABLE_KEY', ''));
+define('STRIPE_WEBHOOK_SECRET', env('STRIPE_WEBHOOK_SECRET', ''));
+define('APP_URL', env('BASE_URL', 'http://localhost:8000'));
 
 // =====================================================
 // VERİTABANI BAĞLANTISI

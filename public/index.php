@@ -278,6 +278,7 @@ function checkCsrf(string $path): void
         '/provider/login',
         '/provider/register',
         '/lead/submit',
+        '/provider/create-checkout-session', // Stripe checkout için geçici muafiyet
     ];
     
     if (in_array($path, $excludedPaths)) {

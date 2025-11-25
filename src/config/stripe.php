@@ -12,7 +12,7 @@ if (!defined('STRIPE_SECRET_KEY')) {
     $stripeKey = env('STRIPE_SECRET_KEY');
     if (empty($stripeKey)) {
         error_log('⚠️ STRIPE_SECRET_KEY not set in .env file!');
-        die('Stripe configuration error. Please check .env file.');
+        throw new Exception('Stripe API key not configured. Please check .env file.');
     }
     define('STRIPE_SECRET_KEY', $stripeKey);
 }
@@ -21,7 +21,7 @@ if (!defined('STRIPE_PUBLISHABLE_KEY')) {
     $stripePubKey = env('STRIPE_PUBLISHABLE_KEY');
     if (empty($stripePubKey)) {
         error_log('⚠️ STRIPE_PUBLISHABLE_KEY not set in .env file!');
-        die('Stripe configuration error. Please check .env file.');
+        throw new Exception('Stripe publishable key not configured. Please check .env file.');
     }
     define('STRIPE_PUBLISHABLE_KEY', $stripePubKey);
 }
@@ -34,8 +34,8 @@ if (!defined('STRIPE_WEBHOOK_SECRET')) {
     if (empty($webhookSecret)) {
         error_log('⚠️ STRIPE_WEBHOOK_SECRET not set in .env file!');
         // Webhook secret is optional for local development
-        if (APP_ENV === 'production') {
-            die('Stripe webhook configuration error. Please check .env file.');
+        if (defined('APP_ENV') && APP_ENV === 'production') {
+            throw new Exception('Stripe webhook secret not configured. Please check .env file.');
         }
     }
     define('STRIPE_WEBHOOK_SECRET', $webhookSecret ?? '');

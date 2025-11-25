@@ -153,7 +153,17 @@ document.getElementById('purchaseForm').addEventListener('submit', async functio
             body: formData
         });
         
-        const result = await response.json();
+        const text = await response.text();
+        console.log('Response text:', text);
+        
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.error('Raw response:', text.substring(0, 500));
+            throw new Error('Invalid JSON response');
+        }
         
         if (result.success && result.url) {
             window.location.href = result.url;
