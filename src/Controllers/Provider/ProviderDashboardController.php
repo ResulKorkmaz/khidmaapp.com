@@ -85,8 +85,9 @@ class ProviderDashboardController extends BaseProviderController
             
             // Toplam satın alma
             $stmt = $this->db->prepare("
-                SELECT COUNT(*) as count, COALESCE(SUM(leads_count - used_leads), 0) as remaining
-                FROM provider_purchases WHERE provider_id = ? AND status = 'completed'
+                SELECT COUNT(*) as count, COALESCE(SUM(remaining_leads), 0) as remaining
+                FROM provider_purchases 
+                WHERE provider_id = ? AND payment_status = 'completed' AND status = 'active'
             ");
             $stmt->execute([$providerId]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -128,18 +129,16 @@ class ProviderDashboardController extends BaseProviderController
     private function getActivePackages(int $providerId): array
     {
         try {
-            // lead_packages tablosunda name_ar/name_tr yok, service_type ve lead_count kullanılıyor
-            // status kolonunu payment_status olarak alias yapıyoruz (view uyumluluğu için)
             $stmt = $this->db->prepare("
                 SELECT pp.*, 
-                       pp.status as payment_status,
                        lp.service_type as package_service_type,
-                       lp.lead_count as package_lead_count,
-                       CONCAT(lp.service_type, ' - ', lp.lead_count, ' Lead') as package_name,
-                       (pp.leads_count - pp.used_leads) as remaining_leads
+                       lp.lead_count as package_lead_count
                 FROM provider_purchases pp
                 LEFT JOIN lead_packages lp ON pp.package_id = lp.id
-                WHERE pp.provider_id = ? AND pp.status = 'completed' AND pp.used_leads < pp.leads_count
+                WHERE pp.provider_id = ? 
+                  AND pp.payment_status = 'completed' 
+                  AND pp.status = 'active'
+                  AND pp.remaining_leads > 0
                 ORDER BY pp.purchased_at DESC
             ");
             $stmt->execute([$providerId]);

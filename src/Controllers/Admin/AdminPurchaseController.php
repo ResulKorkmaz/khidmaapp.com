@@ -70,7 +70,7 @@ class AdminPurchaseController extends BaseAdminController
             $params = [];
             
             if ($statusFilter !== 'all') {
-                $whereClause .= " AND lr.status = ?";
+                $whereClause .= " AND lr.request_status = ?";
                 $params[] = $statusFilter;
             }
             
@@ -89,13 +89,15 @@ class AdminPurchaseController extends BaseAdminController
             $stmt = $this->pdo->prepare("
                 SELECT 
                     lr.*,
-                    l.service_type, l.city, l.phone as lead_phone, l.description as lead_description,
-                    sp.name as provider_name, sp.phone as provider_phone, sp.email as provider_email
+                    sp.name as provider_name, sp.phone as provider_phone, sp.email as provider_email, sp.service_type as provider_service_type, sp.city as provider_city,
+                    pp.package_name, pp.leads_count, pp.remaining_leads,
+                    l.service_type as lead_service_type, l.city as lead_city, l.phone as lead_phone, l.description as lead_description
                 FROM lead_requests lr
-                JOIN leads l ON lr.lead_id = l.id
                 JOIN service_providers sp ON lr.provider_id = sp.id
+                LEFT JOIN provider_purchases pp ON lr.purchase_id = pp.id
+                LEFT JOIN leads l ON lr.lead_id = l.id
                 $whereClause
-                ORDER BY lr.created_at DESC
+                ORDER BY lr.requested_at DESC
                 LIMIT ? OFFSET ?
             ");
             $stmt->execute($params);
@@ -104,8 +106,8 @@ class AdminPurchaseController extends BaseAdminController
             // İstatistikler
             $stats = [
                 'pending' => $this->getRequestCountByStatus('pending'),
-                'approved' => $this->getRequestCountByStatus('approved'),
-                'rejected' => $this->getRequestCountByStatus('rejected'),
+                'completed' => $this->getRequestCountByStatus('completed'),
+                'cancelled' => $this->getRequestCountByStatus('cancelled'),
                 'total' => $totalRequests
             ];
             
@@ -638,7 +640,7 @@ class AdminPurchaseController extends BaseAdminController
      */
     private function getRequestCountByStatus(string $status): int
     {
-        $stmt = $this->pdo->prepare("SELECT COUNT(*) as count FROM lead_requests WHERE status = ?");
+        $stmt = $this->pdo->prepare("SELECT COUNT(*) as count FROM lead_requests WHERE request_status = ?");
         $stmt->execute([$status]);
         return (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
     }
