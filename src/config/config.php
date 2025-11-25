@@ -6,9 +6,17 @@
  * Veritabanı bağlantısı, güvenlik ayarları ve genel konfigürasyonlar burada tanımlanır.
  */
 
-// Hata raporlama ayarları
+// Hata raporlama ayarları - Environment'a göre ayarla
 error_reporting(E_ALL);
+
+// Production'da hataları gösterme, sadece logla
+if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+} else {
 ini_set('display_errors', 1);
+}
 
 // Karakter kodlaması
 ini_set('default_charset', 'UTF-8');
@@ -59,8 +67,8 @@ define('APP_NAME', env('APP_NAME', 'KhidmaApp.com'));
 define('DB_HOST', env('DB_HOST', '127.0.0.1'));
 define('DB_PORT', env('DB_PORT', '3306'));
 define('DB_NAME', env('DB_NAME', 'khidmaapp'));
-define('DB_USER', env('DB_USER', 'rslkrkmz'));
-define('DB_PASS', env('DB_PASS', 'Rr123456'));
+define('DB_USER', env('DB_USER', 'root'));
+define('DB_PASS', env('DB_PASS', ''));  // ⚠️ Set in .env file!
 
 // URL Ayarları
 define('BASE_URL', env('BASE_URL', 'http://localhost:8000'));

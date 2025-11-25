@@ -285,6 +285,114 @@ function requireAdminLogin() {
     }
 }
 
+// =====================================================
+// RATE LIMITING HELPERS
+// =====================================================
 
+/**
+ * Rate limit middleware - Controller başında çağır
+ */
+function checkRateLimit(string $key, int $maxAttempts = 60, int $decayMinutes = 1): void {
+    require_once __DIR__ . '/../Services/RateLimiter.php';
+    
+    $limiter = RateLimiter::getInstance();
+    
+    // IP engellenmiş mi?
+    if ($limiter->isIpBlocked()) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'error' => 'IP blocked',
+            'error_ar' => 'تم حظر عنوان IP الخاص بك'
+        ]);
+        exit;
+    }
+    
+    // Rate limit aşıldı mı?
+    if (!$limiter->check($key, $maxAttempts, $decayMinutes)) {
+        $limiter->throttleResponse($key);
+    }
+}
 
+/**
+ * Login rate limit kontrolü
+ */
+function checkLoginRateLimit(string $identifier = ''): bool {
+    require_once __DIR__ . '/../Services/RateLimiter.php';
+    return RateLimiter::getInstance()->checkLogin($identifier);
+}
 
+/**
+ * Başarısız login denemesi kaydet
+ */
+function recordFailedLogin(string $identifier = ''): void {
+    require_once __DIR__ . '/../Services/RateLimiter.php';
+    RateLimiter::getInstance()->hitLogin($identifier);
+}
+
+/**
+ * Başarılı login sonrası rate limit temizle
+ */
+function clearLoginRateLimit(string $identifier = ''): void {
+    require_once __DIR__ . '/../Services/RateLimiter.php';
+    RateLimiter::getInstance()->clearLogin($identifier);
+}
+
+// =====================================================
+// CACHE HELPERS
+// =====================================================
+
+/**
+ * Değeri cache'den al, yoksa hesapla ve cache'le
+ */
+function cacheRemember(string $key, int $ttl, callable $callback) {
+    require_once __DIR__ . '/../Services/CacheService.php';
+    return CacheService::getInstance()->remember($key, $ttl, $callback);
+}
+
+/**
+ * Service types'ı cache'li getir
+ */
+function getCachedServiceTypes(): array {
+    return cacheRemember('service_types', 3600, function() {
+        return getServiceTypes();
+    });
+}
+
+/**
+ * Cities'i cache'li getir
+ */
+function getCachedCities(): array {
+    return cacheRemember('cities', 3600, function() {
+        return getCities();
+    });
+}
+
+/**
+ * Dashboard istatistiklerini cache'li getir
+ */
+function getCachedDashboardStats(callable $statsCallback, int $ttl = 300): array {
+    return cacheRemember('dashboard_stats', $ttl, $statsCallback);
+}
+
+/**
+ * Cache'i temizle (veri güncellendiğinde çağır)
+ */
+function clearStatsCache(): void {
+    require_once __DIR__ . '/../Services/CacheService.php';
+    CacheService::getInstance()->deleteByPrefix('stats_');
+    CacheService::getInstance()->delete('dashboard_stats');
+}
+
+// =====================================================
+// TRANSACTION HELPERS
+// =====================================================
+
+/**
+ * Transaction içinde callback çalıştır
+ */
+function withTransaction(callable $callback) {
+    require_once __DIR__ . '/../Services/DatabaseService.php';
+    return DatabaseService::transaction($callback);
+}

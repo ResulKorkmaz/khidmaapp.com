@@ -3,27 +3,42 @@
  * Stripe Configuration
  */
 
-// Stripe API Keys - TEST MODE (Development)
-// 🧪 TEST KEYS - Güvenle test edebilirsiniz!
-// Dashboard: https://dashboard.stripe.com/test/apikeys
+// Stripe API Keys
+// 🔒 IMPORTANT: Set these in .env file!
+// Dashboard: https://dashboard.stripe.com/apikeys
 
-// Always use hardcoded test keys (don't rely on env variables for now)
+// Load from environment variables
 if (!defined('STRIPE_SECRET_KEY')) {
-    define('STRIPE_SECRET_KEY', 'sk_test_51S2fDqQ9jTzzLmSNw1ud7fuwIlKCtOJtX7qCoDWxQpc6GUrbzui0IHwf4HgbyAwIod5qtwjbdD8OEWX3VE0weRx700twCYwGQz');
+    $stripeKey = env('STRIPE_SECRET_KEY');
+    if (empty($stripeKey)) {
+        error_log('⚠️ STRIPE_SECRET_KEY not set in .env file!');
+        die('Stripe configuration error. Please check .env file.');
+    }
+    define('STRIPE_SECRET_KEY', $stripeKey);
 }
+
 if (!defined('STRIPE_PUBLISHABLE_KEY')) {
-    define('STRIPE_PUBLISHABLE_KEY', 'pk_test_51S2fDqQ9jTzzLmSNPlTCpulQJZhc9EcTGlbntlJ6IlyHxPiUdZGfxOSsxCtzVkFZnN0NxY1lh6fGE9X2dwcXECTr00MAdIHdLw');
+    $stripePubKey = env('STRIPE_PUBLISHABLE_KEY');
+    if (empty($stripePubKey)) {
+        error_log('⚠️ STRIPE_PUBLISHABLE_KEY not set in .env file!');
+        die('Stripe configuration error. Please check .env file.');
+    }
+    define('STRIPE_PUBLISHABLE_KEY', $stripePubKey);
 }
 
-// ⚠️ PRODUCTION KEYS (Canlıya çıkmadan önce bunları kullan):
-// define('STRIPE_SECRET_KEY', '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');
-// define('STRIPE_PUBLISHABLE_KEY', 'pk_live_51S2fDqQ9jTzzLmSNRinUEYjiaNcNAFoWCTEEM2XvODpbuPvIP1TGruyIey9cvn12msq1GpfdQyzhOQp1QjM3fbCw00BNl7xfBO');
-
-// Webhook Secret (https://dashboard.stripe.com/webhooks)
+// Webhook Secret
 // Endpoint URL: https://khidmaapp.com/webhook/stripe
 // Events: checkout.session.completed, payment_intent.succeeded, charge.refunded
 if (!defined('STRIPE_WEBHOOK_SECRET')) {
-    define('STRIPE_WEBHOOK_SECRET', 'whsec_CAlsYmnWkrVU6Iuhx9SfgLwiQlqCmjwW');
+    $webhookSecret = env('STRIPE_WEBHOOK_SECRET');
+    if (empty($webhookSecret)) {
+        error_log('⚠️ STRIPE_WEBHOOK_SECRET not set in .env file!');
+        // Webhook secret is optional for local development
+        if (APP_ENV === 'production') {
+            die('Stripe webhook configuration error. Please check .env file.');
+        }
+    }
+    define('STRIPE_WEBHOOK_SECRET', $webhookSecret ?? '');
 }
 
 // Uygulama URL'i (production'da environment variable olarak ayarlanmalı)
