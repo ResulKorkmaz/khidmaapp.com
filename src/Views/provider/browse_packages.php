@@ -88,15 +88,15 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
                     <?php endif; ?>
                     
                     <!-- Paket Başlığı -->
-                    <div class="<?= $isPopular ? 'bg-gradient-to-br from-green-600 to-green-700' : 'bg-gradient-to-br from-blue-600 to-blue-700' ?> text-white p-8 text-center relative overflow-hidden">
+                    <div class="<?= $isPopular ? 'bg-gradient-to-br from-green-600 to-green-700' : 'bg-gradient-to-br from-blue-600 to-blue-700' ?> p-8 text-center relative overflow-hidden">
                         <!-- Decorative circles -->
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
-                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-12 -mb-12"></div>
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
                         
                         <div class="relative z-10">
-                            <div class="text-6xl sm:text-7xl font-black mb-2"><?= $package['lead_count'] ?></div>
-                            <div class="text-2xl font-bold opacity-95">طلب</div>
-                            <div class="mt-3 text-white/80 text-sm font-medium">
+                            <div class="text-6xl sm:text-7xl font-black mb-2 text-white"><?= $package['lead_count'] ?></div>
+                            <div class="text-2xl font-bold text-white">طلب</div>
+                            <div class="mt-3 text-sm font-medium" style="color: rgba(255,255,255,0.85);">
                                 <?= htmlspecialchars($package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات')) ?>
                             </div>
                         </div>
