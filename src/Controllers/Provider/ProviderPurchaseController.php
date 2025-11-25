@@ -47,6 +47,15 @@ class ProviderPurchaseController extends BaseProviderController
     }
     
     /**
+     * Lead Kalite Politikası sayfası
+     */
+    public function leadPolicy(): void
+    {
+        $this->requireAuth();
+        $this->render('lead_policy', []);
+    }
+    
+    /**
      * Paket satın alma sayfası
      */
     public function purchase(int $packageId): void

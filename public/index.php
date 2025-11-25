@@ -148,6 +148,7 @@ $routes = [
     // ========== PROVIDER PACKAGES ==========
     'GET:/provider/packages' => ['ProviderPurchaseController', 'packages', 'provider.auth'],
     'GET:/provider/browse-packages' => ['ProviderPurchaseController', 'packages', 'provider.auth'],
+    'GET:/provider/lead-policy' => ['ProviderPurchaseController', 'leadPolicy', 'provider.auth'],
     'POST:/provider/create-checkout-session' => ['ProviderPurchaseController', 'createCheckoutSession', 'provider.auth'],
     'GET:/provider/purchase/success' => ['ProviderPurchaseController', 'success', 'provider.auth'],
     'GET:/provider/purchase/cancel' => ['ProviderPurchaseController', 'cancel', 'provider.auth'],
