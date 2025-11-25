@@ -231,8 +231,8 @@ class ProviderPurchaseController extends BaseProviderController
                 }
             }
             
-            $_SESSION['success'] = 'تم الشراء بنجاح! سيتم إرسال العملاء المحتملين قريباً';
-            $this->redirect('/provider/dashboard');
+            $_SESSION['success'] = 'تم الشراء بنجاح! يمكنك الآن طلب العملاء المحتملين';
+            $this->redirect('/provider/leads');
             
         } catch (\Stripe\Exception\ApiErrorException $e) {
             error_log("Stripe retrieve error: " . $e->getMessage());

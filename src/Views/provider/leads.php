@@ -72,6 +72,66 @@
     </div>
 </div>
 
+<!-- Satın Alınan Paketler -->
+<?php if (!empty($purchases)): ?>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        الحزم المشتراة
+    </h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <?php foreach ($purchases as $purchase): ?>
+            <?php 
+            $remainingLeads = $purchase['remaining_leads'] ?? 0;
+            $totalLeads = $purchase['leads_count'] ?? $purchase['package_lead_count'] ?? 0;
+            $usedLeads = $totalLeads - $remainingLeads;
+            $percentage = $totalLeads > 0 ? ($usedLeads / $totalLeads) * 100 : 0;
+            ?>
+            <div class="border border-gray-200 rounded-xl p-4 <?= $remainingLeads > 0 ? 'bg-green-50 border-green-200' : 'bg-gray-50' ?>">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="font-bold text-gray-900">
+                        <?= htmlspecialchars($purchase['package_name'] ?? ($totalLeads . ' طلب')) ?>
+                    </span>
+                    <?php if ($remainingLeads > 0): ?>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">نشط</span>
+                    <?php else: ?>
+                        <span class="px-2 py-1 bg-gray-200 text-gray-600 text-xs font-semibold rounded-full">مكتمل</span>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>الطلبات المتبقية</span>
+                        <span class="font-bold <?= $remainingLeads > 0 ? 'text-green-600' : 'text-gray-500' ?>"><?= $remainingLeads ?> / <?= $totalLeads ?></span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="<?= $remainingLeads > 0 ? 'bg-green-500' : 'bg-gray-400' ?> h-2 rounded-full transition-all" style="width: <?= $percentage ?>%"></div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-xs text-gray-500">
+                    <span>تاريخ الشراء: <?= date('Y-m-d', strtotime($purchase['purchased_at'] ?? $purchase['created_at'] ?? 'now')) ?></span>
+                    <span><?= number_format($purchase['price'] ?? 0, 0) ?> ريال</span>
+                </div>
+                
+                <?php if ($remainingLeads > 0): ?>
+                    <button onclick="requestLead(<?= $purchase['id'] ?>)" 
+                            class="w-full mt-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        اطلب عميل
+                    </button>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+<?php endif; ?>
+
 <!-- Lead Listesi -->
 <?php if (empty($leads)): ?>
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
@@ -216,6 +276,35 @@
 <?php endif; ?>
 
 <script>
+async function requestLead(purchaseId) {
+    if (!confirm('هل تريد طلب عميل جديد؟ سيتم إرسال بيانات العميل من قبل الإدارة.')) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('purchase_id', purchaseId);
+        formData.append('csrf_token', getCsrfToken());
+        
+        const response = await fetch('/provider/request-lead', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ ' + (result.message || 'تم إرسال طلبك بنجاح! سيتم إرسال بيانات العميل قريباً.'));
+            window.location.reload();
+        } else {
+            alert('❌ ' + (result.message || 'حدث خطأ'));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء إرسال الطلب');
+    }
+}
+
 async function markAsViewed(leadId) {
     try {
         const formData = new FormData();

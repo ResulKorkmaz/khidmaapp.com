@@ -73,9 +73,13 @@ class ProviderLeadController extends BaseProviderController
             // İstatistikler
             $stats = $this->getLeadStats($providerId);
             
+            // Satın alınan paketler
+            $purchases = $this->getProviderPurchases($providerId);
+            
             $this->render('leads', [
                 'leads' => $leads,
                 'stats' => $stats,
+                'purchases' => $purchases,
                 'statusFilter' => $statusFilter,
                 'page' => $page,
                 'totalPages' => $totalPages,
@@ -124,7 +128,7 @@ class ProviderLeadController extends BaseProviderController
     }
     
     /**
-     * Lead talep et
+     * Satın alınan paketten lead talep et
      */
     public function request(): void
     {
@@ -134,53 +138,50 @@ class ProviderLeadController extends BaseProviderController
             $this->errorResponse('Method not allowed', 405);
         }
         
-        if (!$this->verifyCsrf()) {
-            $this->errorResponse('Geçersiz güvenlik belirteci', 403);
-        }
-        
-        $leadId = $this->intPost('lead_id');
+        $purchaseId = $this->intPost('purchase_id');
         $providerId = $this->getProviderId();
         
-        if (!$leadId) {
-            $this->errorResponse('Geçersiz lead ID', 400);
+        if (!$purchaseId) {
+            $this->errorResponse('Geçersiz paket ID', 400);
         }
         
         try {
             // Provider aktif mi kontrol et
             $provider = $this->getProvider();
             if (!$provider || $provider['status'] !== 'active') {
-                $this->errorResponse('Hesabınız aktif değil', 403);
+                $this->errorResponse('حسابك غير مفعّل', 403);
             }
             
-            // Lead mevcut mu kontrol et
-            $stmt = $this->db->prepare("SELECT * FROM leads WHERE id = ? AND deleted_at IS NULL");
-            $stmt->execute([$leadId]);
-            $lead = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$lead) {
-                $this->errorResponse('Lead bulunamadı', 404);
-            }
-            
-            // Zaten talep edilmiş mi kontrol et
-            $stmt = $this->db->prepare("SELECT id FROM lead_requests WHERE lead_id = ? AND provider_id = ?");
-            $stmt->execute([$leadId, $providerId]);
-            if ($stmt->fetch()) {
-                $this->errorResponse('Bu lead\'i zaten talep ettiniz', 400);
-            }
-            
-            // Talep oluştur
+            // Satın alma kaydını kontrol et
             $stmt = $this->db->prepare("
-                INSERT INTO lead_requests (lead_id, provider_id, status, created_at)
+                SELECT * FROM provider_purchases 
+                WHERE id = ? AND provider_id = ? AND payment_status = 'completed'
+            ");
+            $stmt->execute([$purchaseId, $providerId]);
+            $purchase = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$purchase) {
+                $this->errorResponse('الحزمة غير موجودة', 404);
+            }
+            
+            // Kalan lead var mı kontrol et
+            if (($purchase['remaining_leads'] ?? 0) <= 0) {
+                $this->errorResponse('لا توجد طلبات متبقية في هذه الحزمة', 400);
+            }
+            
+            // Lead talebi oluştur (admin'in göndermesi için)
+            $stmt = $this->db->prepare("
+                INSERT INTO lead_requests (provider_id, purchase_id, status, created_at)
                 VALUES (?, ?, 'pending', NOW())
             ");
-            $stmt->execute([$leadId, $providerId]);
+            $stmt->execute([$providerId, $purchaseId]);
             
-            error_log("✅ Provider #{$providerId} requested lead #{$leadId}");
+            error_log("✅ Provider #{$providerId} requested lead from purchase #{$purchaseId}");
             
-            $this->successResponse('Lead talebi başarıyla gönderildi');
+            $this->successResponse('تم إرسال طلبك بنجاح! سيتم إرسال بيانات العميل قريباً.');
         } catch (PDOException $e) {
             error_log("Request lead error: " . $e->getMessage());
-            $this->errorResponse('Talep gönderilirken hata oluştu', 500);
+            $this->errorResponse('حدث خطأ أثناء إرسال الطلب', 500);
         }
     }
     
@@ -287,6 +288,27 @@ class ProviderLeadController extends BaseProviderController
     }
     
     // ==================== PRIVATE METHODS ====================
+    
+    /**
+     * Provider'ın satın aldığı paketleri getir
+     */
+    private function getProviderPurchases(int $providerId): array
+    {
+        try {
+            $stmt = $this->db->prepare("
+                SELECT pp.*, lp.name_ar as package_name, lp.lead_count as package_lead_count
+                FROM provider_purchases pp
+                LEFT JOIN lead_packages lp ON pp.package_id = lp.id
+                WHERE pp.provider_id = ? AND pp.payment_status = 'completed'
+                ORDER BY pp.purchased_at DESC
+            ");
+            $stmt->execute([$providerId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Get provider purchases error: " . $e->getMessage());
+            return [];
+        }
+    }
     
     /**
      * Provider için lead istatistikleri
