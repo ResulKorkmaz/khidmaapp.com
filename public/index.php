@@ -263,6 +263,18 @@ function checkCsrf(string $path): void
         return;
     }
     
+    // Login ve register sayfaları için CSRF kontrolü yapma
+    $excludedPaths = [
+        '/admin/login',
+        '/provider/login',
+        '/provider/register',
+        '/lead/submit',
+    ];
+    
+    if (in_array($path, $excludedPaths)) {
+        return;
+    }
+    
     $csrfToken = $_POST['csrf_token'] ?? '';
     
     if (empty($csrfToken)) {

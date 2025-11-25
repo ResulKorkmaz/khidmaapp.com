@@ -96,7 +96,9 @@ class AdminProviderController extends BaseAdminController
             $this->render('provider_detail', [
                 'provider' => $provider,
                 'purchases' => $purchases,
-                'deliveredLeads' => $deliveredLeads
+                'deliveredLeads' => $deliveredLeads,
+                'pageTitle' => 'Usta Detayı - ' . $provider['name'],
+                'currentPage' => 'providers'
             ]);
             
         } catch (PDOException $e) {
