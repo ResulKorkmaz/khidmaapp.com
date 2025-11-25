@@ -125,24 +125,32 @@ $routes = [
     
     // ========== PROVIDER DASHBOARD ==========
     'GET:/provider/dashboard' => ['ProviderDashboardController', 'index', 'provider.auth'],
-    'GET:/provider/leads' => ['ProviderController', 'leads', 'provider.auth'],
-    'GET:/provider/profile' => ['ProviderController', 'profile', 'provider.auth'],
-    'POST:/provider/profile' => ['ProviderController', 'profile', 'provider.auth'],
-    'GET:/provider/settings' => ['ProviderController', 'settings', 'provider.auth'],
-    'POST:/provider/settings' => ['ProviderController', 'settings', 'provider.auth'],
-    'GET:/provider/messages' => ['ProviderController', 'messages', 'provider.auth'],
-    'GET:/provider/packages' => ['ProviderController', 'browsePackages', 'provider.auth'],
-    'GET:/provider/browse-packages' => ['ProviderController', 'browsePackages', 'provider.auth'],
-    'GET:/provider/my-requests' => ['ProviderController', 'myRequests', 'provider.auth'],
-    'GET:/provider/hidden-leads' => ['ProviderController', 'hiddenLeads', 'provider.auth'],
-    'POST:/provider/request-lead' => ['ProviderController', 'requestLead', 'provider.auth'],
-    'POST:/provider/mark-lead-viewed' => ['ProviderController', 'markLeadViewed', 'provider.auth'],
-    'POST:/provider/hide-lead' => ['ProviderController', 'hideLead', 'provider.auth'],
-    'POST:/provider/mark-message-read' => ['ProviderController', 'markMessageRead', 'provider.auth'],
-    'POST:/provider/delete-message' => ['ProviderController', 'deleteMessage', 'provider.auth'],
-    'POST:/provider/create-checkout-session' => ['ProviderController', 'createCheckoutSession', 'provider.auth'],
-    'GET:/provider/purchase/success' => ['ProviderController', 'purchaseSuccess', 'provider.auth'],
-    'GET:/provider/purchase/cancel' => ['ProviderController', 'purchaseCancel', 'provider.auth'],
+    
+    // ========== PROVIDER LEADS ==========
+    'GET:/provider/leads' => ['ProviderLeadController', 'index', 'provider.auth'],
+    'GET:/provider/my-requests' => ['ProviderLeadController', 'myRequests', 'provider.auth'],
+    'GET:/provider/hidden-leads' => ['ProviderLeadController', 'hidden', 'provider.auth'],
+    'POST:/provider/request-lead' => ['ProviderLeadController', 'request', 'provider.auth'],
+    'POST:/provider/mark-lead-viewed' => ['ProviderLeadController', 'markViewed', 'provider.auth'],
+    'POST:/provider/hide-lead' => ['ProviderLeadController', 'hide', 'provider.auth'],
+    
+    // ========== PROVIDER PROFILE ==========
+    'GET:/provider/profile' => ['ProviderProfileController', 'index', 'provider.auth'],
+    'POST:/provider/profile' => ['ProviderProfileController', 'index', 'provider.auth'],
+    'GET:/provider/settings' => ['ProviderProfileController', 'settings', 'provider.auth'],
+    'POST:/provider/settings' => ['ProviderProfileController', 'settings', 'provider.auth'],
+    
+    // ========== PROVIDER MESSAGES ==========
+    'GET:/provider/messages' => ['ProviderMessageController', 'index', 'provider.auth'],
+    'POST:/provider/mark-message-read' => ['ProviderMessageController', 'markRead', 'provider.auth'],
+    'POST:/provider/delete-message' => ['ProviderMessageController', 'delete', 'provider.auth'],
+    
+    // ========== PROVIDER PACKAGES ==========
+    'GET:/provider/packages' => ['ProviderPurchaseController', 'packages', 'provider.auth'],
+    'GET:/provider/browse-packages' => ['ProviderPurchaseController', 'packages', 'provider.auth'],
+    'POST:/provider/create-checkout-session' => ['ProviderPurchaseController', 'createCheckoutSession', 'provider.auth'],
+    'GET:/provider/purchase/success' => ['ProviderPurchaseController', 'success', 'provider.auth'],
+    'GET:/provider/purchase/cancel' => ['ProviderPurchaseController', 'cancel', 'provider.auth'],
     
     // ========== ADMIN AUTH ==========
     'GET:/admin/login' => ['AdminAuthController', 'login'],
@@ -227,7 +235,7 @@ $dynamicRoutes = [
     '#^GET:/admin/providers/(\d+)$#' => ['AdminProviderController', 'detail', 'admin.auth'],
     
     // Provider purchase package
-    '#^GET:/provider/purchase/(\d+)$#' => ['ProviderController', 'purchasePackage', 'provider.auth'],
+    '#^GET:/provider/purchase/(\d+)$#' => ['ProviderPurchaseController', 'purchase', 'provider.auth'],
 ];
 
 // ============================================
