@@ -1,32 +1,44 @@
 <?php
-// Get current user role for menu permissions
+/**
+ * Admin Layout
+ * 
+ * Admin paneli ana layout dosyası
+ */
+
+// Veritabanı istatistiklerini al
 $currentUserRole = 'user';
 $newLeadsCount = 0;
 $pendingProvidersCount = 0;
+$newPurchasesCount = 0;
+$pendingLeadRequestsCount = 0;
 
 try {
     $pdo = getDatabase();
     if ($pdo) {
-        // Get user role
+        // Kullanıcı rolünü al
         $stmt = $pdo->prepare("SELECT role FROM admins WHERE id = ?");
         $stmt->execute([$_SESSION['admin_id'] ?? 0]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $currentUserRole = $result['role'] ?? 'user';
         
-        // Get new leads count (status = 'new')
-        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM leads WHERE status = 'new'");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $newLeadsCount = $result['count'] ?? 0;
+        // Yeni lead sayısı
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM leads WHERE status = 'new' AND deleted_at IS NULL");
+        $newLeadsCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
         
-        // Get pending providers count (status = 'pending')
-        $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM service_providers WHERE status = 'pending'");
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $pendingProvidersCount = $result['count'] ?? 0;
+        // Bekleyen usta sayısı
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM service_providers WHERE status = 'pending'");
+        $pendingProvidersCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+        
+        // Yeni satın almalar (son 24 saat)
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM provider_purchases WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) AND payment_status = 'completed'");
+        $newPurchasesCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+        
+        // Bekleyen lead talepleri
+        $stmt = $pdo->query("SELECT COUNT(*) as count FROM lead_requests WHERE status = 'pending'");
+        $pendingLeadRequestsCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
     }
 } catch (PDOException $e) {
-    error_log("Get user role error: " . $e->getMessage());
+    error_log("Admin layout stats error: " . $e->getMessage());
 }
 ?>
 <!DOCTYPE html>
@@ -34,23 +46,19 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Admin Paneli' ?> - KhidmaApp</title>
+    <title><?= htmlspecialchars($pageTitle ?? 'Admin Paneli') ?> - KhidmaApp</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <link href="/assets/css/app.css" rel="stylesheet">
+    
     <style>
-        /* Sidebar overlay başlangıçta gizli */
-        #sidebarOverlay {
-            display: none;
-        }
-        #sidebarOverlay.show {
-            display: block;
-        }
+        /* Sidebar responsive */
+        #sidebarOverlay { display: none; }
+        #sidebarOverlay.show { display: block; }
         
-        /* Sidebar mobilde gizli */
         @media (max-width: 1023px) {
             #sidebar {
                 transform: translateX(-100%);
@@ -61,7 +69,6 @@ try {
             }
         }
         
-        /* Desktop: Sticky sidebar */
         @media (min-width: 1024px) {
             #sidebar {
                 position: sticky !important;
@@ -70,154 +77,26 @@ try {
                 transform: translateX(0) !important;
                 overflow-y: auto;
             }
-            
-            /* Main content yanında olmalı */
-            main {
-                min-height: 100vh;
-            }
+            main { min-height: 100vh; }
         }
         
-        /* Hide scrollbar for horizontal scroll */
+        /* Scrollbar gizle */
         .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;  /* Chrome, Safari, Opera */
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
         
-        /* Badge Animasyonları */
-        .request-badge-pulse, .purchase-badge-pulse {
-            animation: badge-pulse 1.5s ease-in-out infinite, badge-ring 2s ease-out infinite, badge-bounce 2s ease-in-out infinite;
+        /* Badge animasyonları */
+        .badge-pulse {
+            animation: pulse 2s ease-in-out infinite;
         }
-        
-        @keyframes badge-pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.15);
-            }
-        }
-        
-        @keyframes badge-ring {
-            0% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8);
-            }
-            50% {
-                box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-            }
-        }
-        
-        @keyframes badge-bounce {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            25% {
-                transform: translateY(-4px) scale(1.1);
-            }
-            50% {
-                transform: translateY(0) scale(1.05);
-            }
-            75% {
-                transform: translateY(-2px) scale(1.08);
-            }
-        }
-        
-        /* Number count up animation */
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .count-up {
-            animation: countUp 0.5s ease-out;
-        }
-        
-        /* Glow effect for purchases badge */
-        @keyframes glow {
-            0%, 100% {
-                box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
-            }
-        }
-        
-        .purchase-badge-pulse {
-            animation: badge-pulse 1.5s ease-in-out infinite, 
-                       badge-ring 2s ease-out infinite, 
-                       glow 2s ease-in-out infinite;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
     </style>
 </head>
-<?php
-// Yeni satın alımları say (son 24 saat içinde)
-$newPurchasesCount = 0;
-$pendingLeadRequestsCount = 0;
-
-try {
-    // Direkt veritabanı bağlantısı
-    require_once __DIR__ . '/../../config/config.php';
-    $db = getDatabase();
-    
-    if ($db) {
-        // Yeni satın alımlar (son 24 saat)
-        try {
-            $stmt = $db->prepare("
-                SELECT COUNT(*) as count 
-                FROM provider_purchases 
-                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
-                AND payment_status = 'completed'
-            ");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $newPurchasesCount = intval($result['count'] ?? 0);
-            error_log("✅ New purchases query SUCCESS: count = $newPurchasesCount");
-        } catch (Exception $e) {
-            error_log('❌ New purchases query error: ' . $e->getMessage());
-            // Test için fallback
-            $newPurchasesCount = 2; // TEMPORARY FOR TESTING
-        }
-        
-        // Pending lead requests (bekleyen istekler)
-        try {
-            $stmt = $db->prepare("
-                SELECT COUNT(*) as count 
-                FROM lead_requests 
-                WHERE request_status = 'pending'
-            ");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $pendingLeadRequestsCount = intval($result['count'] ?? 0);
-            error_log("✅ Lead requests query SUCCESS: count = $pendingLeadRequestsCount");
-        } catch (Exception $e) {
-            error_log('❌ Lead requests query error: ' . $e->getMessage());
-            // Fallback: Manuel set et
-            $pendingLeadRequestsCount = 2; // TEMP FIX
-        }
-    } else {
-        error_log('❌ Database connection FAILED in layout.php');
-        // Fallback
-        $pendingLeadRequestsCount = 2; // TEMP FIX
-    }
-} catch (Exception $e) {
-    error_log('❌ Admin layout stats error: ' . $e->getMessage());
-    // Fallback
-    $pendingLeadRequestsCount = 2; // TEMP FIX
-}
-
-error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
-?>
 <body class="bg-gray-50">
     <!-- Mobile Header -->
     <header class="bg-white border-b border-gray-200 shadow-sm lg:hidden sticky top-0 z-50">
@@ -244,192 +123,41 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
     <div class="flex min-h-screen">
         <!-- Sidebar Navigation -->
         <aside id="sidebar" class="fixed lg:sticky top-0 left-0 h-full lg:h-screen w-64 flex-shrink-0 bg-white border-r border-gray-200 shadow-xl transition-transform duration-300 ease-in-out z-50 flex flex-col">
-            <!-- Desktop Header -->
-            <div class="hidden lg:flex flex-shrink-0 items-center gap-3 px-6 py-6 border-b border-gray-200">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-gray-900">KhidmaApp</h2>
-                    <p class="text-xs text-gray-500">Admin Paneli</p>
-                </div>
-            </div>
-
-            <!-- User Info (Mobile) -->
-            <div class="lg:hidden flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-blue-50">
-                <p class="text-sm font-semibold text-gray-900">Hoş geldiniz</p>
-                <p class="text-xs text-gray-600"><?= htmlspecialchars($_SESSION['admin_username'] ?? '') ?></p>
-            </div>
-
-            <!-- Navigation Menu -->
-            <nav class="flex-1 py-4 overflow-y-auto min-h-0">
-                <ul class="space-y-1 px-3">
-                    <!-- Dashboard -->
-                    <li>
-                        <a href="/admin" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'dashboard' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                            <span class="font-semibold">Dashboard</span>
-                        </a>
-                    </li>
-
-                    <!-- Lead İstekleri - EN ÜSTTE! -->
-                    <li>
-                        <a href="/admin/lead-requests" class="relative flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'lead-requests' ? 'bg-orange-600 text-white shadow-lg' : 'bg-orange-50 text-orange-700 hover:bg-orange-100 border-2 border-orange-200' ?>">
-                            <span class="font-semibold whitespace-nowrap">Lead İstekleri</span>
-                            <?php if (isset($pendingLeadRequestsCount) && $pendingLeadRequestsCount > 0): ?>
-                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
-                                    <?= $pendingLeadRequestsCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Lead'ler -->
-                    <li>
-                        <a href="/admin/leads" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'leads' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                                </svg>
-                                <span class="font-semibold">Lead'ler</span>
-                            </div>
-                            <?php if ($newLeadsCount > 0): ?>
-                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
-                                    <?= $newLeadsCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Ustalar -->
-                    <li>
-                        <a href="/admin/providers" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'providers' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                                <span class="font-semibold">Ustalar</span>
-                            </div>
-                            <?php if ($pendingProvidersCount > 0): ?>
-                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full flex-shrink-0">
-                                    <?= $pendingProvidersCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Satın Alımlar -->
-                    <li>
-                        <a href="/admin/purchases" class="flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'purchases' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                </svg>
-                                <span class="font-semibold">Satın Alımlar</span>
-                            </div>
-                            <?php if ($newPurchasesCount > 0): ?>
-                                <span class="ml-auto bg-red-600 text-white text-sm font-bold min-w-[24px] h-6 px-2 flex items-center justify-center rounded-full">
-                                    <?= $newPurchasesCount ?>
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </li>
-
-                    <!-- Divider -->
-                    <li class="pt-4">
-                        <div class="px-4 mb-2">
-                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Ayarlar</p>
-                        </div>
-                    </li>
-
-                    <!-- Hizmetler -->
-                    <li>
-                        <a href="/admin/services" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'services' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-semibold">Hizmetler</span>
-                        </a>
-                    </li>
-                    
-                    <!-- Lead Paketleri -->
-                    <li>
-                        <a href="/admin/lead-packages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'lead-packages' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                            <span class="font-semibold">Lead Paketleri</span>
-                        </a>
-                    </li>
-                    
-                    <!-- Provider Mesajları -->
-                    <li>
-                        <a href="/admin/provider-messages" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all <?= ($currentPage ?? '') === 'provider-messages' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-700 hover:bg-gray-100' ?>">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                            </svg>
-                            <span class="font-semibold">Provider Mesajları</span>
-                        </a>
-                    </li>
-                </ul>
-        </nav>
-        
-            <!-- User Info (Desktop) -->
-            <div class="hidden lg:block flex-shrink-0 px-6 py-4 border-t border-gray-200 relative">
-                <button id="profileMenuToggle" class="w-full flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors group">
-                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                        <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <div class="flex-1 min-w-0 text-left">
-                        <p class="text-sm font-semibold text-gray-900 truncate"><?= htmlspecialchars($_SESSION['admin_username'] ?? '') ?></p>
-                        <p class="text-xs text-gray-500">Yönetici</p>
-                    </div>
-                    <svg class="w-4 h-4 text-gray-400 transition-transform" id="profileMenuChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </button>
-                
-                <!-- Dropdown Menu -->
-                <div id="profileDropdown" class="hidden absolute bottom-full left-0 right-0 mb-2 mx-4 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
-                    <?php if ($currentUserRole === 'super_admin'): ?>
-                    <a href="/admin/users" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                        </svg>
-                        <span class="text-sm font-medium text-gray-700">Kullanıcı Yönetimi</span>
-                    </a>
-                    <div class="border-t border-gray-100"></div>
-                    <?php endif; ?>
-                    <a href="/admin/logout" class="flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors">
-                        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        <span class="text-sm font-medium text-red-600">Çıkış Yap</span>
-                    </a>
-                </div>
-            </div>
+            <?php include __DIR__ . '/components/sidebar.php'; ?>
         </aside>
 
         <!-- Main Content -->
         <main class="flex-1 bg-gray-50 w-full lg:w-auto">
-            <!-- Mobile spacing for header -->
-            <div class="lg:hidden h-20"></div>
-            
             <!-- Content Container -->
             <div class="w-full max-w-full px-4 py-6 lg:px-8 lg:py-8">
-        <?= $content ?? '' ?>
+                <?php 
+                // Session mesajlarını göster
+                if (!empty($_SESSION['success'])): ?>
+                    <?php 
+                    $message = $_SESSION['success'];
+                    unset($_SESSION['success']);
+                    include __DIR__ . '/components/alert.php';
+                    $type = 'success';
+                    ?>
+                <?php endif; ?>
+                
+                <?php if (!empty($_SESSION['error'])): ?>
+                    <?php 
+                    $message = $_SESSION['error'];
+                    unset($_SESSION['error']);
+                    $type = 'error';
+                    include __DIR__ . '/components/alert.php';
+                    ?>
+                <?php endif; ?>
+                
+                <?= $content ?? '' ?>
             </div>
         </main>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        // Mobile menu functionality
+        // Mobile menu
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -446,7 +174,7 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
             document.body.style.overflow = '';
         }
         
-        // Profile dropdown functionality
+        // Profile dropdown
         const profileMenuToggle = document.getElementById('profileMenuToggle');
         const profileDropdown = document.getElementById('profileDropdown');
         const profileMenuChevron = document.getElementById('profileMenuChevron');
@@ -455,317 +183,40 @@ error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
             profileMenuToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
                 profileDropdown.classList.toggle('hidden');
-                profileMenuChevron.classList.toggle('rotate-180');
+                profileMenuChevron?.classList.toggle('rotate-180');
             });
             
-            // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {
                 if (!profileMenuToggle.contains(e.target) && !profileDropdown.contains(e.target)) {
                     profileDropdown.classList.add('hidden');
-                    profileMenuChevron.classList.remove('rotate-180');
+                    profileMenuChevron?.classList.remove('rotate-180');
                 }
             });
         }
 
         // Toggle sidebar
-        if (mobileMenuToggle) {
-            mobileMenuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (sidebar.classList.contains('show')) {
-                    closeSidebar();
-                } else {
-                    openSidebar();
-                }
-            });
-        }
-
-        // Close when clicking overlay
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', closeSidebar);
-        }
-
-        // Close sidebar when clicking a link on mobile
-        if (sidebar) {
-            const sidebarLinks = sidebar.querySelectorAll('a');
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 1024) {
-                        closeSidebar();
-                    }
-                });
-            });
-        }
-
-        // Close sidebar on window resize to desktop
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 1024) {
-                closeSidebar();
-            }
+        mobileMenuToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sidebar.classList.contains('show') ? closeSidebar() : openSidebar();
         });
-        
-        // Lead Request Badge Güncellemesi
-        window.updatePendingRequestsBadge = function(newCount) {
-            const badge = document.getElementById('pending-requests-badge');
-            
-            if (!badge) {
-                console.warn('Badge element bulunamadı');
-                return;
-            }
-            
-            if (newCount > 0) {
-                // Sayıyı güncelle
-                badge.textContent = newCount;
-                badge.classList.remove('hidden');
-                
-                // Style'ı AGRESIF zorla - TEK RENK (gradient yok!)
-                badge.style.background = '#dc2626'; // Solid red
-                badge.style.color = '#ffffff';
-                badge.style.display = 'flex';
-                badge.style.alignItems = 'center';
-                badge.style.justifyContent = 'center';
-                badge.style.opacity = '1';
-                badge.style.visibility = 'visible';
-                badge.style.zIndex = '9999';
-                badge.style.position = 'relative';
-                badge.style.border = '3px solid #ffffff';
-                badge.style.boxShadow = '0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.fontSize = '16px';
-                badge.style.fontWeight = '800';
-                
-                // Count up animasyonu ekle
-                badge.classList.remove('count-up');
-                void badge.offsetWidth; // Reflow trick
-                badge.classList.add('count-up');
-                
-                console.log('✅ Badge güncellendi (TEK RENK):', newCount);
-            } else {
-                // Sayı 0 ise badge'i gizle
-                badge.classList.add('hidden');
-                console.log('🔴 Badge gizlendi (sayı: 0)');
-            }
-        };
-        
-        // Sayfa yüklendiğinde badge'i kontrol et ve style'ı AGRESIF zorla
-        document.addEventListener('DOMContentLoaded', function() {
-            const badge = document.getElementById('pending-requests-badge');
-            if (badge && !badge.classList.contains('hidden')) {
-                // Style'ı AGRESIF zorla uygula - TEK RENK (gradient yok!)
-                badge.style.background = '#dc2626'; // Solid red, no gradient
-                badge.style.color = '#ffffff';
-                badge.style.display = 'flex';
-                badge.style.alignItems = 'center';
-                badge.style.justifyContent = 'center';
-                badge.style.opacity = '1';
-                badge.style.visibility = 'visible';
-                badge.style.zIndex = '9999';
-                badge.style.position = 'relative';
-                badge.style.border = '3px solid #ffffff';
-                badge.style.boxShadow = '0 0 0 0 rgba(220, 38, 38, 0.7), 0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.border = '2px solid white';
-                badge.style.boxShadow = '0 4px 14px 0 rgba(220, 38, 38, 0.6)';
-                badge.style.fontSize = '16px';
-                badge.style.fontWeight = '800';
-                
-                console.log('📊 Pending requests badge aktif:', badge.textContent);
-                console.log('🎨 Badge style AGRESIF zorlandı');
-                console.log('   ├─ bg: gradient red');
-                console.log('   ├─ color:', badge.style.color);
-                console.log('   ├─ border: 2px solid white');
-                console.log('   └─ shadow: kırmızı glow');
-            }
+
+        // Close on overlay click
+        sidebarOverlay?.addEventListener('click', closeSidebar);
+
+        // Close on link click (mobile)
+        sidebar?.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 1024) closeSidebar();
+            });
+        });
+
+        // Close on resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) closeSidebar();
         });
     </script>
     
-    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? 'Admin Paneli' ?> - KhidmaApp</title>
-    
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <link href="/assets/css/app.css" rel="stylesheet">
-    <style>
-        /* Sidebar overlay başlangıçta gizli */
-        #sidebarOverlay {
-            display: none;
-        }
-        #sidebarOverlay.show {
-            display: block;
-        }
-        
-        /* Sidebar mobilde gizli */
-        @media (max-width: 1023px) {
-            #sidebar {
-                transform: translateX(-100%);
-                height: 100vh;
-            }
-            #sidebar.show {
-                transform: translateX(0);
-            }
-        }
-        
-        /* Desktop: Sticky sidebar */
-        @media (min-width: 1024px) {
-            #sidebar {
-                position: sticky !important;
-                top: 0;
-                height: 100vh;
-                transform: translateX(0) !important;
-                overflow-y: auto;
-            }
-            
-            /* Main content yanında olmalı */
-            main {
-                min-height: 100vh;
-            }
-        }
-        
-        /* Hide scrollbar for horizontal scroll */
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;  /* Chrome, Safari, Opera */
-        }
-        
-        /* Badge Animasyonları */
-        .request-badge-pulse, .purchase-badge-pulse {
-            animation: badge-pulse 1.5s ease-in-out infinite, badge-ring 2s ease-out infinite, badge-bounce 2s ease-in-out infinite;
-        }
-        
-        @keyframes badge-pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.15);
-            }
-        }
-        
-        @keyframes badge-ring {
-            0% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.8);
-            }
-            50% {
-                box-shadow: 0 0 0 12px rgba(220, 38, 38, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
-            }
-        }
-        
-        @keyframes badge-bounce {
-            0%, 100% {
-                transform: translateY(0) scale(1);
-            }
-            25% {
-                transform: translateY(-4px) scale(1.1);
-            }
-            50% {
-                transform: translateY(0) scale(1.05);
-            }
-            75% {
-                transform: translateY(-2px) scale(1.08);
-            }
-        }
-        
-        /* Number count up animation */
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .count-up {
-            animation: countUp 0.5s ease-out;
-        }
-        
-        /* Glow effect for purchases badge */
-        @keyframes glow {
-            0%, 100% {
-                box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 25px rgba(220, 38, 38, 0.8);
-            }
-        }
-        
-        .purchase-badge-pulse {
-            animation: badge-pulse 1.5s ease-in-out infinite, 
-                       badge-ring 2s ease-out infinite, 
-                       glow 2s ease-in-out infinite;
-        }
-    </style>
-</head>
-<?php
-// Yeni satın alımları say (son 24 saat içinde)
-$newPurchasesCount = 0;
-$pendingLeadRequestsCount = 0;
-
-try {
-    // Direkt veritabanı bağlantısı
-    require_once __DIR__ . '/../../config/config.php';
-    $db = getDatabase();
-    
-    if ($db) {
-        // Yeni satın alımlar (son 24 saat)
-        try {
-            $stmt = $db->prepare("
-                SELECT COUNT(*) as count 
-                FROM provider_purchases 
-                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
-                AND payment_status = 'completed'
-            ");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $newPurchasesCount = intval($result['count'] ?? 0);
-            error_log("✅ New purchases query SUCCESS: count = $newPurchasesCount");
-        } catch (Exception $e) {
-            error_log('❌ New purchases query error: ' . $e->getMessage());
-            // Test için fallback
-            $newPurchasesCount = 2; // TEMPORARY FOR TESTING
-        }
-        
-        // Pending lead requests (bekleyen istekler)
-        try {
-            $stmt = $db->prepare("
-                SELECT COUNT(*) as count 
-                FROM lead_requests 
-                WHERE request_status = 'pending'
-            ");
-            $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $pendingLeadRequestsCount = intval($result['count'] ?? 0);
-            error_log("✅ Lead requests query SUCCESS: count = $pendingLeadRequestsCount");
-        } catch (Exception $e) {
-            error_log('❌ Lead requests query error: ' . $e->getMessage());
-            // Fallback: Manuel set et
-            $pendingLeadRequestsCount = 2; // TEMP FIX
-        }
-    } else {
-        error_log('❌ Database connection FAILED in layout.php');
-        // Fallback
-        $pendingLeadRequestsCount = 2; // TEMP FIX
-    }
-} catch (Exception $e) {
-    error_log('❌ Admin layout stats error: ' . $e->getMessage());
-    // Fallback
-    $pendingLeadRequestsCount = 2; // TEMP FIX
-}
-
-error_log("🎯 FINAL: pendingLeadRequestsCount = $pendingLeadRequestsCount");
-?>
