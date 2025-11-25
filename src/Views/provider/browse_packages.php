@@ -182,6 +182,26 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
     <?php endif; ?>
 </div>
 
+<style>
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+@keyframes pulse-border {
+    0%, 100% { border-color: #f97316; box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4); }
+    50% { border-color: #ea580c; box-shadow: 0 0 0 8px rgba(249, 115, 22, 0); }
+}
+.shake-animation {
+    animation: shake 0.5s ease-in-out;
+}
+.pulse-orange {
+    animation: pulse-border 1s ease-in-out infinite;
+    border-color: #f97316 !important;
+    background-color: #fff7ed !important;
+}
+</style>
+
 <script>
 // Onay kutusu kontrolü
 document.addEventListener('DOMContentLoaded', function() {
@@ -199,7 +219,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     btn.removeAttribute('data-disabled');
                     
                     // Butonun paket ID'sine göre renk belirle
-                    // 3'lü paket yeşil, diğerleri mavi
                     if (btn.closest('.border-green-400')) {
                         btn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'hover:shadow-lg');
                     } else {
@@ -213,13 +232,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // Onay kutusu işaretlendiğinde vurguyu kaldır
+            // Onay kutusu işaretlendiğinde turuncu vurguyu kaldır
             if (this.checked && policyBox) {
-                policyBox.classList.remove('ring-4', 'ring-red-400', 'animate-pulse');
+                policyBox.classList.remove('pulse-orange', 'shake-animation');
             }
         });
         
-        // Pasif butona tıklandığında uyarı göster ve onay kutusuna yönlendir
+        // Pasif butona tıklandığında onay kutusunu turuncu yap ve animasyon ekle
         buyButtons.forEach(btn => {
             btn.setAttribute('data-disabled', 'true');
             btn.addEventListener('click', function(e) {
@@ -227,18 +246,33 @@ document.addEventListener('DOMContentLoaded', function() {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Bildirim göster
-                    showNotification('⚠️ يرجى الموافقة على شروط الشراء أولاً', 'warning');
-                    
-                    // Onay kutusunu vurgula ve kaydır
                     if (policyBox) {
-                        policyBox.classList.add('ring-4', 'ring-red-400', 'animate-pulse');
+                        // Önce mevcut animasyonları kaldır
+                        policyBox.classList.remove('pulse-orange', 'shake-animation');
+                        
+                        // Sayfayı onay kutusuna kaydır
                         policyBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         
-                        // 3 saniye sonra vurguyu kaldır
+                        // Kısa bir gecikme ile animasyonları ekle
                         setTimeout(() => {
-                            policyBox.classList.remove('ring-4', 'ring-red-400', 'animate-pulse');
-                        }, 3000);
+                            policyBox.classList.add('pulse-orange', 'shake-animation');
+                            
+                            // Checkbox'a tıklama efekti - hafif büyüt
+                            checkbox.style.transform = 'scale(1.3)';
+                            checkbox.style.transition = 'transform 0.3s ease';
+                            
+                            setTimeout(() => {
+                                checkbox.style.transform = 'scale(1)';
+                            }, 300);
+                        }, 300);
+                        
+                        // 4 saniye sonra turuncu vurguyu kaldır (kullanıcı tıklamazsa)
+                        setTimeout(() => {
+                            if (!checkbox.checked) {
+                                policyBox.classList.remove('shake-animation');
+                                // pulse-orange devam etsin ta ki tıklayana kadar
+                            }
+                        }, 500);
                     }
                     
                     return false;
@@ -247,49 +281,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
-// Bildirim gösterme fonksiyonu
-function showNotification(message, type = 'info') {
-    // Mevcut bildirimi kaldır
-    const existing = document.getElementById('toast-notification');
-    if (existing) existing.remove();
-    
-    // Bildirim oluştur
-    const toast = document.createElement('div');
-    toast.id = 'toast-notification';
-    toast.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #f59e0b;
-        color: #000;
-        padding: 16px 24px;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: bold;
-        font-size: 16px;
-    `;
-    toast.innerHTML = `
-        <span>${message}</span>
-        <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:#000;font-size:20px;line-height:1;">&times;</button>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // 4 saniye sonra otomatik kapat
-    setTimeout(() => {
-        if (toast.parentElement) {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s';
-            setTimeout(() => toast.remove(), 300);
-        }
-    }, 4000);
-}
 </script>
 
 <?php
