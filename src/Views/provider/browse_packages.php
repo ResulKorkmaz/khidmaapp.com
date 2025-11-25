@@ -49,6 +49,21 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
             <p class="text-gray-600">لا توجد حزم متاحة حالياً</p>
         </div>
     <?php else: ?>
+        <!-- ✅ Onay Kutusu - EN ÜSTTE -->
+        <div class="mb-4 bg-green-50 border-2 border-green-300 rounded-lg p-4">
+            <label class="flex items-start gap-3 cursor-pointer select-none">
+                <input type="checkbox" id="policy-accept" class="w-5 h-5 mt-0.5 text-green-600 border-2 border-green-400 rounded focus:ring-green-500 cursor-pointer">
+                <div class="text-sm">
+                    <p class="font-bold text-green-800">
+                        ✅ قرأت وفهمت <a href="/provider/lead-policy" target="_blank" class="underline hover:text-green-900">سياسة جودة الطلبات</a> وأوافق عليها
+                    </p>
+                    <p class="text-green-700 mt-1 text-xs">
+                        أفهم أن الطلبات غير الصالحة في <strong>الشراء الأول</strong> سيتم استبدالها، وفي الشراء التالي سأحصل على <strong>+1 طلب إضافي</strong> (مرة واحدة فقط).
+                    </p>
+                </div>
+            </label>
+        </div>
+        
         <!-- Paket Kartları -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <?php foreach ($packages as $package): 
@@ -164,21 +179,6 @@ $providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? (
                 </div>
             </div>
         </div>
-        
-        <!-- ✅ Onay Kutusu -->
-        <div class="mt-4 bg-green-50 border-2 border-green-300 rounded-lg p-4">
-            <label class="flex items-start gap-3 cursor-pointer select-none">
-                <input type="checkbox" id="policy-accept" class="w-5 h-5 mt-0.5 text-green-600 border-2 border-green-400 rounded focus:ring-green-500 cursor-pointer">
-                <div class="text-sm">
-                    <p class="font-bold text-green-800">
-                        ✅ قرأت وفهمت <a href="/provider/lead-policy" target="_blank" class="underline hover:text-green-900">سياسة جودة الطلبات</a> وأوافق عليها
-                    </p>
-                    <p class="text-green-700 mt-1 text-xs">
-                        أفهم أن الطلبات غير الصالحة في <strong>الشراء الأول</strong> سيتم استبدالها، وفي الشراء التالي سأحصل على <strong>+1 طلب إضافي</strong> (مرة واحدة فقط).
-                    </p>
-                </div>
-            </label>
-        </div>
     <?php endif; ?>
 </div>
 
@@ -196,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     btn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed', 'pointer-events-none');
                     
                     // Butonun paket ID'sine göre renk belirle
-                    const packageId = btn.id.replace('buy-btn-', '');
                     // 3'lü paket yeşil, diğerleri mavi
                     if (btn.closest('.border-green-400')) {
                         btn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white', 'hover:shadow-lg');
