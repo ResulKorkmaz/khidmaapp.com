@@ -2,7 +2,8 @@
 
 <!-- İstatistik Kartları -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+    <!-- Toplam Lead Hakkı -->
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-blue-200">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -10,37 +11,41 @@
                 </svg>
             </div>
             <div>
-                <p class="text-2xl font-bold text-gray-900"><?= $stats['total'] ?? 0 ?></p>
-                <p class="text-sm text-gray-500">إجمالي الطلبات</p>
+                <p class="text-2xl font-bold text-blue-600"><?= $stats['total_rights'] ?? 0 ?></p>
+                <p class="text-sm text-gray-600">إجمالي حقوق الطلبات</p>
+                <p class="text-xs text-gray-400">مجموع الحزم المشتراة</p>
             </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+    <!-- Teslim Edilen Lead -->
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-green-200">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <p class="text-2xl font-bold text-gray-900"><?= $stats['viewed'] ?? 0 ?></p>
-                <p class="text-sm text-gray-500">تم عرضها</p>
+                <p class="text-2xl font-bold text-green-600"><?= $stats['delivered'] ?? 0 ?></p>
+                <p class="text-sm text-gray-600">تم التسليم</p>
+                <p class="text-xs text-gray-400">الطلبات المستلمة</p>
             </div>
         </div>
     </div>
     
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
+    <!-- Kalan Lead Hakkı -->
+    <div class="bg-white rounded-xl p-4 shadow-sm border border-orange-200">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
                 <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <p class="text-2xl font-bold text-gray-900"><?= $stats['not_viewed'] ?? 0 ?></p>
-                <p class="text-sm text-gray-500">لم يتم عرضها</p>
+                <p class="text-2xl font-bold text-orange-600"><?= $stats['remaining'] ?? 0 ?></p>
+                <p class="text-sm text-gray-600">المتبقي</p>
+                <p class="text-xs text-gray-400">حقوق الطلبات المتبقية</p>
             </div>
         </div>
     </div>
@@ -72,21 +77,38 @@
     </div>
 </div>
 
-<!-- 90 Dakika Bekleme Uyarısı -->
+<!-- Bekleme Uyarısı -->
 <?php if (!empty($lastRequestInfo) && !$lastRequestInfo['canRequest']): ?>
-<div class="bg-orange-50 border border-orange-300 rounded-2xl p-4 mb-6">
+<?php 
+    $isPending = ($lastRequestInfo['waitReason'] ?? '') === 'pending';
+    $remainingHours = $lastRequestInfo['remainingHours'] ?? 0;
+    $remainingMinutes = $lastRequestInfo['remainingMinutes'] ?? 0;
+    $remainingMins = $remainingMinutes % 60;
+?>
+<div class="<?= $isPending ? 'bg-yellow-50 border-yellow-300' : 'bg-orange-50 border-orange-300' ?> border rounded-2xl p-4 mb-6">
     <div class="flex items-center gap-3">
-        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-            <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-12 h-12 <?= $isPending ? 'bg-yellow-100' : 'bg-orange-100' ?> rounded-xl flex items-center justify-center">
+            <svg class="w-6 h-6 <?= $isPending ? 'text-yellow-600' : 'text-orange-600' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
         </div>
         <div class="flex-1">
-            <p class="font-bold text-orange-800">⏳ يرجى الانتظار قبل طلب عميل جديد</p>
-            <p class="text-sm text-orange-700">
-                يمكنك طلب عميل جديد بعد <strong id="countdown"><?= $lastRequestInfo['remainingMinutes'] ?></strong> دقيقة
-            </p>
-            <p class="text-xs text-orange-600 mt-1">
+            <?php if ($isPending): ?>
+                <p class="font-bold text-yellow-800">⏳ طلبك السابق قيد الانتظار</p>
+                <p class="text-sm text-yellow-700">
+                    سيتم إرسال بيانات العميل قريباً. يمكنك طلب عميل جديد بعد 
+                    <strong><?= $remainingHours ?></strong> ساعة و <strong><?= $remainingMins ?></strong> دقيقة
+                </p>
+                <p class="text-xs text-yellow-600 mt-1">
+                    ⚠️ إذا لم يتم التسليم خلال 48 ساعة، يمكنك طلب عميل جديد
+                </p>
+            <?php else: ?>
+                <p class="font-bold text-orange-800">⏳ يرجى الانتظار قبل طلب عميل جديد</p>
+                <p class="text-sm text-orange-700">
+                    يمكنك طلب عميل جديد بعد <strong id="countdown"><?= $remainingMinutes ?></strong> دقيقة
+                </p>
+            <?php endif; ?>
+            <p class="text-xs <?= $isPending ? 'text-yellow-600' : 'text-orange-600' ?> mt-1">
                 آخر طلب: <?= date('H:i - Y/m/d', strtotime($lastRequestInfo['lastRequestTime'])) ?>
             </p>
         </div>
@@ -160,11 +182,20 @@
                             اطلب عميل الآن
                         </button>
                     <?php else: ?>
-                        <button disabled class="w-full py-3 bg-gray-300 text-gray-500 font-bold rounded-lg cursor-not-allowed flex items-center justify-center gap-2">
+                        <?php 
+                        $isPendingWait = ($lastRequestInfo['waitReason'] ?? '') === 'pending';
+                        $waitHours = $lastRequestInfo['remainingHours'] ?? 0;
+                        $waitMins = ($lastRequestInfo['remainingMinutes'] ?? 0) % 60;
+                        ?>
+                        <button disabled class="w-full py-3 <?= $isPendingWait ? 'bg-yellow-200 text-yellow-700' : 'bg-gray-300 text-gray-500' ?> font-bold rounded-lg cursor-not-allowed flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            انتظر <?= $lastRequestInfo['remainingMinutes'] ?? 0 ?> دقيقة
+                            <?php if ($isPendingWait): ?>
+                                قيد الانتظار (<?= $waitHours ?>س <?= $waitMins ?>د)
+                            <?php else: ?>
+                                انتظر <?= $lastRequestInfo['remainingMinutes'] ?? 0 ?> دقيقة
+                            <?php endif; ?>
                         </button>
                     <?php endif; ?>
                 <?php else: ?>

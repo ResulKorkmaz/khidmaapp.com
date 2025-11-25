@@ -173,11 +173,15 @@ class ProviderLeadController extends BaseProviderController
                 $this->errorResponse('لا توجد طلبات متبقية في هذه الحزمة', 400);
             }
             
-            // 🔥 90 dakika bekleme kontrolü - Son talebin üzerinden 90 dk geçmiş mi?
+            // 🔥 Akıllı bekleme kontrolü
+            // - Lead teslim edilmişse: 90 dakika
+            // - Lead teslim edilmemişse (pending): 48 saat
             $stmt = $this->db->prepare("
-                SELECT requested_at FROM lead_requests 
-                WHERE provider_id = ? 
-                ORDER BY requested_at DESC 
+                SELECT lr.*, 
+                       CASE WHEN lr.lead_id IS NOT NULL THEN 'delivered' ELSE 'pending' END as delivery_status
+                FROM lead_requests lr
+                WHERE lr.provider_id = ? 
+                ORDER BY lr.requested_at DESC 
                 LIMIT 1
             ");
             $stmt->execute([$providerId]);
@@ -185,13 +189,23 @@ class ProviderLeadController extends BaseProviderController
             
             if ($lastRequest) {
                 $lastRequestTime = strtotime($lastRequest['requested_at']);
-                $cooldownMinutes = 90;
+                $isDelivered = ($lastRequest['delivery_status'] === 'delivered') || ($lastRequest['request_status'] === 'completed');
+                
+                // Bekleme süresi
+                $cooldownMinutes = $isDelivered ? 90 : (48 * 60); // 90 dk veya 48 saat
                 $cooldownSeconds = $cooldownMinutes * 60;
                 $timePassed = time() - $lastRequestTime;
                 
                 if ($timePassed < $cooldownSeconds) {
                     $remainingMinutes = ceil(($cooldownSeconds - $timePassed) / 60);
-                    $this->errorResponse("يرجى الانتظار {$remainingMinutes} دقيقة قبل طلب عميل جديد", 429);
+                    
+                    if ($isDelivered) {
+                        $this->errorResponse("يرجى الانتظار {$remainingMinutes} دقيقة قبل طلب عميل جديد", 429);
+                    } else {
+                        $remainingHours = floor($remainingMinutes / 60);
+                        $remainingMins = $remainingMinutes % 60;
+                        $this->errorResponse("طلبك السابق قيد الانتظار. يرجى الانتظار {$remainingHours} ساعة و {$remainingMins} دقيقة", 429);
+                    }
                 }
             }
             
@@ -337,42 +351,72 @@ class ProviderLeadController extends BaseProviderController
     }
     
     /**
-     * Son lead talep bilgisi
+     * Son lead talep bilgisi - Akıllı bekleme süresi
+     * - Lead teslim edilmişse: 90 dakika sonra yeni talep
+     * - Lead teslim edilmemişse (pending): 48 saat sonra tekrar talep
      */
     private function getLastRequestInfo(int $providerId): array
     {
         try {
+            // Son talebi ve durumunu getir
             $stmt = $this->db->prepare("
-                SELECT requested_at FROM lead_requests 
-                WHERE provider_id = ? 
-                ORDER BY requested_at DESC 
+                SELECT lr.*, 
+                       CASE WHEN lr.lead_id IS NOT NULL THEN 'delivered' ELSE 'pending' END as delivery_status
+                FROM lead_requests lr
+                WHERE lr.provider_id = ? 
+                ORDER BY lr.requested_at DESC 
                 LIMIT 1
             ");
             $stmt->execute([$providerId]);
             $lastRequest = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$lastRequest) {
-                return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => null];
+                return [
+                    'canRequest' => true, 
+                    'remainingMinutes' => 0, 
+                    'lastRequestTime' => null,
+                    'waitReason' => null
+                ];
             }
             
             $lastRequestTime = strtotime($lastRequest['requested_at']);
-            $cooldownMinutes = 90;
+            $isDelivered = ($lastRequest['delivery_status'] === 'delivered') || ($lastRequest['request_status'] === 'completed');
+            
+            // Bekleme süresi: Teslim edildiyse 90 dk, edilmediyse 48 saat
+            if ($isDelivered) {
+                $cooldownMinutes = 90; // 90 dakika
+                $waitReason = 'delivered';
+            } else {
+                $cooldownMinutes = 48 * 60; // 48 saat = 2880 dakika
+                $waitReason = 'pending';
+            }
+            
             $cooldownSeconds = $cooldownMinutes * 60;
             $timePassed = time() - $lastRequestTime;
             
             if ($timePassed >= $cooldownSeconds) {
-                return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => $lastRequest['requested_at']];
+                return [
+                    'canRequest' => true, 
+                    'remainingMinutes' => 0, 
+                    'lastRequestTime' => $lastRequest['requested_at'],
+                    'waitReason' => null
+                ];
             }
             
             $remainingMinutes = ceil(($cooldownSeconds - $timePassed) / 60);
+            $remainingHours = floor($remainingMinutes / 60);
+            
             return [
                 'canRequest' => false, 
-                'remainingMinutes' => $remainingMinutes, 
-                'lastRequestTime' => $lastRequest['requested_at']
+                'remainingMinutes' => $remainingMinutes,
+                'remainingHours' => $remainingHours,
+                'lastRequestTime' => $lastRequest['requested_at'],
+                'waitReason' => $waitReason,
+                'isDelivered' => $isDelivered
             ];
         } catch (PDOException $e) {
             error_log("Get last request info error: " . $e->getMessage());
-            return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => null];
+            return ['canRequest' => true, 'remainingMinutes' => 0, 'lastRequestTime' => null, 'waitReason' => null];
         }
     }
     
@@ -384,23 +428,44 @@ class ProviderLeadController extends BaseProviderController
         try {
             $stats = [];
             
-            // Toplam gönderilen lead
+            // Toplam satın alınan lead hakkı (tüm paketlerden)
+            $stmt = $this->db->prepare("
+                SELECT COALESCE(SUM(leads_count), 0) as total_rights
+                FROM provider_purchases 
+                WHERE provider_id = ? AND payment_status = 'completed' AND status = 'active'
+            ");
+            $stmt->execute([$providerId]);
+            $stats['total_rights'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total_rights'];
+            
+            // Teslim edilen lead sayısı
             $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM provider_lead_deliveries WHERE provider_id = ?");
             $stmt->execute([$providerId]);
-            $stats['total'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $stats['delivered'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
             
-            // Görüntülenen
+            // Kalan lead hakkı
+            $stmt = $this->db->prepare("
+                SELECT COALESCE(SUM(remaining_leads), 0) as remaining
+                FROM provider_purchases 
+                WHERE provider_id = ? AND payment_status = 'completed' AND status = 'active'
+            ");
+            $stmt->execute([$providerId]);
+            $stats['remaining'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['remaining'];
+            
+            // Görüntülenen (tamamlanan) lead sayısı
             $stmt = $this->db->prepare("SELECT COUNT(*) as count FROM provider_lead_deliveries WHERE provider_id = ? AND viewed_at IS NOT NULL");
             $stmt->execute([$providerId]);
             $stats['viewed'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
             
-            // Görüntülenmemiş
-            $stats['not_viewed'] = $stats['total'] - $stats['viewed'];
+            // Görüntülenmemiş lead sayısı
+            $stats['not_viewed'] = $stats['delivered'] - $stats['viewed'];
+            
+            // Eski uyumluluk için
+            $stats['total'] = $stats['delivered'];
             
             return $stats;
         } catch (PDOException $e) {
             error_log("Get lead stats error: " . $e->getMessage());
-            return ['total' => 0, 'viewed' => 0, 'not_viewed' => 0];
+            return ['total_rights' => 0, 'delivered' => 0, 'remaining' => 0, 'viewed' => 0, 'not_viewed' => 0, 'total' => 0];
         }
     }
 }
