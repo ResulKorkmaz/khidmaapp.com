@@ -375,16 +375,23 @@ class AdminProviderController extends BaseAdminController
      */
     private function getProviderPurchases(int $providerId): array
     {
-        $stmt = $this->pdo->prepare("
-            SELECT pp.*, lp.name as package_name,
-                   (SELECT COUNT(*) FROM provider_lead_deliveries WHERE purchase_id = pp.id) as delivered_count
-            FROM provider_purchases pp
-            LEFT JOIN lead_packages lp ON pp.package_id = lp.id
-            WHERE pp.provider_id = ?
-            ORDER BY pp.created_at DESC
-        ");
-        $stmt->execute([$providerId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            // lead_packages tablosunda name kolonu yok, service_type ve lead_count kullanılıyor
+            $stmt = $this->pdo->prepare("
+                SELECT pp.*, 
+                       CONCAT(lp.service_type, ' - ', lp.lead_count, ' Lead') as package_name,
+                       (SELECT COUNT(*) FROM provider_lead_deliveries WHERE purchase_id = pp.id) as delivered_count
+                FROM provider_purchases pp
+                LEFT JOIN lead_packages lp ON pp.package_id = lp.id
+                WHERE pp.provider_id = ?
+                ORDER BY pp.created_at DESC
+            ");
+            $stmt->execute([$providerId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("getProviderPurchases error: " . $e->getMessage());
+            return [];
+        }
     }
     
     /**
@@ -392,16 +399,21 @@ class AdminProviderController extends BaseAdminController
      */
     private function getProviderDeliveredLeads(int $providerId): array
     {
-        $stmt = $this->pdo->prepare("
-            SELECT l.*, pld.delivered_at, pld.viewed_at, pld.delivery_method
-            FROM provider_lead_deliveries pld
-            JOIN leads l ON pld.lead_id = l.id
-            WHERE pld.provider_id = ?
-            ORDER BY pld.delivered_at DESC
-            LIMIT 50
-        ");
-        $stmt->execute([$providerId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT l.*, pld.delivered_at, pld.viewed_at, pld.delivery_method
+                FROM provider_lead_deliveries pld
+                JOIN leads l ON pld.lead_id = l.id
+                WHERE pld.provider_id = ?
+                ORDER BY pld.delivered_at DESC
+                LIMIT 50
+            ");
+            $stmt->execute([$providerId]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("getProviderDeliveredLeads error: " . $e->getMessage());
+            return [];
+        }
     }
 }
 
