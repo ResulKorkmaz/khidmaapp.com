@@ -651,5 +651,89 @@ class AdminLeadController extends BaseAdminController
             error_log("Auto delete invalid leads error: " . $e->getMessage());
         }
     }
+    
+    /**
+     * 30 günden eski çöp kutusundaki lead'leri otomatik sil
+     */
+    public function autoDeleteOldTrash(): int
+    {
+        if (!$this->pdo) return 0;
+        
+        try {
+            $stmt = $this->pdo->prepare("
+                DELETE FROM leads 
+                WHERE deleted_at IS NOT NULL 
+                AND deleted_at < DATE_SUB(NOW(), INTERVAL 30 DAY)
+            ");
+            $stmt->execute();
+            $deletedCount = $stmt->rowCount();
+            
+            if ($deletedCount > 0) {
+                error_log("✅ Çöp kutusundan {$deletedCount} adet eski lead kalıcı olarak silindi");
+            }
+            
+            return $deletedCount;
+        } catch (PDOException $e) {
+            error_log("Auto delete old trash error: " . $e->getMessage());
+            return 0;
+        }
+    }
+    
+    /**
+     * Lead'leri export et (PDF, Excel, CSV, DOCX)
+     */
+    public function export(): void
+    {
+        $this->requireAuth();
+        
+        $format = $this->sanitizedGet('format', 'pdf');
+        $status = $this->sanitizedGet('status', 'all');
+        $serviceType = $this->sanitizedGet('service_type', 'all');
+        $city = $this->sanitizedGet('city', 'all');
+        $sentFilter = $this->sanitizedGet('sent_filter', 'all');
+        $serviceTimeType = $this->sanitizedGet('service_time_type', 'all');
+        $dateFrom = $this->sanitizedGet('date_from');
+        $dateTo = $this->sanitizedGet('date_to');
+        
+        // Tüm lead'leri getir (pagination yok)
+        $leads = $this->getLeads($status, $serviceType, $city, 0, 10000, $sentFilter, $dateFrom, $dateTo, $serviceTimeType);
+        
+        if (empty($leads)) {
+            http_response_code(404);
+            echo '<h1>Hata</h1><p>Export edilecek lead bulunamadı.</p>';
+            return;
+        }
+        
+        require_once __DIR__ . '/../../Services/LeadExportService.php';
+        
+        error_log("Admin '" . ($_SESSION['admin_username'] ?? 'unknown') . "' exported " . count($leads) . " leads as $format");
+        
+        try {
+            switch ($format) {
+                case 'excel':
+                case 'xlsx':
+                    LeadExportService::exportExcel($leads);
+                    break;
+                    
+                case 'csv':
+                    LeadExportService::exportCSV($leads);
+                    break;
+                    
+                case 'docx':
+                case 'word':
+                    LeadExportService::exportDOCX($leads);
+                    break;
+                    
+                case 'pdf':
+                default:
+                    LeadExportService::exportPDF($leads);
+                    break;
+            }
+        } catch (Exception $e) {
+            error_log("Export error: " . $e->getMessage());
+            http_response_code(500);
+            echo '<h1>Export Hatası</h1><p>' . htmlspecialchars($e->getMessage()) . '</p>';
+        }
+    }
 }
 

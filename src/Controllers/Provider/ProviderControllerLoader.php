@@ -12,6 +12,10 @@ require_once __DIR__ . '/BaseProviderController.php';
 // Provider controllers
 require_once __DIR__ . '/ProviderAuthController.php';
 require_once __DIR__ . '/ProviderDashboardController.php';
+require_once __DIR__ . '/ProviderLeadController.php';
+require_once __DIR__ . '/ProviderProfileController.php';
+require_once __DIR__ . '/ProviderPurchaseController.php';
+require_once __DIR__ . '/ProviderMessageController.php';
 
 /**
  * Provider controller factory
@@ -52,6 +56,38 @@ class ProviderControllerFactory
     public static function dashboard(): ProviderDashboardController
     {
         return self::get('Dashboard');
+    }
+    
+    /**
+     * Lead controller
+     */
+    public static function lead(): ProviderLeadController
+    {
+        return self::get('Lead');
+    }
+    
+    /**
+     * Profile controller
+     */
+    public static function profile(): ProviderProfileController
+    {
+        return self::get('Profile');
+    }
+    
+    /**
+     * Purchase controller
+     */
+    public static function purchase(): ProviderPurchaseController
+    {
+        return self::get('Purchase');
+    }
+    
+    /**
+     * Message controller
+     */
+    public static function message(): ProviderMessageController
+    {
+        return self::get('Message');
     }
 }
 
