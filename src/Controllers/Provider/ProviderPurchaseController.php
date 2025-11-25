@@ -24,13 +24,15 @@ class ProviderPurchaseController extends BaseProviderController
         }
         
         try {
-            // Aktif paketleri getir (sadece 2 paket: 1 ve 3 lead)
+            // Ustanın hizmet türüne göre paketleri getir (sadece 2 paket: 1 ve 3 lead)
+            $providerServiceType = $provider['service_type'] ?? '';
+            
             $stmt = $this->db->prepare("
                 SELECT * FROM lead_packages 
-                WHERE is_active = 1 
+                WHERE is_active = 1 AND service_type = ?
                 ORDER BY display_order ASC, lead_count ASC
             ");
-            $stmt->execute();
+            $stmt->execute([$providerServiceType]);
             $packages = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             $this->render('browse_packages', [
@@ -59,14 +61,14 @@ class ProviderPurchaseController extends BaseProviderController
         }
         
         try {
-            // Paketi getir
-            $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ? AND is_active = 1");
-            $stmt->execute([$packageId]);
+            // Paketi getir - ustanın hizmet türüne uygun olmalı
+            $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ? AND is_active = 1 AND service_type = ?");
+            $stmt->execute([$packageId, $provider['service_type']]);
             $package = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$package) {
-                $_SESSION['error'] = 'Paket bulunamadı';
-                $this->redirect('/provider/packages');
+                $_SESSION['error'] = 'Bu paket sizin hizmet türünüz için uygun değil';
+                $this->redirect('/provider/browse-packages');
             }
             
             $this->render('purchase', [
@@ -104,13 +106,13 @@ class ProviderPurchaseController extends BaseProviderController
         }
         
         try {
-            // Paketi getir
-            $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ? AND is_active = 1");
-            $stmt->execute([$packageId]);
+            // Paketi getir - ustanın hizmet türüne uygun olmalı
+            $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ? AND is_active = 1 AND service_type = ?");
+            $stmt->execute([$packageId, $provider['service_type']]);
             $package = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$package) {
-                $this->errorResponse('Paket bulunamadı', 404);
+                $this->errorResponse('Bu paket sizin hizmet türünüz için uygun değil', 404);
             }
             
             // Stripe yapılandırması

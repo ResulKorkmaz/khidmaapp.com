@@ -11,6 +11,10 @@ ob_start();
 $provider = $provider ?? [];
 $packages = $packages ?? [];
 $isActive = ($provider['status'] ?? '') === 'active';
+
+// Ustanın hizmet türü adını al
+$serviceTypes = getServiceTypes();
+$providerServiceName = $serviceTypes[$provider['service_type'] ?? '']['ar'] ?? ($provider['service_type'] ?? '');
 ?>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
@@ -44,7 +48,9 @@ $isActive = ($provider['status'] ?? '') === 'active';
             </a>
         </div>
         <h1 class="text-3xl sm:text-4xl font-black text-gray-900 mb-3">حزم الطلبات المتاحة</h1>
-        <p class="text-base sm:text-lg text-gray-600">اختر الحزمة المناسبة لعملك واحصل على عملاء جدد</p>
+        <p class="text-base sm:text-lg text-gray-600">
+            اختر الحزمة المناسبة لخدمة <span class="font-bold text-blue-600"><?= htmlspecialchars($providerServiceName) ?></span>
+        </p>
     </div>
     
     <?php if (empty($packages)): ?>
