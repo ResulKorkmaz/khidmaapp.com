@@ -32,6 +32,9 @@ class ServiceLoader
         
         // Service dosyalarını yükle
         $serviceFiles = [
+            'DatabaseService.php',
+            'CacheService.php',
+            'RateLimiter.php',
             'AdminLeadService.php',
             'AdminProviderService.php',
             'AdminStatsService.php',
@@ -163,6 +166,34 @@ class ServiceLoader
     public static function getLogger(): ?Logger
     {
         return self::getInstance('Logger');
+    }
+    
+    // ==========================================
+    // INFRASTRUCTURE SERVICES
+    // ==========================================
+    
+    /**
+     * Database Service
+     */
+    public static function getDatabaseService(): ?DatabaseService
+    {
+        return self::getInstance('DatabaseService');
+    }
+    
+    /**
+     * Cache Service
+     */
+    public static function getCacheService(): ?CacheService
+    {
+        return self::getInstance('CacheService');
+    }
+    
+    /**
+     * Rate Limiter
+     */
+    public static function getRateLimiter(): ?RateLimiter
+    {
+        return self::getInstance('RateLimiter');
     }
 }
 
