@@ -6,9 +6,17 @@
  * Veritabanı bağlantısı, güvenlik ayarları ve genel konfigürasyonlar burada tanımlanır.
  */
 
-// Hata raporlama ayarları
+// Hata raporlama ayarları - Environment'a göre ayarla
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+// Production'da hataları gösterme, sadece logla
+if (isset($_ENV['APP_ENV']) && $_ENV['APP_ENV'] === 'production') {
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/../../logs/php_errors.log');
+} else {
+    ini_set('display_errors', 1);
+}
 
 // Karakter kodlaması
 ini_set('default_charset', 'UTF-8');

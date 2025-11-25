@@ -21,3 +21,4 @@ done
 
 echo "🎉 All pages fixed with single green color!"
 
+
