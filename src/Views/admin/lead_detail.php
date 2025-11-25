@@ -10,12 +10,16 @@ $leadModel = new Lead(getDatabase());
 $leadId = $_GET['id'] ?? 0;
 
 // Lead detaylarını getir
-$lead = $leadModel->getDetails($leadId);
+$lead = $leadModel->find($leadId);
 
 if (!$lead) {
     header('Location: /admin/leads');
     exit;
 }
+
+// Ek bilgileri hesapla
+$lead['created_at_human'] = date('d.m.Y H:i', strtotime($lead['created_at']));
+$lead['created_at_formatted'] = date('Y-m-d H:i:s', strtotime($lead['created_at']));
 
 // Admin paneli için Türkçe isimleri kullan
 $services = getServiceTypes();
