@@ -240,9 +240,73 @@ ob_start();
                 </div>
             </div>
             
+            <!-- WhatsApp Doğrulama -->
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 shadow-lg border-2 border-green-200">
+                <h3 class="text-lg font-bold text-green-800 mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
+                    </svg>
+                    WhatsApp Doğrulama
+                </h3>
+                <p class="text-sm text-green-700 mb-4">Müşteriye doğrulama mesajı gönderin</p>
+                
+                <?php
+                // Hizmet adını al
+                $serviceNameAr = $services[$lead['service_type']]['ar'] ?? $lead['service_type'];
+                $phone = preg_replace('/[^0-9]/', '', $lead['phone']);
+                // Suudi numarası için 966 ekle (05 ile başlıyorsa)
+                if (substr($phone, 0, 1) === '0') {
+                    $phone = '966' . substr($phone, 1);
+                }
+                
+                // Doğrulama mesajı - Arapça
+                $verifyMessage = "السلام عليكم 👋
+
+تم استلام طلب خدمة *{$serviceNameAr}* الخاص بك.
+
+سنقوم بتوجيه أحد مقدمي الخدمة المعتمدين إليك في أقرب وقت.
+
+📋 *للتأكيد:*
+✅ إذا أنت طلبت هذه الخدمة، أرسل: *1*
+❌ إذا لم تطلب هذه الخدمة، أرسل: *0*
+
+شكراً لثقتك بمنصة خدمة 🙏";
+                
+                $encodedMessage = urlencode($verifyMessage);
+                $whatsappUrl = "https://wa.me/{$phone}?text={$encodedMessage}";
+                ?>
+                
+                <!-- Mesaj Önizleme -->
+                <div class="bg-white rounded-lg p-3 mb-4 text-sm text-gray-700 border border-green-200 max-h-40 overflow-y-auto" dir="rtl">
+                    <pre class="whitespace-pre-wrap font-sans text-xs"><?= htmlspecialchars($verifyMessage) ?></pre>
+                </div>
+                
+                <!-- Butonlar -->
+                <div class="space-y-2">
+                    <a href="<?= $whatsappUrl ?>" target="_blank" 
+                       class="w-full inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg hover:shadow-xl">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
+                        </svg>
+                        WhatsApp'ta Aç ve Gönder
+                    </a>
+                    
+                    <button onclick="copyVerifyMessage()" class="w-full inline-flex items-center justify-center bg-white hover:bg-gray-50 text-green-700 font-semibold py-2.5 rounded-xl border-2 border-green-300 transition-all">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Mesajı Kopyala
+                    </button>
+                </div>
+                
+                <p class="text-xs text-green-600 mt-3 text-center">
+                    💡 Müşteri "1" yazarsa → Durumu "Doğrulanmış" yapın
+                </p>
+            </div>
+            
             <!-- Actions -->
             <div class="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
-                <h3 class="text-lg font-bold text-gray-900 mb-4">İşlemler</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Diğer İşlemler</h3>
                 
                 <div class="space-y-3">
                     <a href="tel:<?= htmlspecialchars($lead['phone']) ?>" class="w-full inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300">
@@ -251,15 +315,6 @@ ob_start();
                         </svg>
                         Müşteriyi Ara
                     </a>
-                    
-                    <?php if (!empty($lead['whatsapp_phone'])): ?>
-                    <a href="https://wa.me/<?= preg_replace('/[^0-9]/', '', $lead['whatsapp_phone']) ?>" target="_blank" class="w-full inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition-all duration-300">
-                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.465 3.516"/>
-                        </svg>
-                        WhatsApp Gönder
-                    </a>
-                    <?php endif; ?>
                     
                     <button onclick="if(confirm('Bu lead\'i silmek istediğinizden emin misiniz?')) { /* DELETE */ }" class="w-full inline-flex items-center justify-center bg-red-100 hover:bg-red-200 text-red-700 font-semibold py-3 rounded-xl transition-all duration-300">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -274,6 +329,23 @@ ob_start();
 </div>
 
 <script>
+// WhatsApp mesajını kopyala
+function copyVerifyMessage() {
+    const message = <?= json_encode($verifyMessage, JSON_UNESCAPED_UNICODE) ?>;
+    navigator.clipboard.writeText(message).then(() => {
+        showAlert('✅ Mesaj kopyalandı!', 'success');
+    }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = message;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showAlert('✅ Mesaj kopyalandı!', 'success');
+    });
+}
+
 // Status update form handler
 document.getElementById('status-update-form').addEventListener('submit', async function(e) {
     e.preventDefault();
