@@ -7,10 +7,35 @@
     <link href="/assets/css/app.css" rel="stylesheet">
     <style>
         body { font-family: system-ui, -apple-system, sans-serif; }
-        @media (max-width: 1023px) {
-            #sidebar { transform: translateX(100%); }
-            #sidebar.open { transform: translateX(0); }
+        
+        /* Desktop: Sidebar sabit, içerik kaydırılabilir */
+        @media (min-width: 1024px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+            }
+            #main-content {
+                margin-right: 14rem; /* w-56 = 14rem */
+            }
         }
+        
+        /* Mobile: Sidebar gizli, açılabilir */
+        @media (max-width: 1023px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        
         .nav-item { transition: all 0.15s; }
         .nav-item:hover { background: #f3f4f6; }
         .nav-item.active { background: #059669; color: white; }
@@ -19,7 +44,6 @@
 </head>
 <body class="bg-gray-100">
 <?php
-// Görüntülenmemiş lead sayısı
 $unviewedCount = 0;
 if (isset($_SESSION['provider_id'])) {
     try {
@@ -32,7 +56,7 @@ if (isset($_SESSION['provider_id'])) {
 ?>
 
 <!-- Mobile Header -->
-<header class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-40">
+<header class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-30">
     <a href="/provider/dashboard" class="font-bold text-green-600">KhidmaApp</a>
     <button id="menuBtn" class="p-2 text-gray-600">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,10 +66,10 @@ if (isset($_SESSION['provider_id'])) {
 </header>
 
 <!-- Overlay -->
-<div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"></div>
+<div id="overlay" class="fixed inset-0 bg-black/50 z-40 hidden"></div>
 
 <!-- Sidebar -->
-<aside id="sidebar" class="fixed lg:sticky top-0 right-0 w-56 h-screen bg-white border-l border-gray-200 z-50 flex flex-col">
+<aside id="sidebar" class="w-56 bg-white border-l border-gray-200 z-50 flex flex-col">
     <!-- Logo -->
     <div class="hidden lg:flex items-center gap-2 h-14 px-4 border-b border-gray-200">
         <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
@@ -141,7 +165,7 @@ if (isset($_SESSION['provider_id'])) {
 </aside>
 
 <!-- Main Content -->
-<main class="lg:mr-56 min-h-screen pt-14 lg:pt-0">
+<main id="main-content" class="min-h-screen pt-14 lg:pt-0">
     <?= $content ?? '' ?>
 </main>
 
@@ -167,14 +191,12 @@ menuBtn?.addEventListener('click', openMenu);
 closeBtn?.addEventListener('click', closeMenu);
 overlay?.addEventListener('click', closeMenu);
 
-// Close on link click (mobile)
 sidebar?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
         if (window.innerWidth < 1024) closeMenu();
     });
 });
 
-// CSRF helper
 function getCsrfToken() {
     return '<?= generateCsrfToken() ?>';
 }
