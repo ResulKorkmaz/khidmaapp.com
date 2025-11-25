@@ -7,37 +7,36 @@
 ob_start();
 ?>
 
-<!-- Hero Section - Anasayfa ile uyumlu gradient -->
-<section class="relative bg-gradient-to-br from-[#1E5A8A] via-[#2B7AB8] to-[#3B9DD9] text-white overflow-hidden pt-32 pb-16 md:pt-36 md:pb-20">
+<!-- Hero Section - Solid background color -->
+<section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1E5A8A 0%, #2B7AB8 50%, #3B9DD9 100%); padding-top: 140px; padding-bottom: 80px;">
     <!-- Background Pattern -->
-    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 50px 50px;"></div>
-    
-    <!-- Decorative Orbs -->
-    <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-[#165080]/30 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3"></div>
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px;"></div>
     
     <div class="container-custom relative z-10">
         <div class="max-w-4xl mx-auto text-center">
             <!-- Breadcrumb -->
-            <nav class="mb-6 text-sm" aria-label="breadcrumb">
-                <ol class="flex items-center justify-center gap-2 text-blue-200">
-                    <li><a href="/" class="hover:text-white transition-colors duration-200 font-medium">الرئيسية</a></li>
-                    <li class="text-blue-300">/</li>
-                    <li class="text-white font-semibold">سياسة الخصوصية</li>
+            <nav class="mb-8" aria-label="breadcrumb">
+                <ol class="flex items-center justify-center gap-3 text-base">
+                    <li><a href="/" style="color: rgba(255,255,255,0.8);" class="hover:text-white transition-colors duration-200 font-medium">الرئيسية</a></li>
+                    <li style="color: rgba(255,255,255,0.5);">/</li>
+                    <li style="color: #ffffff; font-weight: bold;">سياسة الخصوصية</li>
                 </ol>
             </nav>
             
             <!-- Icon -->
-            <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg border border-white/20">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+            <div class="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3);">
+                <svg class="w-12 h-12" fill="none" stroke="#ffffff" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>
                 </svg>
             </div>
             
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
+            <!-- Başlık -->
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight" style="color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                 سياسة الخصوصية
             </h1>
-            <p class="text-xl text-blue-100 max-w-2xl mx-auto">
+            
+            <!-- Alt başlık -->
+            <p class="text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed" style="color: rgba(255,255,255,0.95);">
                 نحن ملتزمون بحماية خصوصيتك وبياناتك الشخصية وفقاً لأعلى المعايير العالمية
             </p>
         </div>
@@ -56,28 +55,28 @@ ob_start();
                 </p>
             </div>
             
-            <!-- Company Info -->
-            <div class="mb-10 p-8 bg-gradient-to-br from-[#1E5A8A] to-[#3B9DD9] rounded-2xl text-white shadow-xl">
-                <h2 class="text-2xl font-bold mb-4 flex items-center">
-                    <span class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center me-3">📋</span>
+            <!-- Company Info - Net ve okunabilir -->
+            <div class="mb-10 p-8 bg-gradient-to-br from-[#1E5A8A] to-[#3B9DD9] rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-bold mb-6 flex items-center text-white">
+                    <span class="w-12 h-12 bg-white rounded-xl flex items-center justify-center me-4 text-2xl shadow-lg">📋</span>
                     معلومات الشركة
                 </h2>
-                <div class="grid md:grid-cols-2 gap-4 text-blue-50">
-                    <div class="bg-white/10 rounded-xl p-4">
-                        <p class="text-sm text-blue-200 mb-1">المنصة</p>
-                        <p class="font-semibold">خدمة (KhidmaApp.com)</p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-xl p-5 shadow-md">
+                        <p class="text-sm text-gray-500 mb-1 font-medium">المنصة</p>
+                        <p class="font-bold text-gray-900 text-lg">خدمة (KhidmaApp.com)</p>
                     </div>
-                    <div class="bg-white/10 rounded-xl p-4">
-                        <p class="text-sm text-blue-200 mb-1">المشغّل</p>
-                        <p class="font-semibold">Aptiro LLC</p>
+                    <div class="bg-white rounded-xl p-5 shadow-md">
+                        <p class="text-sm text-gray-500 mb-1 font-medium">المشغّل</p>
+                        <p class="font-bold text-gray-900 text-lg">Aptiro LLC</p>
                     </div>
-                    <div class="bg-white/10 rounded-xl p-4">
-                        <p class="text-sm text-blue-200 mb-1">المقر الرئيسي</p>
-                        <p class="font-semibold">نيو مكسيكو، الولايات المتحدة</p>
+                    <div class="bg-white rounded-xl p-5 shadow-md">
+                        <p class="text-sm text-gray-500 mb-1 font-medium">المقر الرئيسي</p>
+                        <p class="font-bold text-gray-900 text-lg">نيو مكسيكو، الولايات المتحدة</p>
                     </div>
-                    <div class="bg-white/10 rounded-xl p-4">
-                        <p class="text-sm text-blue-200 mb-1">منطقة الخدمة</p>
-                        <p class="font-semibold">المملكة العربية السعودية</p>
+                    <div class="bg-white rounded-xl p-5 shadow-md">
+                        <p class="text-sm text-gray-500 mb-1 font-medium">منطقة الخدمة</p>
+                        <p class="font-bold text-gray-900 text-lg">المملكة العربية السعودية</p>
                     </div>
                 </div>
             </div>
