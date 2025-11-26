@@ -333,17 +333,17 @@ if (!function_exists('render_service_request_form')) {
                 background-color: rgba(239, 68, 68, 0.05);
             }
             
-            /* Toast animations */
-            @keyframes slideInRight {
-                from { transform: translateX(100%); opacity: 0; }
+            /* Toast animations - RTL friendly (slide from right) */
+            @keyframes slideInFromRight {
+                from { transform: translateX(120%); opacity: 0; }
                 to { transform: translateX(0); opacity: 1; }
             }
-            @keyframes slideOutRight {
+            @keyframes slideOutToRight {
                 from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(120%); opacity: 0; }
             }
-            .toast-enter { animation: slideInRight 0.3s ease-out forwards; }
-            .toast-exit { animation: slideOutRight 0.3s ease-in forwards; }
+            .toast-enter { animation: slideInFromRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+            .toast-exit { animation: slideOutToRight 0.3s ease-in forwards; }
             
             /* Progress bar animation */
             @keyframes progressShrink {
@@ -381,8 +381,8 @@ if (!function_exists('render_service_request_form')) {
                     if (!this.container) {
                         this.container = document.createElement('div');
                         this.container.id = 'toast-container';
-                        this.container.className = 'fixed top-4 left-4 z-[9999] flex flex-col gap-3 max-w-sm';
-                        this.container.style.cssText = 'direction: ltr;';
+                        this.container.className = 'fixed bottom-4 right-4 z-[99999] flex flex-col gap-3 max-w-sm';
+                        this.container.style.cssText = 'direction: rtl;';
                         document.body.appendChild(this.container);
                     }
                 },
