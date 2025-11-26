@@ -194,7 +194,7 @@ ob_start();
 
 <!-- Modal: Lead Gönder -->
 <div id="sendLeadModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 bg-green-50">
             <div class="flex items-center justify-between">
                 <h3 class="text-2xl font-bold text-gray-900">📤 Lead Gönder</h3>
@@ -205,27 +205,57 @@ ob_start();
                 </button>
             </div>
             <p class="text-sm text-gray-600 mt-2">Usta: <span id="modal-provider-name" class="font-bold text-green-700"></span></p>
-            <p class="text-xs text-gray-500 mt-1">Hizmet: <span id="modal-service-type" class="font-semibold"></span> | Şehir: <span id="modal-city" class="font-semibold"></span></p>
+            <p class="text-xs text-gray-500 mt-1">
+                Hizmet: <span id="modal-service-type" class="font-semibold text-blue-600"></span> | 
+                Şehir: <span id="modal-city" class="font-semibold text-purple-600"></span>
+            </p>
         </div>
         
         <div class="p-6">
+            <!-- Uygun Lead'ler Listesi -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-lg font-bold text-gray-900">🎯 Uygun Lead'ler</h4>
+                    <span id="leads-count-badge" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm font-semibold rounded-full">
+                        Yükleniyor...
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 mb-3">Ustanın hizmet türü ve şehriyle eşleşen lead'ler (en eskiden en yeniye)</p>
+                
+                <div id="matching-leads-container" class="border border-gray-200 rounded-xl overflow-hidden">
+                    <div id="matching-leads-loading" class="p-8 text-center">
+                        <svg class="animate-spin h-8 w-8 mx-auto text-green-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="text-gray-500">Lead'ler yükleniyor...</p>
+                    </div>
+                    <div id="matching-leads-list" class="hidden max-h-64 overflow-y-auto">
+                        <!-- Lead'ler buraya yüklenecek -->
+                    </div>
+                    <div id="matching-leads-empty" class="hidden p-8 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 font-medium">Uygun lead bulunamadı</p>
+                        <p class="text-gray-400 text-sm mt-1">Bu şehir ve hizmet türünde gönderilmemiş lead yok</p>
+                    </div>
+                </div>
+            </div>
+            
             <form id="sendLeadForm">
                 <input type="hidden" name="request_id" id="form-request-id">
                 <input type="hidden" name="purchase_id" id="form-purchase-id">
                 <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Lead ID Girin:</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Seçilen Lead ID:</label>
                     <input type="number" name="lead_id" id="form-lead-id" required min="1"
-                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-green-500 text-lg"
-                           placeholder="Lead ID numarasını girin...">
-                    <p class="text-xs text-gray-500 mt-2">Lead listesinden uygun bir lead seçip ID'sini buraya girin.</p>
-                </div>
-                
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
-                    <p class="text-sm text-yellow-800">
-                        <strong>⚠️ Dikkat:</strong> Lead'in hizmet türü ve şehri ustanın bilgileriyle eşleştiğinden emin olun.
-                    </p>
+                           class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-green-500 focus:ring-green-500 text-lg font-bold"
+                           placeholder="Yukarıdan bir lead seçin veya ID girin...">
+                    <p class="text-xs text-gray-500 mt-2">Yukarıdaki listeden tıklayarak seçebilir veya manuel ID girebilirsiniz.</p>
                 </div>
                 
                 <div class="flex gap-3 justify-end">
@@ -247,14 +277,114 @@ ob_start();
 </div>
 
 <script>
-function openSendLeadModal(requestId, providerName, serviceType, city, purchaseId) {
+// Hizmet türleri ve şehir isimleri
+const serviceTypeNames = <?= json_encode(array_map(fn($s) => $s['tr'], getServiceTypes())) ?>;
+const cityNames = <?= json_encode(array_map(fn($c) => $c['tr'], getCities())) ?>;
+
+async function openSendLeadModal(requestId, providerName, serviceType, city, purchaseId) {
     document.getElementById('modal-provider-name').textContent = providerName;
-    document.getElementById('modal-service-type').textContent = serviceType;
-    document.getElementById('modal-city').textContent = city;
+    document.getElementById('modal-service-type').textContent = serviceTypeNames[serviceType] || serviceType;
+    document.getElementById('modal-city').textContent = cityNames[city] || city;
     document.getElementById('form-request-id').value = requestId;
     document.getElementById('form-purchase-id').value = purchaseId;
     document.getElementById('form-lead-id').value = '';
     document.getElementById('sendLeadModal').classList.remove('hidden');
+    
+    // Lead'leri yükle
+    await loadMatchingLeads(serviceType, city);
+}
+
+async function loadMatchingLeads(serviceType, city) {
+    const loadingEl = document.getElementById('matching-leads-loading');
+    const listEl = document.getElementById('matching-leads-list');
+    const emptyEl = document.getElementById('matching-leads-empty');
+    const countBadge = document.getElementById('leads-count-badge');
+    
+    // Durumu sıfırla
+    loadingEl.classList.remove('hidden');
+    listEl.classList.add('hidden');
+    emptyEl.classList.add('hidden');
+    countBadge.textContent = 'Yükleniyor...';
+    countBadge.className = 'px-3 py-1 bg-gray-100 text-gray-600 text-sm font-semibold rounded-full';
+    
+    try {
+        const response = await fetch(`/admin/api/available-leads?service_type=${encodeURIComponent(serviceType)}&city=${encodeURIComponent(city)}`);
+        const result = await response.json();
+        
+        loadingEl.classList.add('hidden');
+        
+        if (result.success && result.leads && result.leads.length > 0) {
+            const leads = result.leads;
+            countBadge.textContent = `${leads.length} Lead`;
+            countBadge.className = 'px-3 py-1 bg-green-100 text-green-800 text-sm font-semibold rounded-full';
+            
+            // Lead listesini oluştur
+            listEl.innerHTML = leads.map((lead, index) => {
+                const statusBadge = getStatusBadge(lead.status);
+                const date = new Date(lead.created_at);
+                const formattedDate = date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+                
+                return `
+                    <div onclick="selectLead(${lead.id})" 
+                         class="lead-item p-4 border-b border-gray-100 hover:bg-green-50 cursor-pointer transition-colors flex items-center justify-between gap-4"
+                         data-lead-id="${lead.id}">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center font-bold text-blue-600">
+                                #${lead.id}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="font-semibold text-gray-900">📞 ${lead.phone}</span>
+                                    ${statusBadge}
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">${lead.description ? lead.description.substring(0, 50) + '...' : 'Açıklama yok'}</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <div class="text-xs text-gray-400">${formattedDate}</div>
+                            <div class="text-xs text-orange-600 font-medium mt-1">${index === 0 ? '🔥 En eski' : ''}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            listEl.classList.remove('hidden');
+        } else {
+            countBadge.textContent = '0 Lead';
+            countBadge.className = 'px-3 py-1 bg-red-100 text-red-800 text-sm font-semibold rounded-full';
+            emptyEl.classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Load leads error:', error);
+        loadingEl.classList.add('hidden');
+        countBadge.textContent = 'Hata';
+        countBadge.className = 'px-3 py-1 bg-red-100 text-red-800 text-sm font-semibold rounded-full';
+        emptyEl.classList.remove('hidden');
+        emptyEl.querySelector('p.text-gray-500').textContent = 'Lead\'ler yüklenirken hata oluştu';
+    }
+}
+
+function getStatusBadge(status) {
+    const badges = {
+        'new': '<span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded">Yeni</span>',
+        'verified': '<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded">Doğrulanmış</span>',
+        'pending': '<span class="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded">Beklemede</span>'
+    };
+    return badges[status] || `<span class="px-2 py-0.5 bg-gray-100 text-gray-700 text-xs font-semibold rounded">${status}</span>`;
+}
+
+function selectLead(leadId) {
+    document.getElementById('form-lead-id').value = leadId;
+    
+    // Seçili lead'i vurgula
+    document.querySelectorAll('.lead-item').forEach(item => {
+        item.classList.remove('bg-green-100', 'border-l-4', 'border-green-500');
+    });
+    
+    const selectedItem = document.querySelector(`.lead-item[data-lead-id="${leadId}"]`);
+    if (selectedItem) {
+        selectedItem.classList.add('bg-green-100', 'border-l-4', 'border-green-500');
+    }
 }
 
 function closeSendLeadModal() {

@@ -227,6 +227,7 @@ class AdminPurchaseController extends BaseAdminController
     
     /**
      * Mevcut lead'leri getir (provider için)
+     * En eskiden en yeniye sıralı - aynı şehir ve hizmet türü filtrelemeli
      */
     public function availableLeads(): void
     {
@@ -248,6 +249,7 @@ class AdminPurchaseController extends BaseAdminController
                 $params[] = $city;
             }
             
+            // En eskiden en yeniye sıralama (ASC) - adil dağıtım için
             $stmt = $this->pdo->prepare("
                 SELECT id, service_type, city, phone, description, service_time_type, 
                        scheduled_date, status, created_at, is_sent_to_provider
@@ -257,7 +259,7 @@ class AdminPurchaseController extends BaseAdminController
                 AND status IN ('new', 'verified', 'pending')
                 AND (is_sent_to_provider = 0 OR is_sent_to_provider IS NULL)
                 AND deleted_at IS NULL
-                ORDER BY created_at DESC
+                ORDER BY created_at ASC
                 LIMIT 50
             ");
             $stmt->execute($params);
@@ -385,6 +387,7 @@ class AdminPurchaseController extends BaseAdminController
                 $params[] = $city;
             }
             
+            // En eskiden en yeniye sıralama (ASC) - adil dağıtım için
             $stmt = $this->pdo->prepare("
                 SELECT 
                     id, service_type, city, phone, whatsapp_phone, description,
@@ -396,7 +399,7 @@ class AdminPurchaseController extends BaseAdminController
                 AND status IN ('new', 'verified', 'pending')
                 AND (is_sent_to_provider = 0 OR is_sent_to_provider IS NULL)
                 AND deleted_at IS NULL
-                ORDER BY created_at DESC
+                ORDER BY created_at ASC
                 LIMIT 50
             ");
             $stmt->execute($params);
