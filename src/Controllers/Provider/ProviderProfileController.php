@@ -68,16 +68,36 @@ class ProviderProfileController extends BaseProviderController
     private function updateProfile(array $provider): void
     {
         if (!$this->verifyCsrf()) {
-            $_SESSION['error'] = 'Geçersiz güvenlik belirteci';
+            $_SESSION['error'] = 'رمز الأمان غير صالح';
             $this->redirect('/provider/profile');
         }
         
+        $action = $this->postParam('action');
+        
+        switch ($action) {
+            case 'update_profile':
+                $this->updatePersonalInfo($provider);
+                break;
+            case 'update_service':
+                $this->updateServiceInfo($provider);
+                break;
+            case 'change_password':
+                $this->changePasswordFromProfile($provider);
+                break;
+            default:
+                $_SESSION['error'] = 'إجراء غير صالح';
+                $this->redirect('/provider/profile');
+        }
+    }
+    
+    /**
+     * Kişisel bilgileri güncelle
+     */
+    private function updatePersonalInfo(array $provider): void
+    {
         $name = $this->sanitizedPost('name');
         $email = $this->sanitizedPost('email');
         $phone = $this->sanitizedPost('phone');
-        $serviceType = $this->sanitizedPost('service_type');
-        $city = $this->sanitizedPost('city');
-        $description = $this->sanitizedPost('description');
         
         // Validasyon
         $errors = [];
@@ -111,17 +131,93 @@ class ProviderProfileController extends BaseProviderController
             // Güncelle
             $stmt = $this->db->prepare("
                 UPDATE service_providers 
-                SET name = ?, email = ?, phone = ?, service_type = ?, city = ?, description = ?, updated_at = NOW()
+                SET name = ?, email = ?, phone = ?, updated_at = NOW()
                 WHERE id = ?
             ");
-            $stmt->execute([$name, $email, $phone, $serviceType, $city, $description, $provider['id']]);
+            $stmt->execute([$name, $email, $phone, $provider['id']]);
             
-            $_SESSION['success'] = 'تم تحديث الملف الشخصي بنجاح';
+            // Session'daki ismi güncelle
+            $_SESSION['provider_name'] = $name;
+            
+            $_SESSION['success'] = 'تم تحديث المعلومات الشخصية بنجاح';
             $this->redirect('/provider/profile');
             
         } catch (PDOException $e) {
-            error_log("Update profile error: " . $e->getMessage());
-            $_SESSION['error'] = 'حدث خطأ أثناء تحديث الملف الشخصي';
+            error_log("Update personal info error: " . $e->getMessage());
+            $_SESSION['error'] = 'حدث خطأ أثناء تحديث المعلومات';
+            $this->redirect('/provider/profile');
+        }
+    }
+    
+    /**
+     * Hizmet bilgilerini güncelle
+     */
+    private function updateServiceInfo(array $provider): void
+    {
+        $serviceType = $this->sanitizedPost('service_type');
+        $city = $this->sanitizedPost('city');
+        $bio = $this->sanitizedPost('bio');
+        
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE service_providers 
+                SET service_type = ?, city = ?, bio = ?, updated_at = NOW()
+                WHERE id = ?
+            ");
+            $stmt->execute([$serviceType, $city, $bio, $provider['id']]);
+            
+            $_SESSION['success'] = 'تم تحديث معلومات الخدمة بنجاح';
+            $this->redirect('/provider/profile');
+            
+        } catch (PDOException $e) {
+            error_log("Update service info error: " . $e->getMessage());
+            $_SESSION['error'] = 'حدث خطأ أثناء تحديث معلومات الخدمة';
+            $this->redirect('/provider/profile');
+        }
+    }
+    
+    /**
+     * Profil sayfasından şifre değiştir
+     */
+    private function changePasswordFromProfile(array $provider): void
+    {
+        $currentPassword = $this->postParam('current_password');
+        $newPassword = $this->postParam('new_password');
+        $confirmPassword = $this->postParam('confirm_password');
+        
+        // Validasyon
+        if (empty($currentPassword) || empty($newPassword) || empty($confirmPassword)) {
+            $_SESSION['error'] = 'جميع حقول كلمة المرور مطلوبة';
+            $this->redirect('/provider/profile');
+        }
+        
+        if (!password_verify($currentPassword, $provider['password_hash'])) {
+            $_SESSION['error'] = 'كلمة المرور الحالية غير صحيحة';
+            $this->redirect('/provider/profile');
+        }
+        
+        if ($newPassword !== $confirmPassword) {
+            $_SESSION['error'] = 'كلمات المرور الجديدة غير متطابقة';
+            $this->redirect('/provider/profile');
+        }
+        
+        if (strlen($newPassword) < 6) {
+            $_SESSION['error'] = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+            $this->redirect('/provider/profile');
+        }
+        
+        try {
+            $passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+            
+            $stmt = $this->db->prepare("UPDATE service_providers SET password_hash = ?, updated_at = NOW() WHERE id = ?");
+            $stmt->execute([$passwordHash, $provider['id']]);
+            
+            $_SESSION['success'] = 'تم تغيير كلمة المرور بنجاح';
+            $this->redirect('/provider/profile');
+            
+        } catch (PDOException $e) {
+            error_log("Change password error: " . $e->getMessage());
+            $_SESSION['error'] = 'حدث خطأ أثناء تغيير كلمة المرور';
             $this->redirect('/provider/profile');
         }
     }
