@@ -63,13 +63,13 @@ if (isset($_SESSION['provider_id'])) {
 ?>
 
 <!-- Mobile Header -->
-<header class="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-30">
-    <a href="/provider/dashboard" class="font-bold text-green-600">KhidmaApp</a>
-    <button id="menuBtn" class="p-2 text-gray-600">
+<header class="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 z-30 shadow-sm">
+    <button id="menuBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
         </svg>
     </button>
+    <a href="/provider/dashboard" class="font-bold text-green-600 text-lg">KhidmaApp</a>
 </header>
 
 <!-- Overlay -->
@@ -78,7 +78,7 @@ if (isset($_SESSION['provider_id'])) {
 <!-- Sidebar -->
 <aside id="sidebar" class="w-56 bg-white border-l border-gray-200 z-50 flex flex-col">
     <!-- Logo -->
-    <div class="hidden lg:flex items-center gap-2 h-14 px-4 border-b border-gray-200">
+    <div class="hidden lg:flex items-center gap-2 h-16 px-4 border-b border-gray-200">
         <div class="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -88,9 +88,9 @@ if (isset($_SESSION['provider_id'])) {
     </div>
 
     <!-- Mobile Close -->
-    <div class="lg:hidden flex items-center justify-between h-14 px-4 border-b border-gray-200">
+    <div class="lg:hidden flex items-center justify-between h-16 px-4 border-b border-gray-200">
         <span class="font-bold text-gray-900">القائمة</span>
-        <button id="closeBtn" class="p-2 text-gray-600">
+        <button id="closeBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
