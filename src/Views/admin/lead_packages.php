@@ -27,8 +27,12 @@ $categoryColors = [
     'renovation' => ['bg' => 'bg-orange-500', 'light' => 'bg-orange-50', 'border' => 'border-orange-300', 'text' => 'text-orange-700', 'icon' => '🏗️'],
     'ac' => ['bg' => 'bg-cyan-500', 'light' => 'bg-cyan-50', 'border' => 'border-cyan-300', 'text' => 'text-cyan-700', 'icon' => '❄️'],
     'cleaning' => ['bg' => 'bg-green-500', 'light' => 'bg-green-50', 'border' => 'border-green-300', 'text' => 'text-green-700', 'icon' => '🧹'],
+    'manual_sale' => ['bg' => 'bg-emerald-600', 'light' => 'bg-emerald-50', 'border' => 'border-emerald-400', 'text' => 'text-emerald-700', 'icon' => '💬'],
     'general' => ['bg' => 'bg-gray-500', 'light' => 'bg-gray-50', 'border' => 'border-gray-300', 'text' => 'text-gray-700', 'icon' => '📦'],
 ];
+
+// Manuel satış kategorisi için özel isim
+$manualSaleInfo = ['tr' => 'Manuel Satış (WhatsApp)', 'ar' => 'مبيعات يدوية', 'icon' => '💬'];
 
 // Start output buffering
 ob_start();
@@ -122,7 +126,12 @@ ob_start();
         <!-- Packages by Category -->
         <?php foreach ($packagesByService as $serviceType => $servicePackages): ?>
             <?php 
-            $serviceInfo = $services[$serviceType] ?? ['tr' => ucfirst($serviceType), 'ar' => $serviceType, 'icon' => '📦'];
+            // Manuel satış için özel isim kullan
+            if ($serviceType === 'manual_sale') {
+                $serviceInfo = $manualSaleInfo;
+            } else {
+                $serviceInfo = $services[$serviceType] ?? ['tr' => ucfirst($serviceType), 'ar' => $serviceType, 'icon' => '📦'];
+            }
             $colors = $categoryColors[$serviceType] ?? $categoryColors['general'];
             ?>
             <div class="bg-white rounded-2xl shadow-sm border-2 <?= $colors['border'] ?> mb-6 overflow-hidden" id="category-<?= $serviceType ?>">
@@ -180,32 +189,65 @@ ob_start();
                                 </div>
 
                                 <!-- Price Section -->
+                                <?php 
+                                $currency = $package['currency'] ?? 'SAR';
+                                $currencySymbol = $currency === 'USD' ? '$' : ($currency === 'EUR' ? '€' : '');
+                                $isManualSale = !empty($package['is_manual_sale']);
+                                ?>
                                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 mb-4">
                                     <div class="flex items-end justify-between">
                                         <div>
                                             <p class="text-xs text-gray-500 font-medium">Toplam Fiyat</p>
-                                            <p class="text-2xl font-bold text-gray-900"><?= number_format($package['price_sar'], 0) ?> <span class="text-sm font-normal text-gray-500">SAR</span></p>
+                                            <p class="text-2xl font-bold text-gray-900">
+                                                <?php if ($currencySymbol): ?>
+                                                    <?= $currencySymbol ?><?= number_format($package['price_sar'], 0) ?>
+                                                <?php else: ?>
+                                                    <?= number_format($package['price_sar'], 0) ?> <span class="text-sm font-normal text-gray-500"><?= $currency ?></span>
+                                                <?php endif; ?>
+                                            </p>
                                         </div>
                                         <div class="text-right">
                                             <p class="text-xs text-gray-500 font-medium">Lead Başına</p>
-                                            <p class="text-lg font-semibold text-gray-700"><?= number_format($package['price_per_lead'], 0) ?> SAR</p>
+                                            <p class="text-lg font-semibold text-gray-700">
+                                                <?php if ($currencySymbol): ?>
+                                                    <?= $currencySymbol ?><?= number_format($package['price_per_lead'], 0) ?>
+                                                <?php else: ?>
+                                                    <?= number_format($package['price_per_lead'], 0) ?> <?= $currency ?>
+                                                <?php endif; ?>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Stripe Status -->
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-xs text-gray-500">Stripe Durumu:</span>
-                                    <?php if ($package['stripe_product_id']): ?>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700" title="<?= htmlspecialchars($package['stripe_product_id']) ?>">
-                                            ✓ Bağlı
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500">
-                                            Bağlı Değil
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
+                                <?php if ($isManualSale && !empty($package['stripe_payment_link'])): ?>
+                                    <!-- Payment Link for Manual Sales -->
+                                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 mb-4">
+                                        <p class="text-xs text-emerald-600 font-semibold mb-2">💬 WhatsApp Payment Link:</p>
+                                        <div class="flex items-center gap-2">
+                                            <input type="text" readonly value="<?= htmlspecialchars($package['stripe_payment_link']) ?>" 
+                                                   class="flex-1 text-xs bg-white border border-emerald-300 rounded px-2 py-1.5 text-gray-700 font-mono"
+                                                   id="payment-link-<?= $package['id'] ?>">
+                                            <button onclick="copyPaymentLink(<?= $package['id'] ?>)" 
+                                                    class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded transition-colors">
+                                                Kopyala
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php else: ?>
+                                    <!-- Stripe Status -->
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="text-xs text-gray-500">Stripe Durumu:</span>
+                                        <?php if ($package['stripe_product_id']): ?>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700" title="<?= htmlspecialchars($package['stripe_product_id']) ?>">
+                                                ✓ Bağlı
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500">
+                                                Bağlı Değil
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
 
                                 <!-- Actions -->
                                 <div class="flex items-center gap-2 pt-3 border-t border-gray-200">
@@ -384,6 +426,21 @@ ob_start();
 <script>
 // CSRF Token
 const csrfToken = '<?= generateCsrfToken() ?>';
+
+// Copy Payment Link
+function copyPaymentLink(packageId) {
+    const input = document.getElementById('payment-link-' + packageId);
+    input.select();
+    input.setSelectionRange(0, 99999);
+    
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('Payment link kopyalandı! WhatsApp\'ta paylaşabilirsiniz.', 'success');
+    }).catch(err => {
+        // Fallback for older browsers
+        document.execCommand('copy');
+        showToast('Payment link kopyalandı!', 'success');
+    });
+}
 
 // Modal Functions
 function openCreateModal() {
