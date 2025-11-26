@@ -1,4 +1,42 @@
-<?php ob_start(); ?>
+<?php ob_start(); 
+
+// Okunmamış mesaj sayısını al
+$unreadMsgCount = 0;
+try {
+    $pdo = getDatabase();
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM provider_messages WHERE provider_id = ? AND is_read = 0 AND deleted_at IS NULL");
+    $stmt->execute([$_SESSION['provider_id'] ?? 0]);
+    $unreadMsgCount = (int)$stmt->fetchColumn();
+} catch (Exception $e) {}
+?>
+
+<?php if ($unreadMsgCount > 0): ?>
+<!-- Mesaj Bildirimi -->
+<div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-4 mb-6 shadow-lg">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-white font-bold flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+                    لديك <?= $unreadMsgCount ?> رسالة جديدة من الإدارة
+                </p>
+                <p class="text-blue-100 text-sm">اضغط لقراءة الرسائل</p>
+            </div>
+        </div>
+        <a href="/provider/messages" class="px-6 py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors flex items-center gap-2 shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            عرض الرسائل
+        </a>
+    </div>
+</div>
+<?php endif; ?>
 
 <!-- İstatistik Kartları -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">

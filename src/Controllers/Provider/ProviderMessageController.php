@@ -76,6 +76,34 @@ class ProviderMessageController extends BaseProviderController
     }
     
     /**
+     * Tüm mesajları okundu olarak işaretle
+     */
+    public function markAllRead(): void
+    {
+        $this->requireAuth();
+        
+        if (!$this->isPost()) {
+            $this->errorResponse('Method not allowed', 405);
+        }
+        
+        $providerId = $this->getProviderId();
+        
+        try {
+            $stmt = $this->db->prepare("
+                UPDATE provider_messages 
+                SET is_read = 1, read_at = NOW()
+                WHERE provider_id = ? AND is_read = 0 AND deleted_at IS NULL
+            ");
+            $stmt->execute([$providerId]);
+            
+            $this->successResponse('Tüm mesajlar okundu olarak işaretlendi');
+        } catch (PDOException $e) {
+            error_log("Mark all messages read error: " . $e->getMessage());
+            $this->errorResponse('İşlem başarısız', 500);
+        }
+    }
+    
+    /**
      * Mesajı sil
      */
     public function delete(): void

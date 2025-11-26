@@ -143,8 +143,9 @@ $routes = [
     
     // ========== PROVIDER MESSAGES ==========
     'GET:/provider/messages' => ['ProviderMessageController', 'index', 'provider.auth'],
-    'POST:/provider/mark-message-read' => ['ProviderMessageController', 'markRead', 'provider.auth'],
-    'POST:/provider/delete-message' => ['ProviderMessageController', 'delete', 'provider.auth'],
+    'POST:/provider/messages/mark-read' => ['ProviderMessageController', 'markRead', 'provider.auth'],
+    'POST:/provider/messages/mark-all-read' => ['ProviderMessageController', 'markAllRead', 'provider.auth'],
+    'POST:/provider/messages/delete' => ['ProviderMessageController', 'delete', 'provider.auth'],
     
     // ========== PROVIDER PACKAGES ==========
     'GET:/provider/packages' => ['ProviderPurchaseController', 'packages', 'provider.auth'],

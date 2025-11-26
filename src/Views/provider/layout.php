@@ -45,12 +45,19 @@
 <body class="bg-gray-100">
 <?php
 $unviewedCount = 0;
+$unreadMessageCount = 0;
 if (isset($_SESSION['provider_id'])) {
     try {
         $pdo = getDatabase();
+        // Görülmemiş lead sayısı
         $stmt = $pdo->prepare("SELECT COUNT(*) FROM provider_lead_deliveries WHERE provider_id = ? AND viewed_at IS NULL AND deleted_at IS NULL");
         $stmt->execute([$_SESSION['provider_id']]);
         $unviewedCount = (int)$stmt->fetchColumn();
+        
+        // Okunmamış mesaj sayısı
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM provider_messages WHERE provider_id = ? AND is_read = 0 AND deleted_at IS NULL");
+        $stmt->execute([$_SESSION['provider_id']]);
+        $unreadMessageCount = (int)$stmt->fetchColumn();
     } catch (Exception $e) {}
 }
 ?>
@@ -125,6 +132,18 @@ if (isset($_SESSION['provider_id'])) {
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
             </svg>
             الملف الشخصي
+        </a>
+
+        <a href="/provider/messages" class="nav-item flex items-center justify-between mx-2 px-3 py-2.5 rounded-lg text-sm font-medium <?= ($currentPage ?? '') === 'messages' ? 'active' : 'text-gray-700' ?>">
+            <div class="flex items-center gap-3">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                الرسائل
+            </div>
+            <?php if ($unreadMessageCount > 0): ?>
+            <span class="px-1.5 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full min-w-[20px] text-center animate-pulse"><?= $unreadMessageCount ?></span>
+            <?php endif; ?>
         </a>
 
         <a href="/provider/hidden-leads" class="nav-item flex items-center gap-3 mx-2 px-3 py-2.5 rounded-lg text-sm font-medium <?= ($currentPage ?? '') === 'hidden-leads' ? 'active' : 'text-gray-700' ?>">
