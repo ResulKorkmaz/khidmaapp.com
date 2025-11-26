@@ -1,7 +1,7 @@
 <?php
 /**
  * Admin Lead Packages Management Page
- * Stripe entegrasyonlu paket yönetimi
+ * Stripe entegrasyonlu paket yönetimi - Modern ve Profesyonel
  */
 
 if (!isset($_SESSION['admin_id'])) {
@@ -9,14 +9,13 @@ if (!isset($_SESSION['admin_id'])) {
     exit;
 }
 
-// Page data
-$packages = $pageData['packages'] ?? [];
-$packagesByService = $pageData['packagesByService'] ?? [];
-$totalPackages = $pageData['totalPackages'] ?? 0;
-$activeCount = $pageData['activeCount'] ?? 0;
-$inactiveCount = $pageData['inactiveCount'] ?? 0;
-$services = $pageData['services'] ?? [];
-$pageTitle = $pageData['pageTitle'] ?? 'Lead Paket Yönetimi';
+// Page data - Controller'dan gelen değişkenler doğrudan kullanılabilir
+$packages = $packages ?? [];
+$totalPackages = $totalPackages ?? 0;
+$activeCount = $activeCount ?? 0;
+$inactiveCount = $inactiveCount ?? 0;
+$pageTitle = $pageTitle ?? 'Lead Paket Yönetimi';
+$currentPage = 'lead-packages';
 
 // Start output buffering
 ob_start();
@@ -85,97 +84,139 @@ ob_start();
         </div>
     </div>
 
-    <!-- Packages by Service Type -->
-    <?php foreach ($packagesByService as $serviceType => $servicePackages): ?>
-        <?php $serviceInfo = $services[$serviceType] ?? ['tr' => $serviceType, 'icon' => '📦']; ?>
-        
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
-            <!-- Service Header -->
-            <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl"><?= $serviceInfo['icon'] ?? '📦' ?></span>
-                    <h2 class="text-lg font-bold text-gray-900"><?= htmlspecialchars($serviceInfo['tr']) ?></h2>
-                    <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full"><?= count($servicePackages) ?> paket</span>
-                </div>
-            </div>
-
-            <!-- Packages Grid -->
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <?php foreach ($servicePackages as $package): ?>
-                    <?php 
-                    $isActive = $package['is_active'];
-                    $cardClass = $isActive ? 'border-blue-200 bg-blue-50/30' : 'border-gray-200 bg-gray-50 opacity-60';
-                    ?>
-                    <div class="border-2 <?= $cardClass ?> rounded-xl p-4 hover:shadow-md transition-all" id="package-card-<?= $package['id'] ?>">
-                        <!-- Package Header -->
-                        <div class="flex items-start justify-between mb-3">
-                            <div>
-                                <h3 class="font-bold text-lg text-gray-900"><?= htmlspecialchars($package['name_tr']) ?></h3>
-                                <p class="text-sm text-gray-500 mt-1" dir="rtl"><?= htmlspecialchars($package['name_ar']) ?></p>
-                            </div>
-                            <!-- Toggle Switch -->
-                            <button onclick="toggleStatus(<?= $package['id'] ?>)" 
-                                    id="status-btn-<?= $package['id'] ?>"
-                                    class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none <?= $isActive ? 'bg-green-500' : 'bg-gray-300' ?>">
-                                <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform <?= $isActive ? 'translate-x-6' : 'translate-x-1' ?>"></span>
-                            </button>
-                        </div>
-
-                        <!-- Package Details -->
-                        <div class="space-y-2 mb-4">
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Lead Sayısı:</span>
-                                <span class="font-bold text-blue-600"><?= $package['lead_count'] ?> lead</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Toplam Fiyat:</span>
-                                <span class="font-bold text-gray-900"><?= number_format($package['price_sar'], 2) ?> SAR</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-600">Lead Başına:</span>
-                                <span class="font-semibold text-gray-700"><?= number_format($package['price_per_lead'], 2) ?> SAR</span>
-                            </div>
-                            <?php if ($package['discount_percentage'] > 0): ?>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">İndirim:</span>
-                                    <span class="font-bold text-green-600">%<?= number_format($package['discount_percentage'], 1) ?></span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <!-- Stripe Info -->
-                        <?php if ($package['stripe_product_id']): ?>
-                            <div class="mb-4 p-2 bg-purple-50 rounded-lg">
-                                <p class="text-xs text-purple-700 font-mono truncate" title="<?= htmlspecialchars($package['stripe_product_id']) ?>">
-                                    🔗 <?= htmlspecialchars(substr($package['stripe_product_id'], 0, 20)) ?>...
-                                </p>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Actions -->
-                        <div class="flex items-center gap-2 pt-3 border-t border-gray-200">
-                            <button onclick='openEditModal(<?= json_encode($package) ?>)' 
-                                    class="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors">
-                                ✏️ Düzenle
-                            </button>
-                            <button onclick="deletePackage(<?= $package['id'] ?>, '<?= htmlspecialchars($package['name_tr']) ?>')" 
-                                    class="px-3 py-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white text-sm font-semibold rounded-lg transition-colors">
-                                🗑️
-                            </button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-        </div>
-    <?php endforeach; ?>
-
     <?php if (empty($packages)): ?>
+        <!-- Empty State -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
             <span class="text-6xl mb-4 block">📭</span>
             <p class="text-gray-500 font-medium mb-4">Henüz paket eklenmemiş</p>
             <button onclick="openCreateModal()" class="text-blue-600 hover:text-blue-700 font-semibold">
                 + İlk Paketi Oluştur
             </button>
+        </div>
+    <?php else: ?>
+        <!-- Packages Table -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <!-- Table Header -->
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-gray-900">Lead Paketleri</h2>
+                    <p class="text-sm text-gray-500"><?= count($packages) ?> paket</p>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Paket</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Lead Sayısı</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Fiyat (SAR)</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Lead Başına</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">İndirim</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Stripe</th>
+                            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Durum</th>
+                            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        <?php foreach ($packages as $package): ?>
+                            <?php 
+                            $isActive = $package['is_active'];
+                            $rowClass = $isActive ? '' : 'bg-gray-50 opacity-60';
+                            ?>
+                            <tr class="hover:bg-gray-50 transition-colors <?= $rowClass ?>" id="package-row-<?= $package['id'] ?>">
+                                <!-- Paket Adı -->
+                                <td class="px-6 py-4">
+                                    <div>
+                                        <p class="font-bold text-gray-900"><?= htmlspecialchars($package['name_tr']) ?></p>
+                                        <p class="text-sm text-gray-500" dir="rtl"><?= htmlspecialchars($package['name_ar']) ?></p>
+                                        <?php if (!empty($package['description_tr'])): ?>
+                                            <p class="text-xs text-gray-400 mt-1"><?= htmlspecialchars($package['description_tr']) ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+
+                                <!-- Lead Sayısı -->
+                                <td class="px-6 py-4 text-center">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-700">
+                                        <?= $package['lead_count'] ?> Lead
+                                    </span>
+                                </td>
+
+                                <!-- Fiyat -->
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-lg font-bold text-gray-900"><?= number_format($package['price_sar'], 2) ?></span>
+                                    <span class="text-xs text-gray-500">SAR</span>
+                                </td>
+
+                                <!-- Lead Başına -->
+                                <td class="px-6 py-4 text-center">
+                                    <span class="text-sm font-semibold text-gray-700"><?= number_format($package['price_per_lead'], 2) ?> SAR</span>
+                                </td>
+
+                                <!-- İndirim -->
+                                <td class="px-6 py-4 text-center">
+                                    <?php if ($package['discount_percentage'] > 0): ?>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                                            %<?= number_format($package['discount_percentage'], 1) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400">-</span>
+                                    <?php endif; ?>
+                                </td>
+
+                                <!-- Stripe -->
+                                <td class="px-6 py-4 text-center">
+                                    <?php if ($package['stripe_product_id']): ?>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700" title="<?= htmlspecialchars($package['stripe_product_id']) ?>">
+                                            ✓ Bağlı
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-500">
+                                            Bağlı Değil
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+
+                                <!-- Durum Toggle -->
+                                <td class="px-6 py-4 text-center">
+                                    <button onclick="toggleStatus(<?= $package['id'] ?>)" 
+                                            id="status-btn-<?= $package['id'] ?>"
+                                            class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 <?= $isActive ? 'bg-green-500' : 'bg-gray-300' ?>">
+                                        <span class="inline-block h-4 w-4 transform rounded-full bg-white transition-transform <?= $isActive ? 'translate-x-6' : 'translate-x-1' ?>"></span>
+                                    </button>
+                                </td>
+
+                                <!-- İşlemler -->
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <!-- Düzenle -->
+                                        <button onclick='openEditModal(<?= json_encode($package) ?>)' 
+                                                class="group flex items-center gap-1.5 px-3 py-2 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white border border-blue-200 hover:border-blue-600 rounded-lg transition-all shadow-sm hover:shadow-md"
+                                                title="Düzenle">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                            </svg>
+                                            <span class="text-xs font-semibold">Düzenle</span>
+                                        </button>
+
+                                        <!-- Sil -->
+                                        <button onclick="deletePackage(<?= $package['id'] ?>, '<?= htmlspecialchars($package['name_tr']) ?>')" 
+                                                class="group flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white border border-red-200 hover:border-red-600 rounded-lg transition-all shadow-sm hover:shadow-md"
+                                                title="Sil">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            <span class="text-xs font-semibold">Sil</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     <?php endif; ?>
 </div>
@@ -200,19 +241,6 @@ ob_start();
             <input type="hidden" id="packageId" name="package_id">
             <input type="hidden" id="isEdit" value="0">
 
-            <!-- Service Type (only for create) -->
-            <div id="serviceTypeContainer">
-                <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Hizmet Türü <span class="text-red-500">*</span>
-                </label>
-                <select id="serviceType" name="service_type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                    <option value="">Seçiniz...</option>
-                    <?php foreach ($services as $key => $service): ?>
-                        <option value="<?= $key ?>"><?= $service['icon'] ?? '' ?> <?= htmlspecialchars($service['tr']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
             <!-- Lead Count (only for create) -->
             <div id="leadCountContainer">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
@@ -220,6 +248,7 @@ ob_start();
                 </label>
                 <input type="number" id="leadCount" name="lead_count" min="1" placeholder="Örn: 3" 
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <p class="text-xs text-gray-500 mt-1">Pakette kaç lead olacağını belirleyin</p>
             </div>
 
             <!-- Price -->
@@ -229,38 +258,62 @@ ob_start();
                 </label>
                 <input type="number" id="priceSar" name="price_sar" min="0" step="0.01" placeholder="Örn: 324.00" 
                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <p class="text-xs text-gray-500 mt-1">Toplam paket fiyatı (Suudi Riyali)</p>
             </div>
 
-            <!-- Turkish Name -->
-            <div>
+            <!-- Discount Percentage (only for create) -->
+            <div id="discountContainer">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Türkçe Ad <span class="text-red-500">*</span>
+                    İndirim Oranı (%)
                 </label>
-                <input type="text" id="nameTr" name="name_tr" placeholder="Örn: Elektrik - 3 Lead" 
-                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                <input type="number" id="discountPercentage" name="discount_percentage" min="0" max="100" step="0.1" placeholder="Örn: 10" 
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <p class="text-xs text-gray-500 mt-1">Opsiyonel - Gösterilecek indirim yüzdesi</p>
             </div>
 
-            <!-- Arabic Name -->
-            <div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Turkish Name -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Türkçe Ad <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="nameTr" name="name_tr" placeholder="Örn: 3 Lead Paketi" 
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+
+                <!-- Arabic Name -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Arapça Ad <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="nameAr" name="name_ar" placeholder="حزمة 3 طلبات" dir="rtl"
+                           class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Turkish Description -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Türkçe Açıklama</label>
+                    <textarea id="descriptionTr" name="description_tr" rows="2" placeholder="3 yeni müşteri adayı kazanın"
+                              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- Arabic Description -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Arapça Açıklama</label>
+                    <textarea id="descriptionAr" name="description_ar" rows="2" placeholder="احصل على 3 عملاء محتملين جدد" dir="rtl"
+                              class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                </div>
+            </div>
+
+            <!-- Display Order (only for edit) -->
+            <div id="displayOrderContainer" class="hidden">
                 <label class="block text-sm font-semibold text-gray-700 mb-2">
-                    Arapça Ad <span class="text-red-500">*</span>
+                    Sıralama
                 </label>
-                <input type="text" id="nameAr" name="name_ar" placeholder="حزمة 3 طلبات" dir="rtl"
-                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-            </div>
-
-            <!-- Turkish Description -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Türkçe Açıklama</label>
-                <textarea id="descriptionTr" name="description_tr" rows="2" placeholder="3 yeni müşteri adayı kazanın"
-                          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-            </div>
-
-            <!-- Arabic Description -->
-            <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-2">Arapça Açıklama</label>
-                <textarea id="descriptionAr" name="description_ar" rows="2" placeholder="احصل على 3 عملاء محتملين جدد" dir="rtl"
-                          class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+                <input type="number" id="displayOrder" name="display_order" min="0"
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             </div>
 
             <!-- Active Status -->
@@ -276,6 +329,15 @@ ob_start();
                         <span class="text-sm font-medium">Pasif</span>
                     </label>
                 </div>
+            </div>
+
+            <!-- Stripe Info -->
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-lg">💳</span>
+                    <span class="font-semibold text-purple-800">Stripe Entegrasyonu</span>
+                </div>
+                <p class="text-sm text-purple-700">Paket kaydedildiğinde otomatik olarak Stripe'da ürün ve fiyat oluşturulacaktır.</p>
             </div>
 
             <!-- Action Buttons -->
@@ -302,29 +364,34 @@ function openCreateModal() {
     document.getElementById('modalTitle').textContent = 'Yeni Paket Oluştur';
     document.getElementById('packageForm').reset();
     document.getElementById('isEdit').value = '0';
-    document.getElementById('serviceTypeContainer').classList.remove('hidden');
     document.getElementById('leadCountContainer').classList.remove('hidden');
+    document.getElementById('discountContainer').classList.remove('hidden');
+    document.getElementById('displayOrderContainer').classList.add('hidden');
     document.getElementById('packageModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
 
-function openEditModal(package) {
+function openEditModal(pkg) {
     document.getElementById('modalTitle').textContent = 'Paket Düzenle';
     document.getElementById('isEdit').value = '1';
-    document.getElementById('packageId').value = package.id;
-    document.getElementById('priceSar').value = package.price_sar;
-    document.getElementById('nameTr').value = package.name_tr;
-    document.getElementById('nameAr').value = package.name_ar;
-    document.getElementById('descriptionTr').value = package.description_tr || '';
-    document.getElementById('descriptionAr').value = package.description_ar || '';
+    document.getElementById('packageId').value = pkg.id;
+    document.getElementById('priceSar').value = pkg.price_sar;
+    document.getElementById('nameTr').value = pkg.name_tr;
+    document.getElementById('nameAr').value = pkg.name_ar;
+    document.getElementById('descriptionTr').value = pkg.description_tr || '';
+    document.getElementById('descriptionAr').value = pkg.description_ar || '';
+    document.getElementById('displayOrder').value = pkg.display_order || 0;
     
     const radios = document.getElementsByName('is_active');
     radios.forEach(radio => {
-        radio.checked = (radio.value == package.is_active);
+        radio.checked = (radio.value == pkg.is_active);
     });
     
-    document.getElementById('serviceTypeContainer').classList.add('hidden');
+    // Hide lead count and discount (can't edit these)
     document.getElementById('leadCountContainer').classList.add('hidden');
+    document.getElementById('discountContainer').classList.add('hidden');
+    document.getElementById('displayOrderContainer').classList.remove('hidden');
+    
     document.getElementById('packageModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
@@ -404,13 +471,11 @@ async function toggleStatus(packageId) {
                 btn.querySelector('span').classList.add('translate-x-1');
             }
             
-            const card = document.getElementById(`package-card-${packageId}`);
+            const row = document.getElementById(`package-row-${packageId}`);
             if (isActive) {
-                card.classList.remove('border-gray-200', 'bg-gray-50', 'opacity-60');
-                card.classList.add('border-blue-200', 'bg-blue-50/30');
+                row.classList.remove('bg-gray-50', 'opacity-60');
             } else {
-                card.classList.remove('border-blue-200', 'bg-blue-50/30');
-                card.classList.add('border-gray-200', 'bg-gray-50', 'opacity-60');
+                row.classList.add('bg-gray-50', 'opacity-60');
             }
         } else {
             showToast(result.error || 'Durum değiştirilemedi', 'error');
@@ -423,7 +488,7 @@ async function toggleStatus(packageId) {
 
 // Delete Package
 async function deletePackage(packageId, packageName) {
-    if (!confirm(`"${packageName}" paketini silmek istediğinize emin misiniz?\n\nBu paket satın alımlarda kullanılıyorsa silinemez.\nStripe'da arşivlenecektir.`)) {
+    if (!confirm(`"${packageName}" paketini silmek istediğinize emin misiniz?\n\nBu paket satın alımlarda kullanılıyorsa silinemez.`)) {
         return;
     }
     
@@ -441,7 +506,19 @@ async function deletePackage(packageId, packageName) {
         
         if (result.success) {
             showToast(result.message, 'success');
-            setTimeout(() => location.reload(), 1000);
+            
+            // Fade out and remove row
+            const row = document.getElementById(`package-row-${packageId}`);
+            if (row) {
+                row.style.transition = 'opacity 0.5s';
+                row.style.opacity = '0';
+                setTimeout(() => {
+                    row.remove();
+                    if (document.querySelectorAll('tbody tr').length === 0) {
+                        location.reload();
+                    }
+                }, 500);
+            }
         } else {
             showToast(result.error || 'Paket silinemedi', 'error');
         }
@@ -471,6 +548,13 @@ function showToast(message, type = 'info') {
 // Close modal on ESC key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Close modal on outside click
+document.getElementById('packageModal').addEventListener('click', function(e) {
+    if (e.target === this) {
         closeModal();
     }
 });

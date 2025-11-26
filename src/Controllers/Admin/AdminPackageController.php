@@ -11,7 +11,7 @@ require_once __DIR__ . '/BaseAdminController.php';
 class AdminPackageController extends BaseAdminController 
 {
     /**
-     * Paketler listesi (sadece 2 paket: 1 ve 3 lead)
+     * Paketler listesi
      */
     public function index(): void
     {
@@ -28,8 +28,23 @@ class AdminPackageController extends BaseAdminController
             $activeCount = count(array_filter($packages, fn($p) => $p['is_active'] == 1));
             $inactiveCount = count($packages) - $activeCount;
             
+            // Hizmetleri getir
+            $services = getServiceTypes();
+            
+            // Paketleri hizmet türüne göre grupla
+            $packagesByService = [];
+            foreach ($packages as $package) {
+                $serviceType = $package['service_type'] ?? 'general';
+                if (!isset($packagesByService[$serviceType])) {
+                    $packagesByService[$serviceType] = [];
+                }
+                $packagesByService[$serviceType][] = $package;
+            }
+            
             $this->render('lead_packages', [
                 'packages' => $packages,
+                'packagesByService' => $packagesByService,
+                'services' => $services,
                 'totalPackages' => count($packages),
                 'activeCount' => $activeCount,
                 'inactiveCount' => $inactiveCount,
@@ -61,6 +76,7 @@ class AdminPackageController extends BaseAdminController
         try {
             $leadCount = $this->intPost('lead_count');
             $priceSar = floatval($this->postParam('price_sar', 0));
+            $serviceType = trim($this->postParam('service_type', 'general'));
             $nameAr = trim($this->postParam('name_ar', ''));
             $nameTr = trim($this->postParam('name_tr', ''));
             $descriptionAr = trim($this->postParam('description_ar', ''));
@@ -73,11 +89,8 @@ class AdminPackageController extends BaseAdminController
                 $this->errorResponse('Lead sayısı ve fiyat zorunludur', 400);
             }
             
-            // Aynı lead sayısına sahip paket var mı kontrol et
-            $stmt = $this->pdo->prepare("SELECT id FROM lead_packages WHERE lead_count = ?");
-            $stmt->execute([$leadCount]);
-            if ($stmt->fetch()) {
-                $this->errorResponse('Bu lead sayısına sahip bir paket zaten mevcut', 400);
+            if (empty($nameTr) || empty($nameAr)) {
+                $this->errorResponse('Türkçe ve Arapça ad zorunludur', 400);
             }
             
             $pricePerLead = $priceSar / $leadCount;
@@ -97,6 +110,7 @@ class AdminPackageController extends BaseAdminController
                         'metadata' => [
                             'lead_count' => $leadCount,
                             'name_ar' => $nameAr,
+                            'service_type' => $serviceType,
                         ]
                     ]);
                     
@@ -115,15 +129,15 @@ class AdminPackageController extends BaseAdminController
             
             $stmt = $this->pdo->prepare("
                 INSERT INTO lead_packages (
-                    lead_count, price_sar, price_per_lead, 
+                    service_type, lead_count, price_sar, price_per_lead, 
                     name_ar, name_tr, description_ar, description_tr,
                     discount_percentage, display_order,
                     stripe_product_id, stripe_price_id, is_active
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ");
             
             $stmt->execute([
-                $leadCount, $priceSar, $pricePerLead,
+                $serviceType, $leadCount, $priceSar, $pricePerLead,
                 $nameAr, $nameTr, $descriptionAr, $descriptionTr,
                 $discountPercentage, $displayOrder,
                 $stripeProductId, $stripePriceId, $isActive
