@@ -267,6 +267,7 @@ class ProviderLeadController extends BaseProviderController
     
     /**
      * Gizlenmiş lead'leri listele
+     * 180 gün sonra lead'ler tamamen gizlenir (görünmez)
      */
     public function hidden(): void
     {
@@ -275,20 +276,64 @@ class ProviderLeadController extends BaseProviderController
         $providerId = $this->getProviderId();
         $provider = $this->getProvider();
         
+        // Sayfalama
+        $page = max(1, $this->intGet('page', 1));
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+        
+        // 180 gün = lead'ler bu süreden sonra görünmez
+        $retentionDays = 180;
+        
         try {
+            // Toplam silinen lead sayısı (tüm zamanlar - istatistik için)
             $stmt = $this->db->prepare("
-                SELECT l.*, phl.hidden_at
-                FROM leads l
-                INNER JOIN provider_hidden_leads phl ON l.id = phl.lead_id
-                WHERE phl.provider_id = ? AND l.deleted_at IS NULL
-                ORDER BY phl.hidden_at DESC
+                SELECT COUNT(*) as total_deleted
+                FROM provider_hidden_leads phl
+                WHERE phl.provider_id = ?
             ");
             $stmt->execute([$providerId]);
+            $totalDeletedAllTime = (int)$stmt->fetch(PDO::FETCH_ASSOC)['total_deleted'];
+            
+            // 180 gün içindeki lead'ler (görünür olanlar)
+            $stmt = $this->db->prepare("
+                SELECT COUNT(*) as count
+                FROM leads l
+                INNER JOIN provider_hidden_leads phl ON l.id = phl.lead_id
+                WHERE phl.provider_id = ? 
+                AND l.deleted_at IS NULL
+                AND phl.hidden_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+            ");
+            $stmt->execute([$providerId, $retentionDays]);
+            $totalVisibleLeads = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+            $totalPages = ceil($totalVisibleLeads / $perPage);
+            
+            // 180 günden eski lead'ler (tamamen gizli)
+            $expiredLeads = $totalDeletedAllTime - $totalVisibleLeads;
+            
+            // Görünür lead'leri getir (180 gün içinde silinmiş)
+            $stmt = $this->db->prepare("
+                SELECT l.*, phl.hidden_at,
+                       DATEDIFF(DATE_ADD(phl.hidden_at, INTERVAL ? DAY), NOW()) as days_remaining
+                FROM leads l
+                INNER JOIN provider_hidden_leads phl ON l.id = phl.lead_id
+                WHERE phl.provider_id = ? 
+                AND l.deleted_at IS NULL
+                AND phl.hidden_at >= DATE_SUB(NOW(), INTERVAL ? DAY)
+                ORDER BY phl.hidden_at DESC
+                LIMIT ? OFFSET ?
+            ");
+            $stmt->execute([$retentionDays, $providerId, $retentionDays, $perPage, $offset]);
             $leads = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             $this->render('hidden_leads', [
                 'leads' => $leads,
-                'provider' => $provider
+                'provider' => $provider,
+                'page' => $page,
+                'totalPages' => $totalPages,
+                'totalVisibleLeads' => $totalVisibleLeads,
+                'totalDeletedAllTime' => $totalDeletedAllTime,
+                'expiredLeads' => $expiredLeads,
+                'retentionDays' => $retentionDays
             ]);
         } catch (PDOException $e) {
             error_log("Hidden leads error: " . $e->getMessage());
