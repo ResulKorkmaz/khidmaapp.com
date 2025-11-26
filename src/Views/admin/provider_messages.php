@@ -1,7 +1,8 @@
 <?php
 /**
  * Admin - Provider Messages
- * Modern, profesyonel ve mobil uyumlu tasarım
+ * Modern, profesyonel mesajlaşma sistemi
+ * Toplu mesaj, şehir/sektör bazlı filtreleme, lead gönderimi
  */
 
 $pageTitle = 'Provider Mesajları';
@@ -16,586 +17,223 @@ $warningMessage = $_SESSION['warning_message'] ?? null;
 if ($warningMessage) {
     unset($_SESSION['warning_message']);
 }
+
+// Filtreler
+$filters = $filters ?? ['city' => '', 'service' => '', 'status' => '', 'search' => ''];
+$cityCounts = $cityCounts ?? [];
+$serviceCounts = $serviceCounts ?? [];
+$activeProviderCount = $activeProviderCount ?? 0;
+$availableLeads = $availableLeads ?? [];
 ?>
 
-<style>
-/* Modern Provider Messages Styles */
-.provider-messages-container {
-    padding: 1.5rem;
-    background: #f8f9fa;
-    min-height: calc(100vh - 100px);
-}
-
-/* Stats Cards */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.stat-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: transform 0.2s;
-}
-
-.stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-}
-
-.stat-card .stat-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    margin-bottom: 1rem;
-}
-
-.stat-card.primary .stat-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.stat-card.success .stat-icon { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.stat-card.warning .stat-icon { background: linear-gradient(135deg, #ffa751 0%, #ffe259 100%); }
-
-.stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin: 0;
-}
-
-.stat-label {
-    color: #718096;
-    font-size: 0.875rem;
-    margin: 0;
-}
-
-/* Search & Filter Bar */
-.search-filter-bar {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.search-input {
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-    transition: all 0.2s;
-    width: 100%;
-}
-
-.search-input:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    outline: none;
-}
-
-/* Provider Cards */
-.providers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-}
-
-.provider-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    transition: all 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.provider-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-    transform: scaleX(0);
-    transition: transform 0.3s;
-}
-
-.provider-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-}
-
-.provider-card:hover::before {
-    transform: scaleX(1);
-}
-
-.provider-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 1rem;
-}
-
-.provider-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 24px;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.provider-info {
-    flex: 1;
-    margin-left: 1rem;
-}
-
-.provider-name {
-    font-size: 1.125rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin: 0 0 0.25rem 0;
-}
-
-.provider-id {
-    font-size: 0.75rem;
-    color: #a0aec0;
-    font-weight: 600;
-}
-
-.provider-status {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    gap: 0.25rem;
-}
-
-.provider-status.active {
-    background: #d4edda;
-    color: #155724;
-}
-
-.provider-status.pending {
-    background: #fff3cd;
-    color: #856404;
-}
-
-.provider-details {
-    margin: 1rem 0;
-}
-
-.detail-row {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0;
-    font-size: 0.875rem;
-    color: #4a5568;
-    gap: 0.5rem;
-}
-
-.detail-icon {
-    width: 20px;
-    text-align: center;
-}
-
-.provider-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin: 1rem 0;
-}
-
-.tag {
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.tag.service {
-    background: #e6f7ff;
-    color: #0050b3;
-}
-
-.tag.city {
-    background: #f0f5ff;
-    color: #2f54eb;
-}
-
-.message-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin: 1rem 0;
-    padding: 1rem;
-    background: #f7fafc;
-    border-radius: 8px;
-}
-
-.message-stat {
-    text-align: center;
-}
-
-.message-stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2d3748;
-}
-
-.message-stat-label {
-    font-size: 0.75rem;
-    color: #718096;
-    margin-top: 0.25rem;
-}
-
-.message-stat.unread .message-stat-value {
-    color: #e53e3e;
-}
-
-.provider-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-}
-
-.action-btn {
-    padding: 0.75rem;
-    border: none;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.action-btn.primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.action-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.action-btn.secondary {
-    background: #edf2f7;
-    color: #4a5568;
-}
-
-.action-btn.secondary:hover {
-    background: #e2e8f0;
-}
-
-/* Modal Styles */
-.modal-content {
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 16px 16px 0 0;
-    padding: 1.5rem;
-    border: none;
-}
-
-.modal-title {
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.modal-body {
-    padding: 2rem;
-}
-
-.form-label {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.form-control, .form-select {
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.75rem;
-    font-size: 0.95rem;
-    transition: all 0.2s;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    outline: none;
-}
-
-.info-alert {
-    background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-    border: 2px solid #667eea;
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.info-alert strong {
-    color: #667eea;
-}
-
-/* Message History */
-.message-item {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    border: 2px solid #e2e8f0;
-    transition: all 0.2s;
-}
-
-.message-item:hover {
-    border-color: #667eea;
-    transform: translateX(4px);
-}
-
-.message-item.unread {
-    background: linear-gradient(135deg, #667eea05 0%, #764ba205 100%);
-    border-color: #667eea;
-}
-
-.message-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: start;
-    margin-bottom: 1rem;
-}
-
-.message-badges {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-}
-
-.badge {
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 600;
-}
-
-.badge.type-lead { background: #d4edda; color: #155724; }
-.badge.type-notification { background: #cfe2ff; color: #084298; }
-.badge.type-announcement { background: #fff3cd; color: #856404; }
-.badge.type-info { background: #e2e3e5; color: #41464b; }
-.badge.priority-urgent { background: #f8d7da; color: #842029; }
-.badge.priority-high { background: #fff3cd; color: #856404; }
-.badge.unread-badge { background: #667eea; color: white; }
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.empty-state-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.3;
-}
-
-.empty-state-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 0.5rem;
-}
-
-.empty-state-text {
-    color: #718096;
-}
-
-/* Loading State */
-.loading-spinner {
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    border: 4px solid #e2e8f0;
-    border-top-color: #667eea;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .provider-messages-container {
-        padding: 1rem;
-    }
-    
-    .providers-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .provider-actions {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-body {
-        padding: 1.5rem;
-    }
-}
-</style>
-
-<div class="provider-messages-container">
+<div class="container mx-auto px-4 py-6">
     <?php if ($warningMessage): ?>
-    <div class="alert alert-warning" role="alert" style="margin-bottom: 1.5rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; color: #856404;">
-        <strong>⚠️ Uyarı:</strong> <?= htmlspecialchars($warningMessage) ?>
+    <div class="bg-amber-50 border-2 border-amber-300 text-amber-800 px-4 py-3 rounded-xl mb-6 flex items-center gap-3">
+        <span class="text-2xl">⚠️</span>
+        <span class="font-medium"><?= htmlspecialchars($warningMessage) ?></span>
     </div>
     <?php endif; ?>
-    
-    <!-- Stats Cards -->
-    <div class="stats-grid">
-        <div class="stat-card primary">
-            <div class="stat-icon">📨</div>
-            <h3 class="stat-value"><?= $stats['total_messages'] ?? 0 ?></h3>
-            <p class="stat-label">Toplam Mesaj</p>
-        </div>
-        <div class="stat-card success">
-            <div class="stat-icon">✅</div>
-            <h3 class="stat-value"><?= $stats['providers_with_messages'] ?? 0 ?></h3>
-            <p class="stat-label">Mesajlaşılan Provider</p>
-        </div>
-        <div class="stat-card warning">
-            <div class="stat-icon">🔔</div>
-            <h3 class="stat-value"><?= $stats['unread_messages'] ?? 0 ?></h3>
-            <p class="stat-label">Okunmamış Mesaj</p>
+
+    <!-- Page Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl shadow-lg p-6 mb-6">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center">
+                    <span class="text-3xl">💬</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-white">Provider Mesajları</h1>
+                    <p class="text-white/90 text-sm mt-1">Toplu veya tekli mesaj gönder, lead paylaş</p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="flex gap-2 flex-wrap">
+                <button onclick="openBulkMessageModal('all')" class="bg-white hover:bg-green-50 text-green-600 font-bold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm">
+                    <span>📢</span>
+                    <span>Tüm Ustalara</span>
+                </button>
+                <button onclick="openBulkMessageModal('city')" class="bg-white hover:bg-blue-50 text-blue-600 font-bold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm">
+                    <span>🏙️</span>
+                    <span>Şehre Göre</span>
+                </button>
+                <button onclick="openBulkMessageModal('service')" class="bg-white hover:bg-orange-50 text-orange-600 font-bold px-4 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 text-sm">
+                    <span>🔧</span>
+                    <span>Sektöre Göre</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="search-filter-bar">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <input type="text" id="searchProviders" class="search-input" placeholder="🔍 Provider ara... (isim, email, telefon)">
-            </div>
-            <div class="col-md-4 mt-3 mt-md-0">
-                <select id="filterStatus" class="form-select">
-                    <option value="">Tüm Durumlar</option>
-                    <option value="active">Aktif</option>
-                    <option value="pending">Beklemede</option>
-                </select>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">👥</div>
+                <div>
+                    <p class="text-gray-500 text-xs font-medium">Toplam Usta</p>
+                    <p class="text-2xl font-bold text-gray-900"><?= $totalProviders ?? 0 ?></p>
+                </div>
             </div>
         </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">✅</div>
+                <div>
+                    <p class="text-gray-500 text-xs font-medium">Aktif Usta</p>
+                    <p class="text-2xl font-bold text-green-600"><?= $activeProviderCount ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📨</div>
+                <div>
+                    <p class="text-gray-500 text-xs font-medium">Toplam Mesaj</p>
+                    <p class="text-2xl font-bold text-blue-600"><?= $stats['total_messages'] ?? 0 ?></p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center text-2xl">🔔</div>
+                <div>
+                    <p class="text-gray-500 text-xs font-medium">Okunmamış</p>
+                    <p class="text-2xl font-bold text-red-600"><?= $stats['unread_messages'] ?? 0 ?></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
+        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">🔍 Ara</label>
+                <input type="text" name="search" value="<?= htmlspecialchars($filters['search']) ?>" 
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                       placeholder="İsim, email, telefon...">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">🏙️ Şehir</label>
+                <select name="city" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="">Tüm Şehirler</option>
+                    <?php foreach ($cities as $key => $city): ?>
+                        <option value="<?= $key ?>" <?= $filters['city'] === $key ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($city['tr']) ?> (<?= $cityCounts[$key] ?? 0 ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">🔧 Hizmet</label>
+                <select name="service" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="">Tüm Hizmetler</option>
+                    <?php foreach ($serviceTypes as $key => $service): ?>
+                        <option value="<?= $key ?>" <?= $filters['service'] === $key ? 'selected' : '' ?>>
+                            <?= $service['icon'] ?? '🔧' ?> <?= htmlspecialchars($service['tr']) ?> (<?= $serviceCounts[$key] ?? 0 ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1.5">📊 Durum</label>
+                <select name="status" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                    <option value="">Tüm Durumlar</option>
+                    <option value="active" <?= $filters['status'] === 'active' ? 'selected' : '' ?>>✅ Aktif</option>
+                    <option value="pending" <?= $filters['status'] === 'pending' ? 'selected' : '' ?>>⏳ Beklemede</option>
+                </select>
+            </div>
+            <div class="flex items-end gap-2">
+                <button type="submit" class="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors text-sm">
+                    Filtrele
+                </button>
+                <a href="/admin/provider-messages" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors text-sm">
+                    Temizle
+                </a>
+            </div>
+        </form>
     </div>
 
     <!-- Providers Grid -->
     <?php if (empty($providers)): ?>
-        <div class="empty-state">
-            <div class="empty-state-icon">📭</div>
-            <h3 class="empty-state-title">Henüz Provider Yok</h3>
-            <p class="empty-state-text">Sistemde kayıtlı hizmet sağlayıcı bulunmuyor</p>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+            <span class="text-6xl mb-4 block">📭</span>
+            <p class="text-gray-500 font-medium mb-2">Provider bulunamadı</p>
+            <p class="text-gray-400 text-sm">Filtrelerinizi değiştirmeyi deneyin</p>
         </div>
     <?php else: ?>
-        <div class="providers-grid" id="providersGrid">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <?php foreach ($providers as $provider): ?>
-                <div class="provider-card" 
-                     data-provider-id="<?= $provider['id'] ?>"
-                     data-status="<?= $provider['status'] ?>"
-                     data-search="<?= htmlspecialchars(strtolower($provider['name'] . ' ' . $provider['email'] . ' ' . $provider['phone'])) ?>">
-                    
-                    <div class="provider-header">
-                        <div style="display: flex; align-items: start; flex: 1;">
-                            <div class="provider-avatar">
+                <?php 
+                $serviceInfo = $serviceTypes[$provider['service_type']] ?? ['tr' => $provider['service_type'], 'icon' => '🔧'];
+                $cityInfo = $cities[$provider['city']] ?? ['tr' => $provider['city']];
+                ?>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-lg hover:border-purple-200 transition-all">
+                    <!-- Header -->
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
                                 <?= strtoupper(substr($provider['name'], 0, 2)) ?>
                             </div>
-                            <div class="provider-info">
-                                <h3 class="provider-name"><?= htmlspecialchars($provider['name']) ?></h3>
-                                <span class="provider-id">#<?= $provider['id'] ?></span>
+                            <div>
+                                <h3 class="font-bold text-gray-900"><?= htmlspecialchars($provider['name']) ?></h3>
+                                <p class="text-xs text-gray-400">#<?= $provider['id'] ?></p>
                             </div>
                         </div>
-                        <span class="provider-status <?= $provider['status'] ?>">
-                            <?php if ($provider['status'] === 'active'): ?>
-                                ✓ Aktif
-                            <?php else: ?>
-                                ⏳ Beklemede
-                            <?php endif; ?>
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold <?= $provider['status'] === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' ?>">
+                            <?= $provider['status'] === 'active' ? '✓ Aktif' : '⏳ Beklemede' ?>
                         </span>
                     </div>
 
-                    <div class="provider-details">
-                        <div class="detail-row">
-                            <span class="detail-icon">📧</span>
-                            <span><?= htmlspecialchars($provider['email']) ?></span>
+                    <!-- Contact Info -->
+                    <div class="space-y-2 mb-4 text-sm">
+                        <div class="flex items-center gap-2 text-gray-600">
+                            <span>📧</span>
+                            <span class="truncate"><?= htmlspecialchars($provider['email']) ?></span>
                         </div>
-                        <div class="detail-row">
-                            <span class="detail-icon">📱</span>
+                        <div class="flex items-center gap-2 text-gray-600">
+                            <span>📱</span>
                             <span><?= htmlspecialchars($provider['phone']) ?></span>
                         </div>
                     </div>
 
-                    <div class="provider-tags">
-                        <span class="tag service">
-                            <?= $serviceTypes[$provider['service_type']]['icon'] ?? '🔧' ?>
-                            <?= $serviceTypes[$provider['service_type']]['tr'] ?? $provider['service_type'] ?>
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs font-semibold">
+                            <?= $serviceInfo['icon'] ?? '🔧' ?> <?= htmlspecialchars($serviceInfo['tr']) ?>
                         </span>
-                        <span class="tag city">
-                            📍 <?= $cities[$provider['city']]['tr'] ?? $provider['city'] ?>
+                        <span class="px-2 py-1 bg-orange-50 text-orange-700 rounded-lg text-xs font-semibold">
+                            📍 <?= htmlspecialchars($cityInfo['tr']) ?>
                         </span>
                     </div>
 
-                    <div class="message-stats">
-                        <div class="message-stat">
-                            <div class="message-stat-value"><?= $provider['message_count'] ?></div>
-                            <div class="message-stat-label">Toplam Mesaj</div>
+                    <!-- Message Stats -->
+                    <div class="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
+                        <div class="text-center">
+                            <p class="text-lg font-bold text-gray-900"><?= $provider['message_count'] ?></p>
+                            <p class="text-xs text-gray-500">Mesaj</p>
                         </div>
-                        <div class="message-stat unread">
-                            <div class="message-stat-value"><?= $provider['unread_count'] ?></div>
-                            <div class="message-stat-label">Okunmamış</div>
+                        <div class="text-center">
+                            <p class="text-lg font-bold <?= $provider['unread_count'] > 0 ? 'text-red-600' : 'text-gray-400' ?>"><?= $provider['unread_count'] ?></p>
+                            <p class="text-xs text-gray-500">Okunmamış</p>
                         </div>
                     </div>
 
-                    <div class="provider-actions">
-                        <button class="action-btn primary" onclick="openSendMessageModal(<?= $provider['id'] ?>, '<?= htmlspecialchars($provider['name'], ENT_QUOTES) ?>')">
+                    <!-- Actions -->
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="openSendMessageModal(<?= $provider['id'] ?>, '<?= htmlspecialchars($provider['name'], ENT_QUOTES) ?>')" 
+                                class="px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1">
                             <span>📤</span>
-                            <span>Mesaj Gönder</span>
+                            <span>Mesaj</span>
                         </button>
-                        <button class="action-btn secondary" onclick="viewMessageHistory(<?= $provider['id'] ?>, '<?= htmlspecialchars($provider['name'], ENT_QUOTES) ?>')">
+                        <button onclick="openSendLeadModal(<?= $provider['id'] ?>, '<?= htmlspecialchars($provider['name'], ENT_QUOTES) ?>', '<?= $provider['service_type'] ?>', '<?= $provider['city'] ?>')" 
+                                class="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <span>🎯</span>
+                            <span>Lead</span>
+                        </button>
+                        <button onclick="viewMessageHistory(<?= $provider['id'] ?>, '<?= htmlspecialchars($provider['name'], ENT_QUOTES) ?>')" 
+                                class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1">
                             <span>📜</span>
                             <span>Geçmiş</span>
                         </button>
@@ -603,180 +241,263 @@ if ($warningMessage) {
                 </div>
             <?php endforeach; ?>
         </div>
-        
+
         <!-- Pagination -->
         <?php if (isset($totalPages) && $totalPages > 1): ?>
-            <div class="pagination-container" style="margin-top: 2rem; padding: 1.5rem; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
-                <div style="display: flex; flex-direction: column; sm:flex-direction: row; align-items: center; justify-content: space-between; gap: 1rem;">
-                    <!-- Pagination Info -->
-                    <div style="font-size: 0.875rem; color: #718096;">
-                        <strong>Toplam:</strong> <?= $totalProviders ?? 0 ?> provider | 
-                        <strong>Sayfa:</strong> <?= $page ?? 1 ?> / <?= $totalPages ?>
-                    </div>
-                    
-                    <!-- Pagination Buttons -->
-                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
-                        <?php 
-                        $currentPaginationPage = $page ?? 1;
-                        $totalPaginationPages = $totalPages;
-                        ?>
-                        
-                        <!-- First Page -->
-                        <?php if ($currentPaginationPage > 1): ?>
-                            <a href="?page=1" class="pagination-btn" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #2d3748; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: none;">
-                                İlk
-                            </a>
-                            <a href="?page=<?= $currentPaginationPage - 1 ?>" class="pagination-btn" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #2d3748; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
-                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                                </svg>
-                                <span class="hidden-mobile">Önceki</span>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                <div class="flex items-center justify-between flex-wrap gap-4">
+                    <p class="text-sm text-gray-600">
+                        <strong><?= $totalProviders ?></strong> provider | Sayfa <strong><?= $page ?></strong> / <?= $totalPages ?>
+                    </p>
+                    <div class="flex gap-2">
+                        <?php if ($page > 1): ?>
+                            <a href="?page=<?= $page - 1 ?>&<?= http_build_query($filters) ?>" 
+                               class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold transition-colors">
+                                ← Önceki
                             </a>
                         <?php endif; ?>
-                        
-                        <!-- Page Numbers -->
-                        <?php
-                        $startPage = max(1, $currentPaginationPage - 2);
-                        $endPage = min($totalPaginationPages, $currentPaginationPage + 2);
-                        for ($i = $startPage; $i <= $endPage; $i++):
-                        ?>
-                            <a href="?page=<?= $i ?>" 
-                               class="pagination-btn <?= $i === $currentPaginationPage ? 'active' : '' ?>"
-                               style="padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; min-width: 40px; text-align: center; <?= $i === $currentPaginationPage ? 'background: #667eea; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);' : 'background: #e2e8f0; color: #2d3748;' ?>">
-                                <?= $i ?>
-                            </a>
-                        <?php endfor; ?>
-                        
-                        <!-- Next Page -->
-                        <?php if ($currentPaginationPage < $totalPaginationPages): ?>
-                            <a href="?page=<?= $currentPaginationPage + 1 ?>" class="pagination-btn" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #2d3748; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;">
-                                <span class="hidden-mobile">Sonraki</span>
-                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                </svg>
-                            </a>
-                            <a href="?page=<?= $totalPaginationPages ?>" class="pagination-btn" style="padding: 0.5rem 1rem; background: #e2e8f0; color: #2d3748; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: none;">
-                                Son
+                        <?php if ($page < $totalPages): ?>
+                            <a href="?page=<?= $page + 1 ?>&<?= http_build_query($filters) ?>" 
+                               class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-semibold transition-colors">
+                                Sonraki →
                             </a>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
-            
-            <style>
-                .pagination-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-                }
-                .pagination-btn.active {
-                    pointer-events: none;
-                }
-                @media (min-width: 640px) {
-                    .pagination-btn:first-child,
-                    .pagination-btn:last-child {
-                        display: flex !important;
-                    }
-                    .hidden-mobile {
-                        display: inline !important;
-                    }
-                }
-                @media (max-width: 639px) {
-                    .hidden-mobile {
-                        display: none;
-                    }
-                }
-            </style>
         <?php endif; ?>
     <?php endif; ?>
 </div>
 
-<!-- Send Message Modal -->
-<div class="modal fade" id="sendMessageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
+<!-- Single Message Modal -->
+<div id="sendMessageModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-5 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
                     <span>📤</span>
-                    <span>Yeni Mesaj Gönder</span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <span>Mesaj Gönder</span>
+                </h3>
+                <button onclick="closeModal('sendMessageModal')" class="text-white/80 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <form id="sendMessageForm">
-                <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
-                <input type="hidden" name="provider_id" id="modal_provider_id">
-                
-                <div class="modal-body">
-                    <div class="info-alert">
-                        <strong>🎯 Alıcı:</strong> <span id="modal_provider_name"></span>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label class="form-label">📋 Mesaj Tipi</label>
-                            <select name="message_type" class="form-select" required>
-                                <option value="info">ℹ️ Bilgilendirme</option>
-                                <option value="lead">📋 Lead Bilgisi</option>
-                                <option value="notification">🔔 Bildirim</option>
-                                <option value="announcement">📢 Duyuru</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">🎚️ Öncelik</label>
-                            <select name="priority" class="form-select" required>
-                                <option value="normal">Normal</option>
-                                <option value="high">🟠 Yüksek</option>
-                                <option value="urgent">🔴 Acil</option>
-                                <option value="low">⚪ Düşük</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">📝 Konu</label>
-                        <input type="text" name="subject" class="form-control" required placeholder="Mesaj konusu (Arapça önerilir)">
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">💬 Mesaj İçeriği</label>
-                        <textarea name="message" class="form-control" rows="6" required placeholder="Mesajınızı buraya yazın... (Arapça önerilir)
-
-Örnek:
-عميل جديد: أحمد
-الخدمة: سباكة
-المدينة: الرياض"></textarea>
-                        <small class="text-muted">💡 Provider'lar için Arapça mesaj göndermeyi unutmayın</small>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ İptal</button>
-                    <button type="submit" class="btn btn-primary">📤 Mesajı Gönder</button>
-                </div>
-            </form>
         </div>
+        <form id="sendMessageForm" class="p-5 space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+            <input type="hidden" name="provider_id" id="modal_provider_id">
+            
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-3">
+                <p class="text-sm text-purple-700"><strong>🎯 Alıcı:</strong> <span id="modal_provider_name"></span></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">📋 Mesaj Tipi</label>
+                    <select name="message_type" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+                        <option value="info">ℹ️ Bilgilendirme</option>
+                        <option value="notification">🔔 Bildirim</option>
+                        <option value="announcement">📢 Duyuru</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">🎚️ Öncelik</label>
+                    <select name="priority" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+                        <option value="normal">Normal</option>
+                        <option value="high">🟠 Yüksek</option>
+                        <option value="urgent">🔴 Acil</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">📝 Konu</label>
+                <input type="text" name="subject" required placeholder="Mesaj konusu (Arapça önerilir)"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">💬 Mesaj</label>
+                <textarea name="message" rows="5" required placeholder="Mesajınızı yazın... (Arapça önerilir)"
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500"></textarea>
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="closeModal('sendMessageModal')" 
+                        class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
+                    İptal
+                </button>
+                <button type="submit" 
+                        class="flex-1 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                    📤 Gönder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bulk Message Modal -->
+<div id="bulkMessageModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-green-600 to-emerald-600 p-5 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span>📢</span>
+                    <span id="bulkModalTitle">Toplu Mesaj Gönder</span>
+                </h3>
+                <button onclick="closeModal('bulkMessageModal')" class="text-white/80 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <form id="bulkMessageForm" class="p-5 space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+            <input type="hidden" name="target_type" id="bulk_target_type" value="all">
+            
+            <!-- Target Selection (shown for city/service) -->
+            <div id="targetSelectionContainer" class="hidden">
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5" id="targetSelectionLabel">Hedef Seçin</label>
+                <select name="target_value" id="bulk_target_value" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+                    <option value="">Seçiniz...</option>
+                </select>
+            </div>
+            
+            <div class="bg-green-50 border border-green-200 rounded-xl p-3" id="bulkTargetInfo">
+                <p class="text-sm text-green-700"><strong>🎯 Hedef:</strong> <span id="bulk_target_text">Tüm Ustalar</span></p>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">📋 Mesaj Tipi</label>
+                    <select name="message_type" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+                        <option value="announcement">📢 Duyuru</option>
+                        <option value="notification">🔔 Bildirim</option>
+                        <option value="info">ℹ️ Bilgilendirme</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">🎚️ Öncelik</label>
+                    <select name="priority" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+                        <option value="normal">Normal</option>
+                        <option value="high">🟠 Yüksek</option>
+                        <option value="urgent">🔴 Acil</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">📝 Konu</label>
+                <input type="text" name="subject" required placeholder="Duyuru konusu (Arapça önerilir)"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">💬 Mesaj</label>
+                <textarea name="message" rows="5" required placeholder="Duyuru mesajınızı yazın... (Arapça önerilir)"
+                          class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-green-500"></textarea>
+            </div>
+            
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-3">
+                <p class="text-sm text-amber-700">⚠️ <strong>Dikkat:</strong> Bu mesaj seçilen tüm ustalara gönderilecektir.</p>
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="closeModal('bulkMessageModal')" 
+                        class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
+                    İptal
+                </button>
+                <button type="submit" 
+                        class="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                    📢 Toplu Gönder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Send Lead Modal -->
+<div id="sendLeadModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-5 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <span>🎯</span>
+                    <span>Lead Gönder</span>
+                </h3>
+                <button onclick="closeModal('sendLeadModal')" class="text-white/80 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <form id="sendLeadForm" class="p-5 space-y-4">
+            <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+            <input type="hidden" name="provider_id" id="lead_provider_id">
+            
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3">
+                <p class="text-sm text-emerald-700"><strong>🎯 Alıcı:</strong> <span id="lead_provider_name"></span></p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1.5">📋 Uygun Lead Seç</label>
+                <select name="lead_id" id="lead_select" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500">
+                    <option value="">Lead seçiniz...</option>
+                </select>
+                <p class="text-xs text-gray-500 mt-1" id="lead_count_info">Yükleniyor...</p>
+            </div>
+            
+            <div id="leadDetails" class="hidden bg-gray-50 rounded-xl p-4 space-y-2">
+                <h4 class="font-semibold text-gray-900 text-sm">Lead Detayları:</h4>
+                <div id="leadDetailsContent"></div>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                <p class="text-sm text-blue-700">💡 Lead seçtiğinizde, ustaya otomatik olarak Arapça formatlı bir mesaj gönderilecektir.</p>
+            </div>
+            
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="closeModal('sendLeadModal')" 
+                        class="flex-1 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors">
+                    İptal
+                </button>
+                <button type="submit" 
+                        class="flex-1 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors">
+                    🎯 Lead Gönder
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Message History Modal -->
-<div class="modal fade" id="messageHistoryModal" tabindex="-1">
-    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">
+<div id="messageHistoryModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-gradient-to-r from-gray-700 to-gray-800 p-5 rounded-t-2xl">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
                     <span>📜</span>
                     <span>Mesaj Geçmişi</span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </h3>
+                <button onclick="closeModal('messageHistoryModal')" class="text-white/80 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="info-alert">
-                    <strong>👤 Provider:</strong> <span id="history_provider_name"></span>
-                </div>
-                <div id="messageHistoryContent">
-                    <div class="text-center py-5">
-                        <div class="loading-spinner"></div>
-                        <p class="mt-3 text-muted">Mesajlar yükleniyor...</p>
-                    </div>
+        </div>
+        <div class="p-5">
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-3 mb-4">
+                <p class="text-sm text-gray-700"><strong>👤 Provider:</strong> <span id="history_provider_name"></span></p>
+            </div>
+            <div id="messageHistoryContent">
+                <div class="text-center py-8">
+                    <div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"></div>
+                    <p class="text-gray-500 mt-3">Mesajlar yükleniyor...</p>
                 </div>
             </div>
         </div>
@@ -784,142 +505,326 @@ if ($warningMessage) {
 </div>
 
 <script>
-// Send Message Modal
+const csrfToken = '<?= generateCsrfToken() ?>';
+const serviceTypes = <?= json_encode($serviceTypes) ?>;
+const cities = <?= json_encode($cities) ?>;
+const availableLeads = <?= json_encode($availableLeads) ?>;
+
+// Modal Functions
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+// Single Message
 function openSendMessageModal(providerId, providerName) {
     document.getElementById('modal_provider_id').value = providerId;
     document.getElementById('modal_provider_name').textContent = providerName;
     document.getElementById('sendMessageForm').reset();
-    document.getElementById('modal_provider_id').value = providerId; // Reset後に再設定
-    new bootstrap.Modal(document.getElementById('sendMessageModal')).show();
+    document.getElementById('modal_provider_id').value = providerId;
+    openModal('sendMessageModal');
 }
 
-// Send Message Form
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    
     const formData = new FormData(this);
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px"></span> Gönderiliyor...';
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Gönderiliyor...';
     
     try {
-        const response = await fetch('/admin/provider-messages/send', {
-            method: 'POST',
-            body: formData
-        });
-        
+        const response = await fetch('/admin/provider-messages/send', { method: 'POST', body: formData });
         const result = await response.json();
         
         if (result.success) {
             alert('✅ ' + result.message);
-            bootstrap.Modal.getInstance(document.getElementById('sendMessageModal')).hide();
-            setTimeout(() => location.reload(), 500);
+            closeModal('sendMessageModal');
+            location.reload();
         } else {
             alert('❌ ' + result.message);
         }
     } catch (error) {
-        alert('❌ Bir hata oluştu: ' + error.message);
+        alert('❌ Hata: ' + error.message);
     } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalText;
+        btn.disabled = false;
+        btn.innerHTML = '📤 Gönder';
     }
 });
 
-// View Message History
-async function viewMessageHistory(providerId, providerName) {
-    console.log('viewMessageHistory called:', providerId, providerName);
-    document.getElementById('history_provider_name').textContent = providerName;
-    const modal = new bootstrap.Modal(document.getElementById('messageHistoryModal'));
-    modal.show();
+// Bulk Message
+function openBulkMessageModal(targetType) {
+    document.getElementById('bulk_target_type').value = targetType;
+    document.getElementById('bulkMessageForm').reset();
+    document.getElementById('bulk_target_type').value = targetType;
     
-    const content = document.getElementById('messageHistoryContent');
-    content.innerHTML = '<div class="text-center py-5"><div class="loading-spinner"></div><p class="mt-3 text-muted">Mesajlar yükleniyor...</p></div>';
+    const container = document.getElementById('targetSelectionContainer');
+    const select = document.getElementById('bulk_target_value');
+    const label = document.getElementById('targetSelectionLabel');
+    const targetText = document.getElementById('bulk_target_text');
+    
+    select.innerHTML = '<option value="">Seçiniz...</option>';
+    
+    if (targetType === 'all') {
+        container.classList.add('hidden');
+        document.getElementById('bulkModalTitle').textContent = 'Tüm Ustalara Mesaj';
+        targetText.textContent = 'Tüm Ustalar (<?= $activeProviderCount ?> kişi)';
+    } else if (targetType === 'city') {
+        container.classList.remove('hidden');
+        document.getElementById('bulkModalTitle').textContent = 'Şehre Göre Mesaj';
+        label.textContent = '🏙️ Şehir Seçin';
+        targetText.textContent = 'Şehir seçilmedi';
+        
+        Object.keys(cities).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = cities[key].tr + ' (<?= json_encode($cityCounts) ?>'[key] || 0 + ' kişi)';
+            select.appendChild(opt);
+        });
+    } else if (targetType === 'service') {
+        container.classList.remove('hidden');
+        document.getElementById('bulkModalTitle').textContent = 'Sektöre Göre Mesaj';
+        label.textContent = '🔧 Hizmet Seçin';
+        targetText.textContent = 'Hizmet seçilmedi';
+        
+        Object.keys(serviceTypes).forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = (serviceTypes[key].icon || '🔧') + ' ' + serviceTypes[key].tr;
+            select.appendChild(opt);
+        });
+    }
+    
+    openModal('bulkMessageModal');
+}
+
+document.getElementById('bulk_target_value').addEventListener('change', function() {
+    const targetType = document.getElementById('bulk_target_type').value;
+    const value = this.value;
+    const targetText = document.getElementById('bulk_target_text');
+    
+    if (value) {
+        if (targetType === 'city') {
+            targetText.textContent = cities[value]?.tr || value;
+        } else if (targetType === 'service') {
+            targetText.textContent = (serviceTypes[value]?.icon || '🔧') + ' ' + (serviceTypes[value]?.tr || value);
+        }
+    }
+});
+
+document.getElementById('bulkMessageForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const targetType = document.getElementById('bulk_target_type').value;
+    const targetValue = document.getElementById('bulk_target_value').value;
+    
+    if (targetType !== 'all' && !targetValue) {
+        alert('❌ Lütfen hedef seçin');
+        return;
+    }
+    
+    if (!confirm('⚠️ Bu mesaj seçilen tüm ustalara gönderilecek. Devam etmek istiyor musunuz?')) {
+        return;
+    }
+    
+    const formData = new FormData(this);
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Gönderiliyor...';
     
     try {
-        console.log('Fetching:', `/admin/provider-messages/history?provider_id=${providerId}`);
-        const response = await fetch(`/admin/provider-messages/history?provider_id=${providerId}`);
-        console.log('Response status:', response.status);
-        
-        // Check for unauthorized (not logged in)
-        if (response.status === 401) {
-            content.innerHTML = '<div class="alert alert-warning">⚠️ Oturum süreniz dolmuş. Sayfayı yenileyin.</div>';
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
-            return;
-        }
-        
+        const response = await fetch('/admin/provider-messages/send-bulk', { method: 'POST', body: formData });
         const result = await response.json();
-        console.log('Result:', result);
+        
+        if (result.success) {
+            alert('✅ ' + result.message);
+            closeModal('bulkMessageModal');
+            location.reload();
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Hata: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '📢 Toplu Gönder';
+    }
+});
+
+// Send Lead
+function openSendLeadModal(providerId, providerName, serviceType, city) {
+    document.getElementById('lead_provider_id').value = providerId;
+    document.getElementById('lead_provider_name').textContent = providerName;
+    document.getElementById('sendLeadForm').reset();
+    document.getElementById('lead_provider_id').value = providerId;
+    document.getElementById('leadDetails').classList.add('hidden');
+    
+    // Filter leads by service type and city
+    const select = document.getElementById('lead_select');
+    select.innerHTML = '<option value="">Lead seçiniz...</option>';
+    
+    const matchingLeads = availableLeads.filter(lead => 
+        lead.service_type === serviceType && lead.city === city
+    );
+    
+    const otherLeads = availableLeads.filter(lead => 
+        lead.service_type !== serviceType || lead.city !== city
+    );
+    
+    if (matchingLeads.length > 0) {
+        const optGroup1 = document.createElement('optgroup');
+        optGroup1.label = '✅ Eşleşen Lead\'ler (' + matchingLeads.length + ')';
+        matchingLeads.forEach(lead => {
+            const opt = document.createElement('option');
+            opt.value = lead.id;
+            opt.textContent = '#' + lead.id + ' - ' + (serviceTypes[lead.service_type]?.tr || lead.service_type) + ' - ' + (cities[lead.city]?.tr || lead.city);
+            opt.dataset.lead = JSON.stringify(lead);
+            optGroup1.appendChild(opt);
+        });
+        select.appendChild(optGroup1);
+    }
+    
+    if (otherLeads.length > 0) {
+        const optGroup2 = document.createElement('optgroup');
+        optGroup2.label = '📋 Diğer Lead\'ler (' + otherLeads.length + ')';
+        otherLeads.forEach(lead => {
+            const opt = document.createElement('option');
+            opt.value = lead.id;
+            opt.textContent = '#' + lead.id + ' - ' + (serviceTypes[lead.service_type]?.tr || lead.service_type) + ' - ' + (cities[lead.city]?.tr || lead.city);
+            opt.dataset.lead = JSON.stringify(lead);
+            optGroup2.appendChild(opt);
+        });
+        select.appendChild(optGroup2);
+    }
+    
+    document.getElementById('lead_count_info').textContent = 
+        matchingLeads.length + ' eşleşen, ' + otherLeads.length + ' diğer lead mevcut';
+    
+    openModal('sendLeadModal');
+}
+
+document.getElementById('lead_select').addEventListener('change', function() {
+    const selected = this.options[this.selectedIndex];
+    const detailsDiv = document.getElementById('leadDetails');
+    const contentDiv = document.getElementById('leadDetailsContent');
+    
+    if (selected.dataset.lead) {
+        const lead = JSON.parse(selected.dataset.lead);
+        contentDiv.innerHTML = `
+            <p class="text-sm"><strong>Hizmet:</strong> ${serviceTypes[lead.service_type]?.tr || lead.service_type}</p>
+            <p class="text-sm"><strong>Şehir:</strong> ${cities[lead.city]?.tr || lead.city}</p>
+            <p class="text-sm"><strong>Telefon:</strong> ${lead.phone}</p>
+            ${lead.description ? '<p class="text-sm"><strong>Açıklama:</strong> ' + lead.description + '</p>' : ''}
+            <p class="text-sm text-gray-500"><strong>Tarih:</strong> ${lead.created_at}</p>
+        `;
+        detailsDiv.classList.remove('hidden');
+    } else {
+        detailsDiv.classList.add('hidden');
+    }
+});
+
+document.getElementById('sendLeadForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const leadId = document.getElementById('lead_select').value;
+    if (!leadId) {
+        alert('❌ Lütfen bir lead seçin');
+        return;
+    }
+    
+    const formData = new FormData(this);
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Gönderiliyor...';
+    
+    try {
+        const response = await fetch('/admin/provider-messages/send-lead', { method: 'POST', body: formData });
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ ' + result.message);
+            closeModal('sendLeadModal');
+            location.reload();
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Hata: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '🎯 Lead Gönder';
+    }
+});
+
+// Message History
+async function viewMessageHistory(providerId, providerName) {
+    document.getElementById('history_provider_name').textContent = providerName;
+    openModal('messageHistoryModal');
+    
+    const content = document.getElementById('messageHistoryContent');
+    content.innerHTML = '<div class="text-center py-8"><div class="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full mx-auto"></div><p class="text-gray-500 mt-3">Mesajlar yükleniyor...</p></div>';
+    
+    try {
+        const response = await fetch(`/admin/provider-messages/history?provider_id=${providerId}`);
+        const result = await response.json();
         
         if (result.success && result.messages.length > 0) {
-            let html = '';
+            let html = '<div class="space-y-3">';
             result.messages.forEach(msg => {
                 const isRead = msg.is_read == 1;
-                const typeClasses = {
-                    'lead': 'type-lead',
-                    'notification': 'type-notification',
-                    'announcement': 'type-announcement',
-                    'info': 'type-info'
+                const typeColors = {
+                    'lead': 'bg-green-100 text-green-700',
+                    'notification': 'bg-blue-100 text-blue-700',
+                    'announcement': 'bg-amber-100 text-amber-700',
+                    'info': 'bg-gray-100 text-gray-700'
                 };
-                const typeClass = typeClasses[msg.message_type] || 'type-info';
+                const typeColor = typeColors[msg.message_type] || typeColors.info;
                 
                 html += `
-                    <div class="message-item ${!isRead ? 'unread' : ''}">
-                        <div class="message-header">
-                            <div class="message-badges">
-                                <span class="badge ${typeClass}">${msg.message_type}</span>
-                                ${msg.priority === 'urgent' ? '<span class="badge priority-urgent">🔴 Acil</span>' : ''}
-                                ${msg.priority === 'high' ? '<span class="badge priority-high">🟠 Yüksek</span>' : ''}
-                                ${!isRead ? '<span class="badge unread-badge">Okunmadı</span>' : ''}
-                            </div>
+                    <div class="border ${isRead ? 'border-gray-200' : 'border-purple-300 bg-purple-50'} rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2 flex-wrap">
+                            <span class="px-2 py-0.5 rounded text-xs font-semibold ${typeColor}">${msg.message_type}</span>
+                            ${msg.priority === 'urgent' ? '<span class="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">🔴 Acil</span>' : ''}
+                            ${msg.priority === 'high' ? '<span class="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-xs font-semibold">🟠 Yüksek</span>' : ''}
+                            ${!isRead ? '<span class="px-2 py-0.5 bg-purple-600 text-white rounded text-xs font-semibold">Okunmadı</span>' : ''}
                         </div>
-                        <h6 style="font-weight:700; color:#2d3748; margin:1rem 0 0.5rem 0;">${escapeHtml(msg.subject)}</h6>
-                        <p style="color:#4a5568; white-space:pre-wrap; margin-bottom:1rem;">${escapeHtml(msg.message)}</p>
-                        <small style="color:#a0aec0;">
-                            📅 ${new Date(msg.created_at).toLocaleString('tr-TR')}
-                            ${msg.read_at ? ' | 👁️ Okundu: ' + new Date(msg.read_at).toLocaleString('tr-TR') : ''}
-                        </small>
+                        <h4 class="font-bold text-gray-900 mb-1">${escapeHtml(msg.subject)}</h4>
+                        <p class="text-sm text-gray-600 whitespace-pre-wrap mb-2">${escapeHtml(msg.message)}</p>
+                        <p class="text-xs text-gray-400">📅 ${new Date(msg.created_at).toLocaleString('tr-TR')}</p>
                     </div>
                 `;
             });
+            html += '</div>';
             content.innerHTML = html;
         } else {
-            content.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><h3 class="empty-state-title">Henüz Mesaj Yok</h3><p class="empty-state-text">Bu provider\'a henüz mesaj gönderilmemiş</p></div>';
+            content.innerHTML = '<div class="text-center py-8"><span class="text-4xl mb-3 block">📭</span><p class="text-gray-500">Henüz mesaj yok</p></div>';
         }
     } catch (error) {
-        console.error('Error loading message history:', error);
-        content.innerHTML = '<div class="alert alert-danger">❌ Mesajlar yüklenemedi: ' + error.message + '</div>';
+        content.innerHTML = '<div class="text-center py-8 text-red-500">❌ Mesajlar yüklenemedi</div>';
     }
 }
 
-// Search & Filter
-document.getElementById('searchProviders').addEventListener('input', filterProviders);
-document.getElementById('filterStatus').addEventListener('change', filterProviders);
-
-function filterProviders() {
-    const search = document.getElementById('searchProviders').value.toLowerCase();
-    const status = document.getElementById('filterStatus').value;
-    const cards = document.querySelectorAll('.provider-card');
-    
-    cards.forEach(card => {
-        const searchText = card.dataset.search;
-        const cardStatus = card.dataset.status;
-        
-        const matchesSearch = !search || searchText.includes(search);
-        const matchesStatus = !status || cardStatus === status;
-        
-        card.style.display = (matchesSearch && matchesStatus) ? 'block' : 'none';
-    });
-}
-
-// HTML escape helper
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
 }
+
+// Close modal on ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('[id$="Modal"]').forEach(modal => {
+            if (!modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+});
 </script>
 
 <?php

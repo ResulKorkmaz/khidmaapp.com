@@ -215,7 +215,10 @@ $routes = [
     // ========== ADMIN MESSAGES ==========
     'GET:/admin/provider-messages' => ['AdminMessageController', 'index', 'admin.auth'],
     'POST:/admin/provider-messages/send' => ['AdminMessageController', 'send', 'admin.auth'],
+    'POST:/admin/provider-messages/send-bulk' => ['AdminMessageController', 'sendBulk', 'admin.auth'],
+    'POST:/admin/provider-messages/send-lead' => ['AdminMessageController', 'sendLead', 'admin.auth'],
     'GET:/admin/provider-messages/history' => ['AdminMessageController', 'history', 'admin.auth'],
+    'GET:/admin/provider-messages/filter-providers' => ['AdminMessageController', 'filterProviders', 'admin.auth'],
     
     // ========== ADMIN USERS ==========
     'GET:/admin/users' => ['AdminUserController', 'index', 'admin.auth'],
