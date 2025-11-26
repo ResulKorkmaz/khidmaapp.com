@@ -523,9 +523,24 @@ ob_start();
                     <!-- Compact Lead Card -->
                     <?php 
                     $isWithdrawn = $currentStatus === 'withdrawn';
-                    $cardBorder = $isWithdrawn ? 'border-orange-400 border-2 bg-orange-50' : 'border-gray-200';
+                    $isNewLead = $currentStatus === 'new';
+                    
+                    // Kart stilini belirle
+                    if ($isWithdrawn) {
+                        $cardBorder = 'border-orange-400 border-2 bg-orange-50';
+                    } elseif ($isNewLead) {
+                        $cardBorder = 'border-green-400 border-2 bg-gradient-to-r from-green-50 to-emerald-50 shadow-green-100 shadow-md';
+                    } else {
+                        $cardBorder = 'border-gray-200';
+                    }
                     ?>
-                    <div class="bg-white border <?= $cardBorder ?> rounded-xl p-4 lg:p-3 hover:shadow-md transition-all <?= $isSent ? 'opacity-70' : '' ?>" id="lead-row-<?= $lead['id'] ?>">
+                    <div class="bg-white border <?= $cardBorder ?> rounded-xl p-4 lg:p-3 hover:shadow-md transition-all <?= $isSent ? 'opacity-70' : '' ?> <?= $isNewLead ? 'relative overflow-hidden' : '' ?>" id="lead-row-<?= $lead['id'] ?>">
+                        <?php if ($isNewLead): ?>
+                        <!-- Yeni Lead Göstergesi -->
+                        <div class="absolute top-0 right-0 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg shadow-sm">
+                            🆕 YENİ
+                        </div>
+                        <?php endif; ?>
                         <div class="flex items-center gap-3 lead-card-mobile">
                             <!-- Checkbox -->
                             <input type="checkbox" class="lead-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500" 
