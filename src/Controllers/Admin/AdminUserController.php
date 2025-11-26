@@ -69,6 +69,124 @@ class AdminUserController extends BaseAdminController
     }
     
     /**
+     * Kendi profil sayfası (herkes için)
+     */
+    public function profile(): void
+    {
+        $this->requireAuth();
+        
+        $userId = $_SESSION['admin_id'];
+        $currentRole = $this->getCurrentUserRole();
+        
+        try {
+            $stmt = $this->pdo->prepare("SELECT id, username, email, role, created_at, last_login FROM admins WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$user) {
+                $_SESSION['error'] = 'Kullanıcı bulunamadı';
+                $this->redirect('/admin');
+            }
+            
+            $this->render('users/profile', [
+                'user' => $user,
+                'currentRole' => $currentRole,
+                'superAdminUsername' => self::SUPER_ADMIN_USERNAME
+            ]);
+        } catch (PDOException $e) {
+            error_log("Get profile error: " . $e->getMessage());
+            $_SESSION['error'] = 'Profil bilgileri alınamadı';
+            $this->redirect('/admin');
+        }
+    }
+    
+    /**
+     * Kendi profilini güncelle
+     */
+    public function updateProfile(): void
+    {
+        $this->requireAuth();
+        
+        if (!$this->isPost()) {
+            $this->redirect('/admin/profile');
+        }
+        
+        $userId = $_SESSION['admin_id'];
+        $username = $this->sanitizedPost('username');
+        $email = $this->sanitizedPost('email');
+        $currentPassword = $this->postParam('current_password', '');
+        $newPassword = $this->postParam('new_password', '');
+        
+        try {
+            // Mevcut kullanıcıyı al
+            $stmt = $this->pdo->prepare("SELECT id, username, password_hash, role FROM admins WHERE id = ?");
+            $stmt->execute([$userId]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$user) {
+                $_SESSION['error'] = 'Kullanıcı bulunamadı';
+                $this->redirect('/admin/profile');
+            }
+            
+            // Super admin kullanıcı adı değiştirilemez
+            if ($user['username'] === self::SUPER_ADMIN_USERNAME && $username !== self::SUPER_ADMIN_USERNAME) {
+                $_SESSION['error'] = 'Super Admin kullanıcı adı değiştirilemez';
+                $this->redirect('/admin/profile');
+            }
+            
+            // Validasyon
+            $errors = [];
+            if (empty($username)) $errors[] = 'Kullanıcı adı gerekli';
+            if (empty($email)) $errors[] = 'E-posta gerekli';
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Geçerli bir e-posta adresi girin';
+            
+            // Şifre değişikliği için mevcut şifre kontrolü
+            if (!empty($newPassword)) {
+                if (empty($currentPassword)) {
+                    $errors[] = 'Şifre değiştirmek için mevcut şifrenizi girin';
+                } elseif (!password_verify($currentPassword, $user['password_hash'])) {
+                    $errors[] = 'Mevcut şifre yanlış';
+                } elseif (strlen($newPassword) < 6) {
+                    $errors[] = 'Yeni şifre en az 6 karakter olmalı';
+                }
+            }
+            
+            if (!empty($errors)) {
+                $_SESSION['error'] = implode(', ', $errors);
+                $this->redirect('/admin/profile');
+            }
+            
+            // Kullanıcı adı/email benzersizlik kontrolü (kendisi hariç)
+            $stmt = $this->pdo->prepare("SELECT id FROM admins WHERE (username = ? OR email = ?) AND id != ?");
+            $stmt->execute([$username, $email, $userId]);
+            if ($stmt->fetch()) {
+                $_SESSION['error'] = 'Bu kullanıcı adı veya e-posta zaten kullanımda';
+                $this->redirect('/admin/profile');
+            }
+            
+            // Güncelle
+            if (!empty($newPassword)) {
+                $passwordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+                $stmt = $this->pdo->prepare("UPDATE admins SET username = ?, email = ?, password_hash = ? WHERE id = ?");
+                $stmt->execute([$username, $email, $passwordHash, $userId]);
+            } else {
+                $stmt = $this->pdo->prepare("UPDATE admins SET username = ?, email = ? WHERE id = ?");
+                $stmt->execute([$username, $email, $userId]);
+            }
+            
+            // Session'ı güncelle
+            $_SESSION['admin_username'] = $username;
+            
+            $_SESSION['success'] = 'Profil başarıyla güncellendi';
+            $this->redirect('/admin/profile');
+        } catch (PDOException $e) {
+            error_log("Update profile error: " . $e->getMessage());
+            $_SESSION['error'] = 'Profil güncellenirken hata oluştu';
+            $this->redirect('/admin/profile');
+        }
+    }
+    
+    /**
      * Kullanıcı düzenleme formu
      */
     public function editForm(): void

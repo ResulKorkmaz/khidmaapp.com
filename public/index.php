@@ -220,6 +220,10 @@ $routes = [
     'GET:/admin/provider-messages/history' => ['AdminMessageController', 'history', 'admin.auth'],
     'GET:/admin/provider-messages/filter-providers' => ['AdminMessageController', 'filterProviders', 'admin.auth'],
     
+    // ========== ADMIN PROFILE ==========
+    'GET:/admin/profile' => ['AdminUserController', 'profile', 'admin.auth'],
+    'POST:/admin/profile/update' => ['AdminUserController', 'updateProfile', 'admin.auth'],
+    
     // ========== ADMIN USERS ==========
     'GET:/admin/users' => ['AdminUserController', 'index', 'admin.auth'],
     'GET:/admin/users/create' => ['AdminUserController', 'createForm', 'admin.auth'],
