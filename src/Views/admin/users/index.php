@@ -1,229 +1,224 @@
 <?php
 /**
  * Kullanıcı Yönetimi - Liste
- * Sadece Super Admin erişebilir
+ * Rol bazlı görünürlük
  */
 $pageTitle = 'Kullanıcı Yönetimi';
 $currentPage = 'users';
 ob_start();
+
+$currentRole = $currentRole ?? 'user';
+$superAdminUsername = $superAdminUsername ?? 'rslkrkmz';
 ?>
 
-<div class="p-6">
+<div class="container mx-auto px-4 py-4">
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-center">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">👥 Kullanıcı Yönetimi</h1>
-            <p class="text-gray-600 mt-1">Sistem kullanıcılarını yönetin</p>
+    <div class="bg-blue-600 rounded-xl p-4 mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">👥</span>
+                <div>
+                    <h1 class="text-lg font-bold text-white">Kullanıcı Yönetimi</h1>
+                    <p class="text-blue-200 text-xs">
+                        <?php if ($currentRole === 'super_admin'): ?>
+                            Tüm kullanıcıları yönetin
+                        <?php elseif ($currentRole === 'admin'): ?>
+                            User kullanıcılarını yönetin
+                        <?php else: ?>
+                            Kullanıcıları görüntüleyin
+                        <?php endif; ?>
+                    </p>
+                </div>
+            </div>
+            <?php if ($currentRole === 'super_admin' || $currentRole === 'admin'): ?>
+            <a href="/admin/users/create" class="bg-white text-blue-600 hover:bg-blue-50 font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors">
+                <span>➕</span>
+                <span>Yeni Kullanıcı</span>
+            </a>
+            <?php endif; ?>
         </div>
-        <a href="/admin/users/create" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-            </svg>
-            Yeni Kullanıcı
-        </a>
     </div>
 
     <?php if (isset($_SESSION['success'])): ?>
-        <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+        <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <span>✅</span>
             <?= htmlspecialchars($_SESSION['success']) ?>
         </div>
         <?php unset($_SESSION['success']); ?>
     <?php endif; ?>
 
     <?php if (isset($_SESSION['error'])): ?>
-        <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+        <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
+            <span>❌</span>
             <?= htmlspecialchars($_SESSION['error']) ?>
         </div>
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <!-- Kullanıcı Tablosu -->
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kullanıcı</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-posta</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rol</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Son Giriş</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-                <?php if (empty($users)): ?>
-                    <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                            Henüz kullanıcı bulunmuyor
-                        </td>
-                    </tr>
-                <?php else: ?>
-                    <?php foreach ($users as $user): ?>
-                        <tr id="user-row-<?= $user['id'] ?>">
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span class="text-blue-600 font-semibold">
-                                            <?= strtoupper(substr($user['username'], 0, 2)) ?>
-                                        </span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
-                                            <?= htmlspecialchars($user['username']) ?>
-                                        </div>
-                                        <div class="text-sm text-gray-500">
-                                            #<?= $user['id'] ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <?= htmlspecialchars($user['email']) ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <?php
-                                $roleColors = [
-                                    'super_admin' => 'bg-purple-100 text-purple-800',
-                                    'admin' => 'bg-blue-100 text-blue-800',
-                                    'user' => 'bg-gray-100 text-gray-800'
-                                ];
-                                $roleNames = [
-                                    'super_admin' => '👑 Super Admin',
-                                    'admin' => '🔑 Admin',
-                                    'user' => '👤 User'
-                                ];
-                                $color = $roleColors[$user['role']] ?? 'bg-gray-100 text-gray-800';
-                                $roleName = $roleNames[$user['role']] ?? $user['role'];
-                                ?>
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <?= $color ?>">
-                                    <?= $roleName ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="status-badge px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full <?= $user['is_active'] ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
-                                    <?= $user['is_active'] ? '✓ Aktif' : '✗ Pasif' ?>
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <?= $user['last_login'] ? date('d.m.Y H:i', strtotime($user['last_login'])) : 'Hiç giriş yapmadı' ?>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <button onclick="toggleUserStatus(<?= $user['id'] ?>)" 
-                                        class="text-blue-600 hover:text-blue-900 mr-3"
-                                        title="Durumu Değiştir">
-                                    🔄 Durum
-                                </button>
-                                <button onclick="deleteUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['username']) ?>')" 
-                                        class="text-red-600 hover:text-red-900"
-                                        title="Sil">
-                                    🗑️ Sil
-                                </button>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+    <!-- Stats -->
+    <div class="bg-white rounded-lg border border-gray-200 p-3 mb-4 flex items-center justify-between">
+        <?php if ($currentRole === 'super_admin'): ?>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-purple-600"><?= count(array_filter($users, fn($u) => $u['role'] === 'super_admin')) ?></span>
+            <span class="text-xs text-gray-500">Super Admin</span>
+        </div>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-blue-600"><?= count(array_filter($users, fn($u) => $u['role'] === 'admin')) ?></span>
+            <span class="text-xs text-gray-500">Admin</span>
+        </div>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <?php endif; ?>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-gray-600"><?= count(array_filter($users, fn($u) => $u['role'] === 'user')) ?></span>
+            <span class="text-xs text-gray-500">User</span>
+        </div>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-green-600"><?= count(array_filter($users, fn($u) => $u['is_active'])) ?></span>
+            <span class="text-xs text-gray-500">Aktif</span>
+        </div>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-gray-900"><?= count($users) ?></span>
+            <span class="text-xs text-gray-500">Toplam</span>
+        </div>
     </div>
 
-    <!-- İstatistikler -->
-    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-purple-50 rounded-lg p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-purple-600 font-medium">Super Admin</p>
-                    <p class="text-2xl font-bold text-purple-900">
-                        <?= count(array_filter($users, fn($u) => $u['role'] === 'super_admin')) ?>
-                    </p>
-                </div>
-                <div class="text-3xl">👑</div>
+    <!-- User List -->
+    <?php if (empty($users)): ?>
+        <div class="bg-white rounded-lg border border-gray-100 p-8 text-center">
+            <span class="text-4xl mb-2 block">📭</span>
+            <p class="text-gray-500 text-sm">Kullanıcı bulunamadı</p>
+        </div>
+    <?php else: ?>
+        <div class="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div class="divide-y divide-gray-100">
+                <?php foreach ($users as $user): ?>
+                    <?php
+                    $roleColors = [
+                        'super_admin' => 'bg-purple-100 text-purple-700',
+                        'admin' => 'bg-blue-100 text-blue-700',
+                        'user' => 'bg-gray-100 text-gray-700'
+                    ];
+                    $roleNames = [
+                        'super_admin' => '👑 Super Admin',
+                        'admin' => '🔑 Admin',
+                        'user' => '👤 User'
+                    ];
+                    $roleColor = $roleColors[$user['role']] ?? 'bg-gray-100 text-gray-700';
+                    $roleName = $roleNames[$user['role']] ?? $user['role'];
+                    $isSuperAdmin = $user['username'] === $superAdminUsername;
+                    $canEdit = ($currentRole === 'super_admin') || 
+                               ($currentRole === 'admin' && $user['role'] === 'user') ||
+                               ($user['id'] == $_SESSION['admin_id']);
+                    $canDelete = ($currentRole === 'super_admin' && !$isSuperAdmin && $user['id'] != $_SESSION['admin_id']) ||
+                                 ($currentRole === 'admin' && $user['role'] === 'user' && $user['id'] != $_SESSION['admin_id']);
+                    ?>
+                    <div class="p-3 hover:bg-gray-50 transition-colors" id="user-row-<?= $user['id'] ?>">
+                        <div class="flex items-center gap-3">
+                            <!-- Avatar -->
+                            <div class="w-10 h-10 <?= $user['role'] === 'super_admin' ? 'bg-purple-500' : ($user['role'] === 'admin' ? 'bg-blue-500' : 'bg-gray-400') ?> rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                                <?= strtoupper(substr($user['username'], 0, 2)) ?>
+                            </div>
+                            
+                            <!-- Info -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <h3 class="font-semibold text-gray-900 text-sm"><?= htmlspecialchars($user['username']) ?></h3>
+                                    <span class="px-1.5 py-0.5 rounded text-xs font-medium <?= $roleColor ?>">
+                                        <?= $roleName ?>
+                                    </span>
+                                    <span class="px-1.5 py-0.5 rounded text-xs font-medium <?= $user['is_active'] ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' ?>">
+                                        <?= $user['is_active'] ? 'Aktif' : 'Pasif' ?>
+                                    </span>
+                                    <?php if ($isSuperAdmin): ?>
+                                        <span class="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 rounded text-xs font-medium">🔒 Korumalı</span>
+                                    <?php endif; ?>
+                                    <?php if ($user['id'] == $_SESSION['admin_id']): ?>
+                                        <span class="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded text-xs font-medium">Ben</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
+                                    <span><?= htmlspecialchars($user['email']) ?></span>
+                                    <span>•</span>
+                                    <span>Son giriş: <?= $user['last_login'] ? date('d.m.Y H:i', strtotime($user['last_login'])) : 'Hiç' ?></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <?php if ($canEdit): ?>
+                                <a href="/admin/users/edit?id=<?= $user['id'] ?>" 
+                                   class="p-2 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors" title="Düzenle">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </a>
+                                <?php endif; ?>
+                                
+                                <?php if ($canEdit && !$isSuperAdmin && $user['id'] != $_SESSION['admin_id']): ?>
+                                <button onclick="toggleUserStatus(<?= $user['id'] ?>)" 
+                                        class="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg transition-colors" title="Durum Değiştir">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                    </svg>
+                                </button>
+                                <?php endif; ?>
+                                
+                                <?php if ($canDelete): ?>
+                                <button onclick="deleteUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['username'], ENT_QUOTES) ?>')" 
+                                        class="p-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors" title="Sil">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
-        <div class="bg-blue-50 rounded-lg p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-blue-600 font-medium">Admin</p>
-                    <p class="text-2xl font-bold text-blue-900">
-                        <?= count(array_filter($users, fn($u) => $u['role'] === 'admin')) ?>
-                    </p>
-                </div>
-                <div class="text-3xl">🔑</div>
-            </div>
-        </div>
-        <div class="bg-gray-50 rounded-lg p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-gray-600 font-medium">User</p>
-                    <p class="text-2xl font-bold text-gray-900">
-                        <?= count(array_filter($users, fn($u) => $u['role'] === 'user')) ?>
-                    </p>
-                </div>
-                <div class="text-3xl">👤</div>
-            </div>
-        </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 <script>
-// CSRF token
 const csrfToken = '<?= $_SESSION['csrf_token'] ?? '' ?>';
 
 function toggleUserStatus(userId) {
-    if (!confirm('Kullanıcı durumunu değiştirmek istediğinize emin misiniz?')) {
-        return;
-    }
-
+    if (!confirm('Kullanıcı durumunu değiştirmek istediğinize emin misiniz?')) return;
+    
     fetch('/admin/users/toggle-status', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'user_id=' + userId + '&csrf_token=' + encodeURIComponent(csrfToken)
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert(data.message || 'İşlem başarısız');
-        }
+        if (data.success) location.reload();
+        else alert(data.message || 'İşlem başarısız');
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Bir hata oluştu');
-    });
+    .catch(e => alert('Bir hata oluştu'));
 }
 
 function deleteUser(userId, username) {
-    if (!confirm(`"${username}" kullanıcısını silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`)) {
-        return;
-    }
-
+    if (!confirm(`"${username}" kullanıcısını silmek istediğinize emin misiniz?`)) return;
+    
     fetch('/admin/users/delete', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'user_id=' + userId + '&csrf_token=' + encodeURIComponent(csrfToken)
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            // Remove row with animation
             const row = document.getElementById('user-row-' + userId);
-            row.style.transition = 'opacity 0.3s';
             row.style.opacity = '0';
-            setTimeout(() => {
-                row.remove();
-            }, 300);
-        } else {
-            alert(data.message || 'Silme işlemi başarısız');
-        }
+            setTimeout(() => row.remove(), 300);
+        } else alert(data.message || 'Silme işlemi başarısız');
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Bir hata oluştu');
-    });
+    .catch(e => alert('Bir hata oluştu'));
 }
 </script>
 

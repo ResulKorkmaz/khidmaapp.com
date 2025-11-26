@@ -224,6 +224,8 @@ $routes = [
     'GET:/admin/users' => ['AdminUserController', 'index', 'admin.auth'],
     'GET:/admin/users/create' => ['AdminUserController', 'createForm', 'admin.auth'],
     'POST:/admin/users/create' => ['AdminUserController', 'create', 'admin.auth'],
+    'GET:/admin/users/edit' => ['AdminUserController', 'editForm', 'admin.auth'],
+    'POST:/admin/users/update' => ['AdminUserController', 'update', 'admin.auth'],
     'POST:/admin/users/delete' => ['AdminUserController', 'delete', 'admin.auth'],
     'POST:/admin/users/toggle-status' => ['AdminUserController', 'toggleStatus', 'admin.auth'],
     
