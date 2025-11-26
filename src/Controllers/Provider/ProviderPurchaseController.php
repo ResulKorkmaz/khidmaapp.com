@@ -219,10 +219,13 @@ class ProviderPurchaseController extends BaseProviderController
                     // Paket adını oluştur
                     $packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
                     
+                    // Payment Intent ID'yi al (iade için gerekli)
+                    $paymentIntentId = $session->payment_intent ?? null;
+                    
                     $stmt = $this->db->prepare("
                         INSERT INTO provider_purchases 
-                        (provider_id, package_id, package_name, leads_count, remaining_leads, price_paid, payment_status, status, stripe_session_id, currency, purchased_at)
-                        VALUES (?, ?, ?, ?, ?, ?, 'completed', 'active', ?, 'SAR', NOW())
+                        (provider_id, package_id, package_name, leads_count, remaining_leads, price_paid, payment_status, status, stripe_session_id, stripe_payment_intent_id, currency, purchased_at)
+                        VALUES (?, ?, ?, ?, ?, ?, 'completed', 'active', ?, ?, 'SAR', NOW())
                     ");
                     $stmt->execute([
                         $providerId,
@@ -231,11 +234,12 @@ class ProviderPurchaseController extends BaseProviderController
                         $package['lead_count'],
                         $package['lead_count'],
                         $package['price_sar'],
-                        $sessionId
+                        $sessionId,
+                        $paymentIntentId
                     ]);
                     
                     $purchaseId = $this->db->lastInsertId();
-                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}, purchase #{$purchaseId}");
+                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}, purchase #{$purchaseId}, payment_intent: {$paymentIntentId}");
                     
                     // 🔥 Otomatik ilk lead talebi gönder
                     $this->createAutoLeadRequest($providerId, $purchaseId);

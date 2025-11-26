@@ -202,10 +202,15 @@ $routes = [
     
     // ========== ADMIN PURCHASES ==========
     'GET:/admin/purchases' => ['AdminPurchaseController', 'index', 'admin.auth'],
+    'GET:/admin/purchases/detail' => ['AdminPurchaseController', 'purchaseDetail', 'admin.auth'],
     'GET:/admin/lead-requests' => ['AdminPurchaseController', 'leadRequests', 'admin.auth'],
     'POST:/admin/lead-requests/send' => ['AdminPurchaseController', 'sendLeadManually', 'admin.auth'],
     'GET:/admin/lead-requests/count' => ['AdminPurchaseController', 'pendingRequestsCount', 'admin.auth'],
     'GET:/admin/api/available-leads' => ['AdminPurchaseController', 'availableLeads', 'admin.auth'],
+    
+    // ========== ADMIN REFUNDS ==========
+    'GET:/admin/refunds' => ['AdminPurchaseController', 'refunds', 'admin.auth'],
+    'POST:/admin/refunds/create' => ['AdminPurchaseController', 'createRefund', 'admin.auth'],
     
     // ========== ADMIN MESSAGES ==========
     'GET:/admin/provider-messages' => ['AdminMessageController', 'index', 'admin.auth'],

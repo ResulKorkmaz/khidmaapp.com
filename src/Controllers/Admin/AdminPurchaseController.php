@@ -651,6 +651,274 @@ class AdminPurchaseController extends BaseAdminController
         }
     }
     
+    // ==================== REFUND METHODS ====================
+    
+    /**
+     * İade listesi sayfası
+     */
+    public function refunds(): void
+    {
+        $this->requireAuth();
+        
+        try {
+            $stmt = $this->pdo->query("
+                SELECT 
+                    r.*,
+                    pp.package_name,
+                    pp.price_paid,
+                    sp.name as provider_name,
+                    sp.email as provider_email,
+                    sp.phone as provider_phone,
+                    a.username as refunded_by_name
+                FROM refunds r
+                INNER JOIN provider_purchases pp ON r.purchase_id = pp.id
+                INNER JOIN service_providers sp ON r.provider_id = sp.id
+                LEFT JOIN admins a ON r.refunded_by = a.id
+                ORDER BY r.requested_at DESC
+            ");
+            $refunds = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // İstatistikler
+            $stats = $this->getRefundStats();
+            
+            $this->render('refunds', [
+                'refunds' => $refunds,
+                'stats' => $stats,
+                'currentPage' => 'refunds'
+            ]);
+        } catch (PDOException $e) {
+            error_log("Refunds list error: " . $e->getMessage());
+            $_SESSION['error'] = 'İadeler yüklenirken hata oluştu';
+            $this->redirect('/admin');
+        }
+    }
+    
+    /**
+     * İade oluştur (Stripe ile)
+     */
+    public function createRefund(): void
+    {
+        $this->requireAuth();
+        
+        if (!$this->isPost()) {
+            $this->errorResponse('Method not allowed', 405);
+        }
+        
+        $purchaseId = intval($_POST['purchase_id'] ?? 0);
+        $refundType = $_POST['refund_type'] ?? 'full'; // full veya partial
+        $refundAmount = floatval($_POST['refund_amount'] ?? 0);
+        $reason = $_POST['reason'] ?? 'customer_request';
+        $reasonDetails = trim($_POST['reason_details'] ?? '');
+        $notes = trim($_POST['notes'] ?? '');
+        
+        if ($purchaseId <= 0) {
+            $this->errorResponse('Geçersiz satın alma ID', 400);
+        }
+        
+        try {
+            // Satın alma bilgilerini al
+            $stmt = $this->pdo->prepare("
+                SELECT pp.*, sp.name as provider_name, sp.email as provider_email
+                FROM provider_purchases pp
+                INNER JOIN service_providers sp ON pp.provider_id = sp.id
+                WHERE pp.id = ?
+            ");
+            $stmt->execute([$purchaseId]);
+            $purchase = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$purchase) {
+                $this->errorResponse('Satın alma bulunamadı', 404);
+            }
+            
+            if ($purchase['payment_status'] !== 'completed') {
+                $this->errorResponse('Bu satın alma henüz tamamlanmamış', 400);
+            }
+            
+            if ($purchase['refund_status'] === 'full') {
+                $this->errorResponse('Bu satın alma zaten tamamen iade edilmiş', 400);
+            }
+            
+            // İade miktarını hesapla
+            $paidAmount = floatval($purchase['price_paid']);
+            $alreadyRefunded = floatval($purchase['refunded_amount'] ?? 0);
+            $maxRefundable = $paidAmount - $alreadyRefunded;
+            
+            if ($refundType === 'full') {
+                $refundAmount = $maxRefundable;
+            } else {
+                if ($refundAmount <= 0 || $refundAmount > $maxRefundable) {
+                    $this->errorResponse("İade miktarı 0 ile {$maxRefundable} SAR arasında olmalı", 400);
+                }
+            }
+            
+            $this->pdo->beginTransaction();
+            
+            // Stripe ile iade yap
+            $stripeRefundId = null;
+            $stripeError = null;
+            
+            if (!empty($purchase['stripe_payment_intent_id'])) {
+                try {
+                    require_once __DIR__ . '/../../../vendor/autoload.php';
+                    require_once __DIR__ . '/../../config/stripe.php';
+                    
+                    $stripe = new \Stripe\StripeClient(STRIPE_SECRET_KEY);
+                    
+                    // Stripe'da iade oluştur
+                    $refund = $stripe->refunds->create([
+                        'payment_intent' => $purchase['stripe_payment_intent_id'],
+                        'amount' => intval($refundAmount * 100), // Kuruş cinsinden
+                        'reason' => $this->mapReasonToStripe($reason),
+                        'metadata' => [
+                            'purchase_id' => $purchaseId,
+                            'provider_id' => $purchase['provider_id'],
+                            'admin_id' => $_SESSION['admin_id'],
+                            'reason' => $reason
+                        ]
+                    ]);
+                    
+                    $stripeRefundId = $refund->id;
+                    $refundStatus = 'completed';
+                    
+                } catch (\Stripe\Exception\ApiErrorException $e) {
+                    $stripeError = $e->getMessage();
+                    error_log("Stripe refund error: " . $stripeError);
+                    $refundStatus = 'failed';
+                }
+            } else {
+                // Stripe payment intent yoksa manuel iade olarak işaretle
+                $refundStatus = 'completed';
+                $stripeRefundId = 'MANUAL_' . time();
+            }
+            
+            // Refund kaydı oluştur
+            $stmt = $this->pdo->prepare("
+                INSERT INTO refunds (
+                    purchase_id, provider_id, stripe_payment_intent_id, stripe_refund_id,
+                    amount, currency, reason, reason_details, refund_type, status,
+                    refunded_by, requested_at, processed_at, notes
+                ) VALUES (?, ?, ?, ?, ?, 'SAR', ?, ?, ?, ?, ?, NOW(), NOW(), ?)
+            ");
+            $stmt->execute([
+                $purchaseId,
+                $purchase['provider_id'],
+                $purchase['stripe_payment_intent_id'],
+                $stripeRefundId,
+                $refundAmount,
+                $reason,
+                $reasonDetails,
+                $refundType,
+                $refundStatus,
+                $_SESSION['admin_id'],
+                $notes
+            ]);
+            
+            // Satın alma kaydını güncelle
+            $newRefundedAmount = $alreadyRefunded + $refundAmount;
+            $newRefundStatus = ($newRefundedAmount >= $paidAmount) ? 'full' : 'partial';
+            
+            $stmt = $this->pdo->prepare("
+                UPDATE provider_purchases 
+                SET refund_status = ?, refunded_amount = ?
+                WHERE id = ?
+            ");
+            $stmt->execute([$newRefundStatus, $newRefundedAmount, $purchaseId]);
+            
+            $this->pdo->commit();
+            
+            if ($refundStatus === 'completed') {
+                error_log("✅ Refund created: {$refundAmount} SAR for purchase #{$purchaseId}");
+                $this->successResponse("İade başarıyla oluşturuldu: {$refundAmount} SAR", [
+                    'refund_id' => $stripeRefundId,
+                    'amount' => $refundAmount
+                ]);
+            } else {
+                $this->errorResponse("Stripe iade hatası: {$stripeError}", 500);
+            }
+            
+        } catch (PDOException $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            error_log("Create refund error: " . $e->getMessage());
+            $this->errorResponse('İade oluşturulurken hata oluştu', 500);
+        }
+    }
+    
+    /**
+     * Satın alma detayı (iade için)
+     */
+    public function purchaseDetail(): void
+    {
+        $this->requireAuth();
+        
+        $id = $this->intGet('id');
+        
+        if (!$id) {
+            $_SESSION['error'] = 'Geçersiz satın alma ID';
+            $this->redirect('/admin/purchases');
+        }
+        
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT 
+                    pp.*,
+                    sp.name as provider_name,
+                    sp.phone as provider_phone,
+                    sp.email as provider_email,
+                    sp.service_type,
+                    sp.city,
+                    lp.name_tr as package_name_tr,
+                    lp.lead_count as package_lead_count
+                FROM provider_purchases pp
+                INNER JOIN service_providers sp ON pp.provider_id = sp.id
+                LEFT JOIN lead_packages lp ON pp.package_id = lp.id
+                WHERE pp.id = ?
+            ");
+            $stmt->execute([$id]);
+            $purchase = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$purchase) {
+                $_SESSION['error'] = 'Satın alma bulunamadı';
+                $this->redirect('/admin/purchases');
+            }
+            
+            // Teslim edilen lead'ler
+            $stmt = $this->pdo->prepare("
+                SELECT pld.*, l.service_type, l.city, l.phone, l.status as lead_status
+                FROM provider_lead_deliveries pld
+                INNER JOIN leads l ON pld.lead_id = l.id
+                WHERE pld.purchase_id = ?
+                ORDER BY pld.delivered_at DESC
+            ");
+            $stmt->execute([$id]);
+            $deliveries = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // İade geçmişi
+            $stmt = $this->pdo->prepare("
+                SELECT r.*, a.username as refunded_by_name
+                FROM refunds r
+                LEFT JOIN admins a ON r.refunded_by = a.id
+                WHERE r.purchase_id = ?
+                ORDER BY r.requested_at DESC
+            ");
+            $stmt->execute([$id]);
+            $refundHistory = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            $this->render('purchase_detail', [
+                'purchase' => $purchase,
+                'deliveries' => $deliveries,
+                'refundHistory' => $refundHistory,
+                'currentPage' => 'purchases'
+            ]);
+            
+        } catch (PDOException $e) {
+            error_log("Purchase detail error: " . $e->getMessage());
+            $_SESSION['error'] = 'Satın alma detayı yüklenirken hata oluştu';
+            $this->redirect('/admin/purchases');
+        }
+    }
+    
     // ==================== PRIVATE METHODS ====================
     
     /**
@@ -676,6 +944,52 @@ class AdminPurchaseController extends BaseAdminController
         $stmt = $this->pdo->prepare("SELECT COUNT(*) as count FROM lead_requests WHERE request_status = ?");
         $stmt->execute([$status]);
         return (int)($stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0);
+    }
+    
+    /**
+     * İade istatistikleri
+     */
+    private function getRefundStats(): array
+    {
+        $stats = [];
+        
+        // Toplam iade sayısı
+        $stmt = $this->pdo->query("SELECT COUNT(*) as count FROM refunds");
+        $stats['total_refunds'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        // Toplam iade tutarı
+        $stmt = $this->pdo->query("SELECT COALESCE(SUM(amount), 0) as total FROM refunds WHERE status = 'completed'");
+        $stats['total_refunded_amount'] = floatval($stmt->fetch(PDO::FETCH_ASSOC)['total']);
+        
+        // Bekleyen iadeler
+        $stmt = $this->pdo->query("SELECT COUNT(*) as count FROM refunds WHERE status = 'pending'");
+        $stats['pending_refunds'] = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
+        
+        // Bu ay iade
+        $stmt = $this->pdo->query("
+            SELECT COALESCE(SUM(amount), 0) as total 
+            FROM refunds 
+            WHERE status = 'completed' AND MONTH(processed_at) = MONTH(CURDATE()) AND YEAR(processed_at) = YEAR(CURDATE())
+        ");
+        $stats['this_month_refunds'] = floatval($stmt->fetch(PDO::FETCH_ASSOC)['total']);
+        
+        return $stats;
+    }
+    
+    /**
+     * Sebep kodunu Stripe formatına çevir
+     */
+    private function mapReasonToStripe(string $reason): string
+    {
+        $map = [
+            'customer_request' => 'requested_by_customer',
+            'invalid_lead' => 'requested_by_customer',
+            'duplicate' => 'duplicate',
+            'service_issue' => 'requested_by_customer',
+            'other' => 'requested_by_customer'
+        ];
+        
+        return $map[$reason] ?? 'requested_by_customer';
     }
 }
 
