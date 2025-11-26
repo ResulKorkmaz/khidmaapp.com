@@ -128,6 +128,8 @@ class AdminDashboardController extends BaseAdminController
         if (!$this->pdo) return;
         try {
             $this->pdo->exec("UPDATE leads SET status = 'pending' WHERE status = 'new' AND deleted_at IS NULL AND TIMESTAMPDIFF(HOUR, created_at, NOW()) >= 48");
-        } catch (PDOException $e) {}
+        } catch (PDOException $e) {
+            error_log("Auto update error: " . $e->getMessage());
+        }
     }
 }
