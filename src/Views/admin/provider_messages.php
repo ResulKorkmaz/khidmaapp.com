@@ -107,12 +107,13 @@ $availableLeads = $availableLeads ?? [];
 
     <!-- Filters -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <form method="GET" id="filterForm" class="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">🔍 Ara</label>
-                <input type="text" name="search" value="<?= htmlspecialchars($filters['search']) ?>" 
+                <input type="text" name="search" id="searchInput" value="<?= htmlspecialchars($filters['search']) ?>" 
                        class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                       placeholder="İsim, email, telefon...">
+                       placeholder="İsim, email, telefon..." autocomplete="off">
+                <p class="text-xs text-gray-400 mt-1">Enter'a basın veya bekleyin</p>
             </div>
             <div>
                 <label class="block text-xs font-semibold text-gray-600 mb-1.5">🏙️ Şehir</label>
@@ -511,6 +512,47 @@ const cities = <?= json_encode($cities) ?>;
 const availableLeads = <?= json_encode($availableLeads) ?>;
 
 // Modal Functions
+// Debounce function for search
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Auto-submit search after typing
+const searchInput = document.getElementById('searchInput');
+const filterForm = document.getElementById('filterForm');
+
+// Submit form on Enter key
+searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        filterForm.submit();
+    }
+});
+
+// Auto-submit after 800ms of no typing
+const autoSearch = debounce(function() {
+    if (searchInput.value.length >= 2 || searchInput.value.length === 0) {
+        filterForm.submit();
+    }
+}, 800);
+
+searchInput.addEventListener('input', autoSearch);
+
+// Also auto-submit when dropdowns change
+document.querySelectorAll('#filterForm select').forEach(select => {
+    select.addEventListener('change', function() {
+        filterForm.submit();
+    });
+});
+
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
     document.body.style.overflow = 'auto';
