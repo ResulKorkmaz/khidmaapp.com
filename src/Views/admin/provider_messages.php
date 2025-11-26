@@ -31,47 +31,50 @@ $availableLeads = $availableLeads ?? [];
     </div>
     <?php endif; ?>
 
-    <!-- Compact Header -->
-    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-4 mb-4">
+    <!-- Header -->
+    <div class="bg-purple-600 rounded-xl p-4 mb-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div class="flex items-center gap-3">
                 <span class="text-2xl">💬</span>
                 <div>
                     <h1 class="text-lg font-bold text-white">Provider Mesajları</h1>
-                    <p class="text-white/80 text-xs">Toplu veya tekli mesaj gönder</p>
+                    <p class="text-purple-200 text-xs">Toplu veya tekli mesaj gönder</p>
                 </div>
             </div>
             <div class="flex gap-2 flex-wrap">
-                <button onclick="openBulkMessageModal('all')" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
+                <button onclick="openBulkMessageModal('all')" class="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
                     <span>📢</span><span>Tümüne</span>
                 </button>
-                <button onclick="openBulkMessageModal('city')" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
+                <button onclick="openBulkMessageModal('city')" class="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
                     <span>🏙️</span><span>Şehir</span>
                 </button>
-                <button onclick="openBulkMessageModal('service')" class="bg-white/20 hover:bg-white/30 text-white font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
+                <button onclick="openBulkMessageModal('service')" class="bg-white text-purple-600 hover:bg-purple-50 font-semibold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 transition-colors">
                     <span>🔧</span><span>Sektör</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Compact Stats -->
-    <div class="grid grid-cols-4 gap-2 mb-4">
-        <div class="bg-white rounded-lg border border-gray-100 p-3 text-center">
-            <p class="text-xl font-bold text-gray-900"><?= $totalProviders ?? 0 ?></p>
-            <p class="text-xs text-gray-500">Usta</p>
+    <!-- Stats - Tek satır -->
+    <div class="bg-white rounded-lg border border-gray-200 p-3 mb-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-gray-900"><?= $totalProviders ?? 0 ?></span>
+            <span class="text-xs text-gray-500">Usta</span>
         </div>
-        <div class="bg-white rounded-lg border border-gray-100 p-3 text-center">
-            <p class="text-xl font-bold text-green-600"><?= $activeProviderCount ?></p>
-            <p class="text-xs text-gray-500">Aktif</p>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-green-600"><?= $activeProviderCount ?></span>
+            <span class="text-xs text-gray-500">Aktif</span>
         </div>
-        <div class="bg-white rounded-lg border border-gray-100 p-3 text-center">
-            <p class="text-xl font-bold text-blue-600"><?= $stats['total_messages'] ?? 0 ?></p>
-            <p class="text-xs text-gray-500">Mesaj</p>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-blue-600"><?= $stats['total_messages'] ?? 0 ?></span>
+            <span class="text-xs text-gray-500">Mesaj</span>
         </div>
-        <div class="bg-white rounded-lg border border-gray-100 p-3 text-center">
-            <p class="text-xl font-bold text-red-600"><?= $stats['unread_messages'] ?? 0 ?></p>
-            <p class="text-xs text-gray-500">Okunmamış</p>
+        <div class="w-px h-6 bg-gray-200"></div>
+        <div class="flex items-center gap-2">
+            <span class="text-lg font-bold text-red-600"><?= $stats['unread_messages'] ?? 0 ?></span>
+            <span class="text-xs text-gray-500">Okunmamış</span>
         </div>
     </div>
 
