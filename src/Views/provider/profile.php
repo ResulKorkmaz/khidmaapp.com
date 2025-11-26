@@ -102,7 +102,7 @@ $cities = getCities();
                         </div>
                         <input type="tel" id="phone" name="phone" 
                                value="<?= htmlspecialchars($provider['phone'] ?? '') ?>"
-                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-right"
                                placeholder="05xxxxxxxx" required>
                     </div>
                 </div>
