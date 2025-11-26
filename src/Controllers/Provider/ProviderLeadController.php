@@ -31,8 +31,8 @@ class ProviderLeadController extends BaseProviderController
         $offset = ($page - 1) * $perPage;
         
         try {
-            // Provider'a gönderilmiş lead'leri getir
-            $whereClause = "WHERE pld.provider_id = ?";
+            // Provider'a gönderilmiş lead'leri getir (gizlenmiş olanlar hariç)
+            $whereClause = "WHERE pld.provider_id = ? AND phl.id IS NULL";
             $params = [$providerId];
             
             if ($statusFilter !== 'all') {
@@ -40,11 +40,12 @@ class ProviderLeadController extends BaseProviderController
                 $params[] = $statusFilter;
             }
             
-            // Toplam sayı
+            // Toplam sayı (gizlenmiş olanlar hariç)
             $countSql = "
                 SELECT COUNT(DISTINCT l.id) as count
                 FROM leads l
                 INNER JOIN provider_lead_deliveries pld ON l.id = pld.lead_id
+                LEFT JOIN provider_hidden_leads phl ON l.id = phl.lead_id AND phl.provider_id = pld.provider_id
                 $whereClause
             ";
             $stmt = $this->db->prepare($countSql);
@@ -52,7 +53,7 @@ class ProviderLeadController extends BaseProviderController
             $totalLeads = (int)$stmt->fetch(PDO::FETCH_ASSOC)['count'];
             $totalPages = ceil($totalLeads / $perPage);
             
-            // Lead'leri getir
+            // Lead'leri getir (gizlenmiş olanlar hariç)
             $params[] = $perPage;
             $params[] = $offset;
             
@@ -62,6 +63,7 @@ class ProviderLeadController extends BaseProviderController
                 FROM leads l
                 INNER JOIN provider_lead_deliveries pld ON l.id = pld.lead_id
                 LEFT JOIN provider_purchases pp ON pld.purchase_id = pp.id
+                LEFT JOIN provider_hidden_leads phl ON l.id = phl.lead_id AND phl.provider_id = pld.provider_id
                 $whereClause
                 ORDER BY pld.delivered_at DESC
                 LIMIT ? OFFSET ?
@@ -292,6 +294,47 @@ class ProviderLeadController extends BaseProviderController
             error_log("Hidden leads error: " . $e->getMessage());
             $_SESSION['error'] = 'Gizli lead\'ler yüklenirken hata oluştu';
             $this->redirect('/provider/dashboard');
+        }
+    }
+    
+    /**
+     * Lead'i geri yükle (çöp kutusundan çıkar)
+     */
+    public function restore(): void
+    {
+        $this->requireAuth();
+        
+        if (!$this->isPost()) {
+            $this->errorResponse('Method not allowed', 405);
+        }
+        
+        if (!$this->verifyCsrf()) {
+            $this->errorResponse('Geçersiz güvenlik belirteci', 403);
+        }
+        
+        $leadId = $this->intPost('lead_id');
+        $providerId = $this->getProviderId();
+        
+        if (!$leadId) {
+            $this->errorResponse('Geçersiz lead ID', 400);
+        }
+        
+        try {
+            // Gizli lead kaydını sil
+            $stmt = $this->db->prepare("
+                DELETE FROM provider_hidden_leads 
+                WHERE provider_id = ? AND lead_id = ?
+            ");
+            $stmt->execute([$providerId, $leadId]);
+            
+            if ($stmt->rowCount() > 0) {
+                $this->successResponse('تم استعادة الطلب بنجاح');
+            } else {
+                $this->errorResponse('الطلب غير موجود في سلة المحذوفات', 404);
+            }
+        } catch (PDOException $e) {
+            error_log("Restore lead error: " . $e->getMessage());
+            $this->errorResponse('حدث خطأ أثناء الاستعادة', 500);
         }
     }
     

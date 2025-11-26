@@ -72,8 +72,32 @@
 
 <script>
 async function restoreLead(leadId) {
-    // TODO: Implement restore functionality
-    alert('سيتم تنفيذ هذه الميزة قريباً');
+    if (!confirm('هل تريد استعادة هذا الطلب؟')) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('lead_id', leadId);
+        formData.append('csrf_token', getCsrfToken());
+        
+        const response = await fetch('/provider/restore-lead', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Sayfayı yenile
+            window.location.reload();
+        } else {
+            alert(result.message || 'حدث خطأ');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('حدث خطأ أثناء الاستعادة');
+    }
 }
 </script>
 

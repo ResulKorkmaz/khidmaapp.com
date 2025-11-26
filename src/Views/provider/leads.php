@@ -266,26 +266,68 @@
     
     <!-- Sayfalama -->
     <?php if (($totalPages ?? 1) > 1): ?>
-        <div class="flex justify-center mt-8">
-            <nav class="inline-flex rounded-lg shadow-sm">
-                <?php if (($page ?? 1) > 1): ?>
-                    <a href="/provider/leads?page=<?= ($page ?? 1) - 1 ?>" 
-                       class="px-4 py-2 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-50 text-sm">
+        <?php 
+        $currentPage = $page ?? 1;
+        $total = $totalPages ?? 1;
+        $range = 2; // Mevcut sayfanın her iki tarafında gösterilecek sayfa sayısı
+        ?>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 bg-white rounded-xl p-4 border border-gray-200">
+            <!-- Bilgi -->
+            <div class="text-sm text-gray-600">
+                صفحة <span class="font-bold text-gray-900"><?= $currentPage ?></span> من <span class="font-bold text-gray-900"><?= $total ?></span>
+                <span class="text-gray-400 mx-2">|</span>
+                إجمالي: <span class="font-bold text-green-600"><?= $totalLeads ?? 0 ?></span> طلب
+            </div>
+            
+            <!-- Sayfa Numaraları -->
+            <nav class="inline-flex items-center gap-1">
+                <!-- Önceki -->
+                <?php if ($currentPage > 1): ?>
+                    <a href="/provider/leads?page=<?= $currentPage - 1 ?>" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
                         السابق
                     </a>
                 <?php endif; ?>
                 
-                <?php for ($i = 1; $i <= ($totalPages ?? 1); $i++): ?>
+                <!-- İlk sayfa -->
+                <?php if ($currentPage > $range + 1): ?>
+                    <a href="/provider/leads?page=1" class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium">1</a>
+                    <?php if ($currentPage > $range + 2): ?>
+                        <span class="px-2 text-gray-400">...</span>
+                    <?php endif; ?>
+                <?php endif; ?>
+                
+                <!-- Sayfa numaraları -->
+                <?php 
+                $start = max(1, $currentPage - $range);
+                $end = min($total, $currentPage + $range);
+                for ($i = $start; $i <= $end; $i++): 
+                ?>
                     <a href="/provider/leads?page=<?= $i ?>" 
-                       class="px-4 py-2 border-t border-b border-gray-300 text-sm <?= $i === ($page ?? 1) ? 'bg-green-600 text-white border-green-600' : 'bg-white hover:bg-gray-50' ?>">
+                       class="px-3 py-2 rounded-lg text-sm font-medium <?= $i === $currentPage ? 'bg-green-600 text-white border border-green-600' : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700' ?>">
                         <?= $i ?>
                     </a>
                 <?php endfor; ?>
                 
-                <?php if (($page ?? 1) < ($totalPages ?? 1)): ?>
-                    <a href="/provider/leads?page=<?= ($page ?? 1) + 1 ?>" 
-                       class="px-4 py-2 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-50 text-sm">
+                <!-- Son sayfa -->
+                <?php if ($currentPage < $total - $range): ?>
+                    <?php if ($currentPage < $total - $range - 1): ?>
+                        <span class="px-2 text-gray-400">...</span>
+                    <?php endif; ?>
+                    <a href="/provider/leads?page=<?= $total ?>" class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium"><?= $total ?></a>
+                <?php endif; ?>
+                
+                <!-- Sonraki -->
+                <?php if ($currentPage < $total): ?>
+                    <a href="/provider/leads?page=<?= $currentPage + 1 ?>" 
+                       class="px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-700 flex items-center gap-1">
                         التالي
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
                     </a>
                 <?php endif; ?>
             </nav>
@@ -369,9 +411,18 @@
         
         <!-- Modal Footer -->
         <div class="bg-gray-50 px-6 py-4 rounded-b-2xl border-t border-gray-200">
-            <button onclick="closeLeadModal()" class="w-full py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors">
-                إغلاق
-            </button>
+            <div class="flex gap-3">
+                <button onclick="closeLeadModal()" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl transition-colors">
+                    إغلاق
+                </button>
+                <button onclick="hideLead()" class="flex-1 py-3 bg-red-100 hover:bg-red-200 text-red-700 font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    حذف من القائمة
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 text-center mt-2">⚠️ سيتم نقل الطلب إلى سلة المحذوفات</p>
         </div>
     </div>
 </div>
@@ -499,6 +550,86 @@ async function markAsViewed(leadId) {
     } catch (error) {
         console.error('Error marking as viewed:', error);
     }
+}
+
+async function hideLead() {
+    if (!currentLeadId) return;
+    
+    if (!confirm('هل أنت متأكد من حذف هذا الطلب؟ سيتم نقله إلى سلة المحذوفات.')) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('lead_id', currentLeadId);
+        formData.append('csrf_token', getCsrfToken());
+        
+        const response = await fetch('/provider/hide-lead', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Modal'ı kapat
+            closeLeadModal();
+            
+            // Tablodaki satırı kaldır (animasyonlu)
+            const row = document.querySelector(`tr:has(button[onclick*='"id":${currentLeadId}'])`);
+            if (row) {
+                row.style.transition = 'all 0.3s ease';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    row.remove();
+                    // Toplam sayıyı güncelle
+                    const countEl = document.querySelector('h2');
+                    if (countEl) {
+                        const match = countEl.textContent.match(/\((\d+)\)/);
+                        if (match) {
+                            const newCount = parseInt(match[1]) - 1;
+                            countEl.textContent = countEl.textContent.replace(/\(\d+\)/, `(${newCount})`);
+                        }
+                    }
+                }, 300);
+            }
+            
+            // Başarı mesajı göster
+            showToast('success', '✅ تم نقل الطلب إلى سلة المحذوفات');
+        } else {
+            showToast('error', result.message || 'حدث خطأ');
+        }
+    } catch (error) {
+        console.error('Error hiding lead:', error);
+        showToast('error', 'حدث خطأ أثناء الحذف');
+    }
+}
+
+function showToast(type, message) {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 z-[9999] px-6 py-4 rounded-xl shadow-2xl border-2 transition-all ${
+        type === 'success' 
+            ? 'bg-green-50 border-green-500 text-green-800' 
+            : 'bg-red-50 border-red-500 text-red-800'
+    }`;
+    
+    toast.innerHTML = `
+        <div class="flex items-center gap-3">
+            ${type === 'success' 
+                ? '<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+                : '<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+            }
+            <span class="font-semibold">${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
 }
 </script>
 

@@ -133,6 +133,7 @@ $routes = [
     'POST:/provider/request-lead' => ['ProviderLeadController', 'request', 'provider.auth'],
     'POST:/provider/mark-lead-viewed' => ['ProviderLeadController', 'markViewed', 'provider.auth'],
     'POST:/provider/hide-lead' => ['ProviderLeadController', 'hide', 'provider.auth'],
+    'POST:/provider/restore-lead' => ['ProviderLeadController', 'restore', 'provider.auth'],
     
     // ========== PROVIDER PROFILE ==========
     'GET:/provider/profile' => ['ProviderProfileController', 'index', 'provider.auth'],

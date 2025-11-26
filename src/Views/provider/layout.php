@@ -165,8 +165,10 @@ if (isset($_SESSION['provider_id'])) {
 </aside>
 
 <!-- Main Content -->
-<main id="main-content" class="min-h-screen pt-14 lg:pt-0">
-    <?= $content ?? '' ?>
+<main id="main-content" class="min-h-screen pt-16 lg:pt-0 pb-4">
+    <div class="p-4 lg:p-6">
+        <?= $content ?? '' ?>
+    </div>
 </main>
 
 <script>
