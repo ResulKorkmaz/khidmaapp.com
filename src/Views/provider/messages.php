@@ -8,14 +8,14 @@ $totalUnread = count($unreadMessages);
 // Mesaj türü ikonları ve renkleri
 $messageTypeConfig = [
     'info' => ['icon' => 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'bg' => 'bg-blue-500', 'light' => 'bg-blue-50', 'text' => 'text-blue-600'],
-    'success' => ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'bg' => 'bg-green-500', 'light' => 'bg-green-50', 'text' => 'text-green-600'],
-    'warning' => ['icon' => 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', 'bg' => 'bg-yellow-500', 'light' => 'bg-yellow-50', 'text' => 'text-yellow-600'],
+    'notification' => ['icon' => 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9', 'bg' => 'bg-green-500', 'light' => 'bg-green-50', 'text' => 'text-green-600'],
+    'announcement' => ['icon' => 'M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z', 'bg' => 'bg-yellow-500', 'light' => 'bg-yellow-50', 'text' => 'text-yellow-600'],
     'lead' => ['icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', 'bg' => 'bg-purple-500', 'light' => 'bg-purple-50', 'text' => 'text-purple-600'],
 ];
 
-function getMessageConfig($type) {
-    global $messageTypeConfig;
-    return $messageTypeConfig[$type] ?? $messageTypeConfig['info'];
+function getMessageConfig($type, $config) {
+    $type = $type ?? 'info';
+    return $config[$type] ?? $config['info'];
 }
 
 function formatMessageDate($date) {
@@ -83,7 +83,7 @@ function formatMessageDate($date) {
             </h2>
             <div class="space-y-3">
                 <?php foreach ($unreadMessages as $message): 
-                    $config = getMessageConfig($message['message_type'] ?? 'info');
+                    $config = getMessageConfig($message['message_type'] ?? 'info', $messageTypeConfig);
                     $priority = $message['priority'] ?? 'normal';
                 ?>
                 <div class="message-card bg-white rounded-xl border-2 border-blue-200 shadow-md hover:shadow-lg transition-all overflow-hidden" 
@@ -110,7 +110,7 @@ function formatMessageDate($date) {
                                     <div class="flex items-center gap-2">
                                         <span class="px-2 py-1 <?= $config['light'] ?> <?= $config['text'] ?> rounded-lg text-xs font-bold">
                                             <?php 
-                                            $typeLabels = ['info' => 'إشعار', 'success' => 'نجاح', 'warning' => 'تنبيه', 'lead' => 'طلب جديد'];
+                                            $typeLabels = ['info' => 'معلومة', 'notification' => 'إشعار', 'announcement' => 'إعلان', 'lead' => 'طلب جديد'];
                                             echo $typeLabels[$message['message_type'] ?? 'info'] ?? 'إشعار';
                                             ?>
                                         </span>
@@ -155,7 +155,7 @@ function formatMessageDate($date) {
             </h2>
             <div class="space-y-2">
                 <?php foreach ($readMessages as $message): 
-                    $config = getMessageConfig($message['message_type'] ?? 'info');
+                    $config = getMessageConfig($message['message_type'] ?? 'info', $messageTypeConfig);
                 ?>
                 <div class="message-card bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-all overflow-hidden opacity-75 hover:opacity-100" 
                      data-message-id="<?= $message['id'] ?>">
@@ -260,9 +260,9 @@ function formatMessageDate($date) {
 let currentMessageId = null;
 
 const typeConfig = {
-    info: { bg: 'from-blue-500 to-blue-600', label: 'إشعار', labelBg: 'bg-blue-100', labelText: 'text-blue-700' },
-    success: { bg: 'from-green-500 to-green-600', label: 'نجاح', labelBg: 'bg-green-100', labelText: 'text-green-700' },
-    warning: { bg: 'from-yellow-500 to-yellow-600', label: 'تنبيه', labelBg: 'bg-yellow-100', labelText: 'text-yellow-700' },
+    info: { bg: 'from-blue-500 to-blue-600', label: 'معلومة', labelBg: 'bg-blue-100', labelText: 'text-blue-700' },
+    notification: { bg: 'from-green-500 to-green-600', label: 'إشعار', labelBg: 'bg-green-100', labelText: 'text-green-700' },
+    announcement: { bg: 'from-yellow-500 to-yellow-600', label: 'إعلان', labelBg: 'bg-yellow-100', labelText: 'text-yellow-700' },
     lead: { bg: 'from-purple-500 to-purple-600', label: 'طلب جديد', labelBg: 'bg-purple-100', labelText: 'text-purple-700' }
 };
 

@@ -22,9 +22,10 @@ class ProviderMessageController extends BaseProviderController
         
         try {
             $stmt = $this->db->prepare("
-                SELECT pm.*, a.username as admin_name
+                SELECT pm.*, 
+                       CASE WHEN pm.sender_type = 'admin' THEN a.username ELSE 'النظام' END as admin_name
                 FROM provider_messages pm
-                LEFT JOIN admins a ON pm.admin_id = a.id
+                LEFT JOIN admins a ON pm.sender_id = a.id AND pm.sender_type = 'admin'
                 WHERE pm.provider_id = ? AND pm.deleted_at IS NULL
                 ORDER BY pm.created_at DESC
             ");
