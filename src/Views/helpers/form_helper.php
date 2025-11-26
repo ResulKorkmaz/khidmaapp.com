@@ -114,7 +114,7 @@ if (!function_exists('render_service_request_form')) {
                            id="<?= $fieldPrefix ?>_phone"
                            name="phone"
                            required
-                           class="<?= $inputClasses ?> py-3 phone-input phone-input-primary text-right pr-3 pl-12"
+                           class="<?= $inputClasses ?> py-3 phone-input phone-input-primary text-right pr-4 pl-12"
                            placeholder="05xxxxxxxx"
                            inputmode="numeric"
                            dir="rtl"
@@ -128,17 +128,17 @@ if (!function_exists('render_service_request_form')) {
                             </svg>
                         </div>
                     </div>
-                    <!-- Validation indicator -->
-                    <div id="<?= $fieldPrefix ?>_phone_status" class="absolute inset-y-0 right-3 flex items-center pointer-events-none opacity-0 transition-opacity duration-200">
-                        <svg class="w-5 h-5 text-green-500 phone-valid hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <svg class="w-5 h-5 text-red-500 phone-invalid hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
                 </div>
-                <p id="<?= $fieldPrefix ?>_phone_hint" class="text-xs mt-1 <?= $textColor ?> opacity-0 transition-opacity duration-200"></p>
+                <!-- Validation hint below input -->
+                <div id="<?= $fieldPrefix ?>_phone_status" class="flex items-center gap-1 mt-1 opacity-0 transition-opacity duration-200">
+                    <svg class="w-4 h-4 text-green-500 phone-valid hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <svg class="w-4 h-4 text-red-500 phone-invalid hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <p id="<?= $fieldPrefix ?>_phone_hint" class="text-xs <?= $textColor ?>"></p>
+                </div>
             </div>
 
             <!-- Phone Confirmation -->
@@ -151,7 +151,7 @@ if (!function_exists('render_service_request_form')) {
                            id="<?= $fieldPrefix ?>_phone_confirm"
                            name="phone_confirm"
                            required
-                           class="<?= $inputClasses ?> py-3 phone-input phone-input-confirm text-right pr-3 pl-12"
+                           class="<?= $inputClasses ?> py-3 phone-input phone-input-confirm text-right pr-4 pl-12"
                            placeholder="أعد كتابة الرقم"
                            inputmode="numeric"
                            dir="rtl"
@@ -165,17 +165,17 @@ if (!function_exists('render_service_request_form')) {
                             </svg>
                         </div>
                     </div>
-                    <!-- Match indicator -->
-                    <div id="<?= $fieldPrefix ?>_confirm_status" class="absolute inset-y-0 right-3 flex items-center pointer-events-none opacity-0 transition-opacity duration-200">
-                        <svg class="w-5 h-5 text-green-500 confirm-match hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        <svg class="w-5 h-5 text-red-500 confirm-mismatch hidden" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
                 </div>
-                <p id="<?= $fieldPrefix ?>_confirm_hint" class="text-xs mt-1 <?= $textColor ?> opacity-0 transition-opacity duration-200"></p>
+                <!-- Match indicator below input -->
+                <div id="<?= $fieldPrefix ?>_confirm_status" class="flex items-center gap-1 mt-1 opacity-0 transition-opacity duration-200">
+                    <svg class="w-4 h-4 text-green-500 confirm-match hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <svg class="w-4 h-4 text-red-500 confirm-mismatch hidden" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                    </svg>
+                    <p id="<?= $fieldPrefix ?>_confirm_hint" class="text-xs <?= $textColor ?>"></p>
+                </div>
             </div>
 
             <!-- Service Time (Minimal Single Row) -->
@@ -464,7 +464,6 @@ if (!function_exists('render_service_request_form')) {
                 if (phone.length === 0) {
                     phoneStatus.style.opacity = '0';
                     phoneInput.classList.remove('input-valid', 'input-invalid');
-                    phoneHint.style.opacity = '0';
                     return;
                 }
                 
@@ -475,26 +474,29 @@ if (!function_exists('render_service_request_form')) {
                     invalidIcon.classList.add('hidden');
                     phoneInput.classList.add('input-valid');
                     phoneInput.classList.remove('input-invalid');
-                    phoneHint.textContent = '✓ رقم صحيح';
-                    phoneHint.classList.remove('text-red-500');
-                    phoneHint.classList.add('text-green-500');
+                    if (phoneHint) {
+                        phoneHint.textContent = 'رقم صحيح';
+                        phoneHint.classList.remove('text-red-500');
+                        phoneHint.classList.add('text-green-500');
+                    }
                 } else {
                     validIcon.classList.add('hidden');
                     invalidIcon.classList.remove('hidden');
                     phoneInput.classList.add('input-invalid');
                     phoneInput.classList.remove('input-valid');
                     
-                    if (!phone.startsWith('05')) {
-                        phoneHint.textContent = 'يجب أن يبدأ بـ 05';
-                    } else if (phone.length < 10) {
-                        phoneHint.textContent = `${10 - phone.length} أرقام متبقية`;
-                    } else {
-                        phoneHint.textContent = 'رقم غير صحيح';
+                    if (phoneHint) {
+                        if (!phone.startsWith('05')) {
+                            phoneHint.textContent = 'يجب أن يبدأ بـ 05';
+                        } else if (phone.length < 10) {
+                            phoneHint.textContent = `${10 - phone.length} أرقام متبقية`;
+                        } else {
+                            phoneHint.textContent = 'رقم غير صحيح';
+                        }
+                        phoneHint.classList.add('text-red-500');
+                        phoneHint.classList.remove('text-green-500');
                     }
-                    phoneHint.classList.add('text-red-500');
-                    phoneHint.classList.remove('text-green-500');
                 }
-                phoneHint.style.opacity = '1';
             }
             
             function updatePhoneConfirmation() {
@@ -508,9 +510,10 @@ if (!function_exists('render_service_request_form')) {
                 if (confirm.length === 0) {
                     confirmStatus.style.opacity = '0';
                     phoneConfirmInput.classList.remove('input-valid', 'input-invalid');
-                    confirmHint.style.opacity = '0';
-                    confirmIcon.classList.remove('bg-green-500', 'bg-red-400');
-                    confirmIcon.classList.add('bg-gray-200');
+                    if (confirmIcon) {
+                        confirmIcon.classList.remove('bg-green-500', 'bg-red-400');
+                        confirmIcon.classList.add('bg-gray-200');
+                    }
                     return;
                 }
                 
@@ -521,25 +524,32 @@ if (!function_exists('render_service_request_form')) {
                     mismatchIcon.classList.add('hidden');
                     phoneConfirmInput.classList.add('input-valid');
                     phoneConfirmInput.classList.remove('input-invalid');
-                    confirmHint.textContent = '✓ الأرقام متطابقة';
-                    confirmHint.classList.remove('text-red-500');
-                    confirmHint.classList.add('text-green-500');
-                    confirmIcon.classList.remove('bg-gray-200', 'bg-red-400');
-                    confirmIcon.classList.add('bg-green-500');
-                    confirmIcon.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+                    if (confirmHint) {
+                        confirmHint.textContent = 'الأرقام متطابقة';
+                        confirmHint.classList.remove('text-red-500');
+                        confirmHint.classList.add('text-green-500');
+                    }
+                    if (confirmIcon) {
+                        confirmIcon.classList.remove('bg-gray-200', 'bg-red-400');
+                        confirmIcon.classList.add('bg-green-500');
+                        confirmIcon.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>';
+                    }
                 } else {
                     matchIcon.classList.add('hidden');
                     mismatchIcon.classList.remove('hidden');
                     phoneConfirmInput.classList.add('input-invalid');
                     phoneConfirmInput.classList.remove('input-valid');
-                    confirmHint.textContent = 'الأرقام غير متطابقة';
-                    confirmHint.classList.add('text-red-500');
-                    confirmHint.classList.remove('text-green-500');
-                    confirmIcon.classList.remove('bg-gray-200', 'bg-green-500');
-                    confirmIcon.classList.add('bg-red-400');
-                    confirmIcon.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>';
+                    if (confirmHint) {
+                        confirmHint.textContent = 'الأرقام غير متطابقة';
+                        confirmHint.classList.add('text-red-500');
+                        confirmHint.classList.remove('text-green-500');
+                    }
+                    if (confirmIcon) {
+                        confirmIcon.classList.remove('bg-gray-200', 'bg-green-500');
+                        confirmIcon.classList.add('bg-red-400');
+                        confirmIcon.innerHTML = '<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>';
+                    }
                 }
-                confirmHint.style.opacity = '1';
             }
             
             // Phone input events
@@ -666,11 +676,10 @@ if (!function_exists('render_service_request_form')) {
                         form.reset();
                         // Reset validation states
                         if (phoneStatus) phoneStatus.style.opacity = '0';
+                        if (phoneStatus) phoneStatus.style.opacity = '0';
                         if (confirmStatus) confirmStatus.style.opacity = '0';
                         if (phoneInput) phoneInput.classList.remove('input-valid', 'input-invalid');
                         if (phoneConfirmInput) phoneConfirmInput.classList.remove('input-valid', 'input-invalid');
-                        if (phoneHint) phoneHint.style.opacity = '0';
-                        if (confirmHint) confirmHint.style.opacity = '0';
                         userModifiedDescription = false;
                     } else {
                         showToast(data.message || 'حدث خطأ، يرجى المحاولة مرة أخرى', 'error');
