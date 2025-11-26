@@ -153,17 +153,43 @@ class AdminPurchaseController extends BaseAdminController
             $this->errorResponse('Method not allowed', 405);
         }
         
-        $data = $this->getJsonInput();
-        $leadId = intval($data['lead_id'] ?? 0);
-        $providerId = intval($data['provider_id'] ?? 0);
-        $purchaseId = intval($data['purchase_id'] ?? 0);
+        // FormData veya JSON kabul et
+        $leadId = intval($_POST['lead_id'] ?? 0);
+        $requestId = intval($_POST['request_id'] ?? 0);
+        $purchaseId = intval($_POST['purchase_id'] ?? 0);
         
-        if ($leadId <= 0 || $providerId <= 0 || $purchaseId <= 0) {
+        // JSON input da kontrol et
+        if ($leadId <= 0 || $requestId <= 0) {
+            $data = $this->getJsonInput();
+            $leadId = $leadId ?: intval($data['lead_id'] ?? 0);
+            $requestId = $requestId ?: intval($data['request_id'] ?? 0);
+            $purchaseId = $purchaseId ?: intval($data['purchase_id'] ?? 0);
+        }
+        
+        if ($leadId <= 0 || $requestId <= 0) {
             $this->errorResponse('Geçersiz parametreler', 400);
         }
         
         try {
             $this->pdo->beginTransaction();
+            
+            // Request'ten provider ve purchase bilgisini al
+            $stmt = $this->pdo->prepare("
+                SELECT lr.provider_id, lr.purchase_id, sp.name as provider_name
+                FROM lead_requests lr
+                JOIN service_providers sp ON lr.provider_id = sp.id
+                WHERE lr.id = ? AND lr.request_status = 'pending'
+            ");
+            $stmt->execute([$requestId]);
+            $request = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$request) {
+                $this->pdo->rollBack();
+                $this->errorResponse('Lead talebi bulunamadı veya zaten işlenmiş', 404);
+            }
+            
+            $providerId = intval($request['provider_id']);
+            $purchaseId = $purchaseId ?: intval($request['purchase_id']);
             
             // Satın alma kontrolü
             $stmt = $this->pdo->prepare("
@@ -211,13 +237,17 @@ class AdminPurchaseController extends BaseAdminController
             ");
             $stmt->execute([$leadId]);
             
-            // Satın alma used_leads güncelle
-            $stmt = $this->pdo->prepare("UPDATE provider_purchases SET used_leads = used_leads + 1 WHERE id = ?");
+            // Satın alma used_leads ve remaining_leads güncelle
+            $stmt = $this->pdo->prepare("UPDATE provider_purchases SET used_leads = used_leads + 1, remaining_leads = remaining_leads - 1 WHERE id = ?");
             $stmt->execute([$purchaseId]);
+            
+            // Lead request'i completed olarak işaretle
+            $stmt = $this->pdo->prepare("UPDATE lead_requests SET request_status = 'completed', lead_id = ?, completed_at = NOW() WHERE id = ?");
+            $stmt->execute([$leadId, $requestId]);
             
             $this->pdo->commit();
             
-            $this->successResponse('Lead başarıyla gönderildi');
+            $this->successResponse('Lead başarıyla gönderildi', ['provider_name' => $request['provider_name'] ?? '']);
         } catch (PDOException $e) {
             $this->pdo->rollBack();
             error_log("Send lead manually error: " . $e->getMessage());
