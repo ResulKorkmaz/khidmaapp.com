@@ -40,6 +40,13 @@
         .nav-item:hover { background: #f3f4f6; }
         .nav-item.active { background: #059669; color: white; }
         .nav-item.active:hover { background: #047857; }
+        
+        /* Mobile content spacing */
+        @media (max-width: 1023px) {
+            .mobile-content-spacing {
+                padding-top: 80px !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -184,8 +191,8 @@ if (isset($_SESSION['provider_id'])) {
 </aside>
 
 <!-- Main Content -->
-<main id="main-content" class="min-h-screen pt-16 lg:pt-0 pb-4">
-    <div class="p-4 lg:p-6">
+<main id="main-content" class="min-h-screen pb-4">
+    <div class="p-4 lg:p-6 mobile-content-spacing">
         <?= $content ?? '' ?>
     </div>
 </main>
