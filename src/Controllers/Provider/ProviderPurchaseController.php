@@ -133,6 +133,12 @@ class ProviderPurchaseController extends BaseProviderController
             $packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
             $packageDescription = $package['description_ar'] ?? $package['lead_count'] . ' lead paketi';
             
+            // leads_packages tablosundan eşleşen paketi bul (FK için)
+            $stmt = $this->db->prepare("SELECT id FROM leads_packages WHERE lead_count = ? LIMIT 1");
+            $stmt->execute([$package['lead_count']]);
+            $leadsPackage = $stmt->fetch(PDO::FETCH_ASSOC);
+            $leadsPackageId = $leadsPackage ? $leadsPackage['id'] : $packageId;
+            
             $session = $stripe->checkout->sessions->create([
                 'payment_method_types' => ['card'],
                 'customer_email' => $provider['email'], // Ustanın email adresi otomatik doldurulur
@@ -152,7 +158,10 @@ class ProviderPurchaseController extends BaseProviderController
                 'cancel_url' => APP_URL . '/provider/purchase/cancel',
                 'metadata' => [
                     'provider_id' => $providerId,
-                    'package_id' => $packageId,
+                    'package_id' => $leadsPackageId, // leads_packages tablosundaki ID (FK için)
+                    'lead_count' => $package['lead_count'],
+                    'price' => $package['price_sar'],
+                    'package_name' => $packageName,
                 ],
             ]);
             
@@ -200,8 +209,12 @@ class ProviderPurchaseController extends BaseProviderController
                 $this->redirect('/provider/leads');
             }
             
-            $providerId = $session->metadata->provider_id;
-            $packageId = $session->metadata->package_id;
+            // Metadata'dan bilgileri al
+            $providerId = $session->metadata->provider_id ?? null;
+            $packageId = $session->metadata->package_id ?? null;
+            $leadCount = $session->metadata->lead_count ?? null;
+            $price = $session->metadata->price ?? null;
+            $packageName = $session->metadata->package_name ?? null;
             
             // Satın alma kaydı oluştur (eğer yoksa)
             $stmt = $this->db->prepare("SELECT id FROM provider_purchases WHERE stripe_session_id = ?");
@@ -211,17 +224,20 @@ class ProviderPurchaseController extends BaseProviderController
             $existingPurchase = $stmt->fetch(PDO::FETCH_ASSOC);
             
             if (!$existingPurchase) {
-                // Paketi getir
-                $stmt = $this->db->prepare("SELECT * FROM lead_packages WHERE id = ?");
-                $stmt->execute([$packageId]);
-                $package = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($package) {
-                    // Paket adını oluştur
-                    $packageName = $package['name_ar'] ?? ($package['lead_count'] == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $package['lead_count'] . ' طلبات');
+                // Metadata'dan gelen bilgileri kullan
+                if ($leadCount && $packageId) {
+                    // Paket adı yoksa oluştur
+                    if (!$packageName) {
+                        $packageName = $leadCount == 1 ? 'حزمة طلب واحد' : 'حزمة ' . $leadCount . ' طلبات';
+                    }
                     
                     // Payment Intent ID'yi al (iade için gerekli)
                     $paymentIntentId = $session->payment_intent ?? null;
+                    
+                    // Fiyat bilgisi yoksa Stripe'dan al
+                    if (!$price) {
+                        $price = ($session->amount_total ?? 0) / 100;
+                    }
                     
                     $stmt = $this->db->prepare("
                         INSERT INTO provider_purchases 
@@ -232,24 +248,32 @@ class ProviderPurchaseController extends BaseProviderController
                         $providerId,
                         $packageId,
                         $packageName,
-                        $package['lead_count'],
-                        $package['lead_count'],
-                        $package['price_sar'],
+                        $leadCount,
+                        $leadCount,
+                        $price,
                         $sessionId,
                         $paymentIntentId
                     ]);
                     
                     $purchaseId = $this->db->lastInsertId();
-                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}, purchase #{$purchaseId}, payment_intent: {$paymentIntentId}");
+                    error_log("✅ Purchase created for provider #{$providerId}, package #{$packageId}, purchase #{$purchaseId}, leads: {$leadCount}, payment_intent: {$paymentIntentId}");
                     
                     // 🔥 Otomatik ilk lead talebi gönder
                     $this->createAutoLeadRequest($providerId, $purchaseId);
+                } else {
+                    error_log("❌ Missing metadata - packageId: {$packageId}, leadCount: {$leadCount}");
                 }
             } else {
                 $purchaseId = $existingPurchase['id'];
+                // Mevcut satın almadan lead count al
+                $stmt = $this->db->prepare("SELECT leads_count FROM provider_purchases WHERE id = ?");
+                $stmt->execute([$purchaseId]);
+                $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+                $leadCount = $existing['leads_count'] ?? 0;
             }
             
-            $_SESSION['success'] = 'تم الشراء بنجاح! تم إرسال طلب العميل الأول تلقائياً.';
+            // Başarı mesajı - kaç lead satın alındığını göster
+            $_SESSION['success'] = "🎉 تم الشراء بنجاح! تمت إضافة {$leadCount} طلبات إلى حسابك.";
             $this->redirect('/provider/leads');
             
         } catch (\Stripe\Exception\ApiErrorException $e) {
