@@ -141,6 +141,13 @@ $routes = [
     'GET:/provider/settings' => ['ProviderProfileController', 'settings', 'provider.auth'],
     'POST:/provider/settings' => ['ProviderProfileController', 'settings', 'provider.auth'],
     
+    // ========== PROVIDER EMAIL VERIFICATION ==========
+    'GET:/provider/verify-email' => ['ProviderEmailVerificationController', 'verify'],
+    'POST:/provider/resend-verification' => ['ProviderEmailVerificationController', 'resend', 'provider.auth'],
+    'GET:/provider/resend-verification' => ['ProviderEmailVerificationController', 'resendPage'],
+    'POST:/provider/resend-verification-guest' => ['ProviderEmailVerificationController', 'resendPage'],
+    'GET:/provider/verification-status' => ['ProviderEmailVerificationController', 'status', 'provider.auth'],
+    
     // ========== PROVIDER MESSAGES ==========
     'GET:/provider/messages' => ['ProviderMessageController', 'index', 'provider.auth'],
     'POST:/provider/messages/mark-read' => ['ProviderMessageController', 'markRead', 'provider.auth'],

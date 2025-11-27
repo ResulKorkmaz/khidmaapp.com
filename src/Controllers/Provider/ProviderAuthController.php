@@ -7,6 +7,7 @@
  */
 
 require_once __DIR__ . '/BaseProviderController.php';
+require_once __DIR__ . '/../../Helpers/EmailVerification.php';
 
 class ProviderAuthController extends BaseProviderController 
 {
@@ -60,6 +61,7 @@ class ProviderAuthController extends BaseProviderController
         $_SESSION['provider_name'] = $provider['name'];
         $_SESSION['provider_email'] = $provider['email'];
         $_SESSION['provider_service_type'] = $provider['service_type'];
+        $_SESSION['email_verified'] = (bool)$provider['email_verified'];
         
         // Update last login
         $stmt = $this->db->prepare("UPDATE service_providers SET last_login_at = NOW() WHERE id = ?");
@@ -74,6 +76,12 @@ class ProviderAuthController extends BaseProviderController
         }
         
         $_SESSION['success'] = 'تم تسجيل الدخول بنجاح!';
+        
+        // E-posta doğrulanmamışsa uyarı göster
+        if (!$provider['email_verified']) {
+            $_SESSION['show_email_verification_banner'] = true;
+        }
+        
         $this->redirect('/provider/dashboard');
     }
     
@@ -165,20 +173,32 @@ class ProviderAuthController extends BaseProviderController
         try {
             $stmt = $this->db->prepare("
                 INSERT INTO service_providers 
-                (name, email, phone, city, password_hash, service_type, status, verification_token, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, NOW())
+                (name, email, phone, city, password_hash, service_type, status, email_verified, created_at) 
+                VALUES (?, ?, ?, ?, ?, ?, 'pending', 0, NOW())
             ");
-            $stmt->execute([$name, $email, $phone, $city, $password_hash, $service_type, $verification_token]);
+            $stmt->execute([$name, $email, $phone, $city, $password_hash, $service_type]);
             
             $provider_id = $this->db->lastInsertId();
+            
+            // E-posta doğrulama e-postası gönder
+            $emailVerification = new EmailVerification($this->db);
+            $verificationResult = $emailVerification->sendVerificationEmail($provider_id);
             
             // Auto-login
             $_SESSION['provider_id'] = $provider_id;
             $_SESSION['provider_name'] = $name;
             $_SESSION['provider_email'] = $email;
             $_SESSION['provider_service_type'] = $service_type;
+            $_SESSION['email_verified'] = false;
             
-            $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! مرحباً بك';
+            if ($verificationResult['success']) {
+                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! تم إرسال رابط التأكيد إلى بريدك الإلكتروني.';
+                $_SESSION['show_email_verification_banner'] = true;
+            } else {
+                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! مرحباً بك';
+                $_SESSION['warning'] = 'لم نتمكن من إرسال رابط التأكيد. يرجى طلب إعادة الإرسال من لوحة التحكم.';
+            }
+            
             $this->redirect('/provider/dashboard');
             
         } catch (PDOException $e) {

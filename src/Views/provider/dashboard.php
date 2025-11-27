@@ -18,9 +18,41 @@ $statusLabels = [
     'rejected' => ['label' => 'مرفوض', 'color' => 'gray', 'icon' => '✕']
 ];
 $status = $statusLabels[$provider['status'] ?? 'pending'] ?? $statusLabels['pending'];
+
+// E-posta doğrulama durumu
+$emailVerified = $provider['email_verified'] ?? false;
+$showVerificationBanner = !$emailVerified || (isset($_SESSION['show_email_verification_banner']) && $_SESSION['show_email_verification_banner']);
+if (isset($_SESSION['show_email_verification_banner'])) unset($_SESSION['show_email_verification_banner']);
 ?>
 
 <div class="max-w-5xl mx-auto px-4 py-6">
+
+    <?php if ($showVerificationBanner && !$emailVerified): ?>
+    <!-- E-posta Doğrulama Banner -->
+    <div id="email-verification-banner" class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl p-4 mb-6 shadow-lg">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white text-lg font-bold">يرجى تأكيد بريدك الإلكتروني</p>
+                    <p class="text-yellow-100 text-sm">تحقق من بريدك الإلكتروني واضغط على رابط التأكيد</p>
+                </div>
+            </div>
+            <button id="resend-verification-btn" 
+                    onclick="resendVerificationEmail()"
+                    class="bg-white text-orange-600 px-5 py-2 rounded-full shadow-md hover:bg-orange-50 transition-colors flex items-center gap-2 font-medium">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                إعادة الإرسال
+            </button>
+        </div>
+    </div>
+    <?php endif; ?>
     
     <!-- Header -->
     <div class="flex items-center justify-between mb-6">
@@ -263,6 +295,67 @@ function showToast(msg, type) {
     toast.textContent = msg;
     document.body.appendChild(toast);
     setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// E-posta doğrulama yeniden gönder
+async function resendVerificationEmail() {
+    const btn = document.getElementById('resend-verification-btn');
+    if (!btn || btn.disabled) return;
+    
+    const original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> جاري الإرسال...';
+    
+    try {
+        const fd = new FormData();
+        fd.append('csrf_token', '<?= generateCsrfToken() ?>');
+        
+        const res = await fetch('/provider/resend-verification', { 
+            method: 'POST', 
+            body: fd,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast(data.message || 'تم إرسال رابط التأكيد بنجاح', 'success');
+            btn.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> تم الإرسال';
+            btn.classList.remove('bg-white', 'text-orange-600', 'hover:bg-orange-50');
+            btn.classList.add('bg-green-500', 'text-white');
+            
+            // 2 dakika sonra butonu tekrar aktif et
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = original;
+                btn.classList.remove('bg-green-500', 'text-white');
+                btn.classList.add('bg-white', 'text-orange-600', 'hover:bg-orange-50');
+            }, 120000);
+        } else {
+            showToast(data.message || 'حدث خطأ', 'error');
+            btn.disabled = false;
+            btn.innerHTML = original;
+            
+            // Cooldown varsa butonu geçici olarak devre dışı bırak
+            if (data.cooldown) {
+                btn.disabled = true;
+                let remaining = data.cooldown;
+                const interval = setInterval(() => {
+                    remaining--;
+                    if (remaining <= 0) {
+                        clearInterval(interval);
+                        btn.disabled = false;
+                        btn.innerHTML = original;
+                    } else {
+                        btn.innerHTML = `انتظر ${Math.ceil(remaining/60)} دقيقة`;
+                    }
+                }, 1000);
+            }
+        }
+    } catch (e) {
+        showToast('حدث خطأ في الاتصال', 'error');
+        btn.disabled = false;
+        btn.innerHTML = original;
+    }
 }
 </script>
 

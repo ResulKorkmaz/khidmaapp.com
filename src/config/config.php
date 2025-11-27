@@ -107,6 +107,20 @@ define('STRIPE_WEBHOOK_SECRET', env('STRIPE_WEBHOOK_SECRET', ''));
 define('APP_URL', env('BASE_URL', 'http://localhost:8000'));
 
 // =====================================================
+// E-POSTA AYARLARI (Hostinger SMTP)
+// =====================================================
+define('MAIL_FROM_EMAIL', env('MAIL_FROM_EMAIL', 'noreply@khidmaapp.com'));
+define('MAIL_FROM_NAME', env('MAIL_FROM_NAME', 'KhidmaApp'));
+define('MAIL_USE_SMTP', env('MAIL_USE_SMTP', false));
+
+// SMTP Ayarları (Hostinger için)
+define('SMTP_HOST', env('SMTP_HOST', 'smtp.hostinger.com'));
+define('SMTP_PORT', env('SMTP_PORT', 465));
+define('SMTP_USERNAME', env('SMTP_USERNAME', ''));
+define('SMTP_PASSWORD', env('SMTP_PASSWORD', ''));
+define('SMTP_ENCRYPTION', env('SMTP_ENCRYPTION', 'ssl')); // ssl veya tls
+
+// =====================================================
 // VERİTABANI BAĞLANTISI
 // =====================================================
 
