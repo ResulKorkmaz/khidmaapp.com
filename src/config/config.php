@@ -6,6 +6,9 @@
  * Veritabanı bağlantısı, güvenlik ayarları ve genel konfigürasyonlar burada tanımlanır.
  */
 
+// Timezone ayarı - Suudi Arabistan (AST/UTC+3)
+date_default_timezone_set('Asia/Riyadh');
+
 // Hata raporlama ayarları - Environment'a göre ayarla
 error_reporting(E_ALL);
 
