@@ -192,7 +192,7 @@ class ProviderAuthController extends BaseProviderController
             $_SESSION['email_verified'] = false;
             
             if ($verificationResult['success']) {
-                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! تم إرسال رابط التأكيد إلى بريدك الإلكتروني.';
+                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! تم إرسال رابط التأكيد إلى بريدك الإلكتروني. ⚠️ تحقق أيضاً من مجلد الرسائل غير المرغوب فيها (Spam)';
                 $_SESSION['show_email_verification_banner'] = true;
             } else {
                 $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! مرحباً بك';

@@ -269,6 +269,13 @@ class EmailVerification
                                     ⏰ <strong>تنبيه:</strong> صلاحية هذا الرابط {$expiryHours} ساعة فقط.
                                 </p>
                             </div>
+                            
+                            <!-- Spam Notice -->
+                            <div style="background-color: #f3f4f6; border-right: 4px solid #6b7280; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                                <p style="color: #4b5563; font-size: 13px; margin: 0;">
+                                    📧 <strong>ملاحظة:</strong> إذا لم تجد هذه الرسالة في صندوق الوارد، يرجى التحقق من مجلد الرسائل غير المرغوب فيها (Spam).
+                                </p>
+                            </div>
                         </td>
                     </tr>
                     

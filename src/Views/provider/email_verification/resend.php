@@ -64,6 +64,9 @@
                         رابط تأكيد البريد الإلكتروني الذي أرسلناه لك قد انتهت صلاحيته.
                         اضغط على الزر أدناه لإرسال رابط جديد.
                     </p>
+                    <p class="text-yellow-600 text-sm mt-3 bg-yellow-50 rounded-lg p-3">
+                        ⚠️ تحقق أيضاً من مجلد الرسائل غير المرغوب فيها (Spam)
+                    </p>
                 </div>
 
                 <form method="POST" action="/provider/resend-verification-guest">

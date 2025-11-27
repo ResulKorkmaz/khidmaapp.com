@@ -40,6 +40,7 @@ if (isset($_SESSION['show_email_verification_banner'])) unset($_SESSION['show_em
                 <div>
                     <p class="text-white text-lg font-bold">يرجى تأكيد بريدك الإلكتروني</p>
                     <p class="text-yellow-100 text-sm">تحقق من بريدك الإلكتروني واضغط على رابط التأكيد</p>
+                    <p class="text-yellow-200 text-xs mt-1">⚠️ تحقق أيضاً من مجلد الرسائل غير المرغوب فيها (Spam)</p>
                 </div>
             </div>
             <button id="resend-verification-btn" 
