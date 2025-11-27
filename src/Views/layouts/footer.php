@@ -941,5 +941,86 @@ if (session_status() === PHP_SESSION_NONE) {
     });
 </script>
 
+<?php
+// Session mesajlarını göster (Toast Notifications)
+$toastMessages = [];
+if (isset($_SESSION['success'])) {
+    $toastMessages[] = ['type' => 'success', 'message' => $_SESSION['success']];
+    unset($_SESSION['success']);
+}
+if (isset($_SESSION['error'])) {
+    $toastMessages[] = ['type' => 'error', 'message' => $_SESSION['error']];
+    unset($_SESSION['error']);
+}
+if (isset($_SESSION['warning'])) {
+    $toastMessages[] = ['type' => 'warning', 'message' => $_SESSION['warning']];
+    unset($_SESSION['warning']);
+}
+if (isset($_SESSION['info'])) {
+    $toastMessages[] = ['type' => 'info', 'message' => $_SESSION['info']];
+    unset($_SESSION['info']);
+}
+
+if (!empty($toastMessages)): ?>
+<!-- Toast Container -->
+<div id="toast-container" class="fixed bottom-4 right-4 z-[99999] flex flex-col gap-3" style="direction: rtl;">
+    <?php foreach ($toastMessages as $index => $toast): 
+        $bgColor = match($toast['type']) {
+            'success' => 'bg-green-500',
+            'error' => 'bg-red-500',
+            'warning' => 'bg-yellow-500',
+            'info' => 'bg-blue-500',
+            default => 'bg-gray-500'
+        };
+        $icon = match($toast['type']) {
+            'success' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+            'error' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+            'warning' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>',
+            'info' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+            default => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+        };
+    ?>
+    <div class="toast-item <?= $bgColor ?> text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px] max-w-[400px] animate-slide-in"
+         style="animation-delay: <?= $index * 100 ?>ms;">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <?= $icon ?>
+        </svg>
+        <p class="text-sm flex-1"><?= $toast['message'] ?></p>
+        <button onclick="this.parentElement.remove()" class="hover:opacity-70 transition-opacity">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+    <?php endforeach; ?>
+</div>
+
+<style>
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out forwards;
+}
+</style>
+
+<script>
+// Toast'ları otomatik kapat
+document.querySelectorAll('.toast-item').forEach((toast, index) => {
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease-out reverse forwards';
+        setTimeout(() => toast.remove(), 300);
+    }, 5000 + (index * 500));
+});
+</script>
+<?php endif; ?>
+
 </body>
 </html>
