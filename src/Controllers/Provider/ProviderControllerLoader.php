@@ -16,6 +16,7 @@ require_once __DIR__ . '/ProviderLeadController.php';
 require_once __DIR__ . '/ProviderProfileController.php';
 require_once __DIR__ . '/ProviderPurchaseController.php';
 require_once __DIR__ . '/ProviderMessageController.php';
+require_once __DIR__ . '/ProviderEmailVerificationController.php';
 
 /**
  * Provider controller factory
@@ -88,6 +89,14 @@ class ProviderControllerFactory
     public static function message(): ProviderMessageController
     {
         return self::get('Message');
+    }
+    
+    /**
+     * Email Verification controller
+     */
+    public static function emailVerification(): ProviderEmailVerificationController
+    {
+        return self::get('EmailVerification');
     }
 }
 
