@@ -135,6 +135,7 @@ class ProviderPurchaseController extends BaseProviderController
             
             $session = $stripe->checkout->sessions->create([
                 'payment_method_types' => ['card'],
+                'customer_email' => $provider['email'], // Ustanın email adresi otomatik doldurulur
                 'line_items' => [[
                     'price_data' => [
                         'currency' => 'sar', // SAR - Suudi Riyali
