@@ -436,6 +436,11 @@ if (session_status() === PHP_SESSION_NONE) {
                 <div id="providerRegisterForm" class="hidden" style="padding: 24px;">
                     <form action="/provider/register" method="POST" class="space-y-4">
                         <input type="hidden" name="csrf_token" value="<?= generateCsrfToken() ?>">
+                        <!-- 🔒 Honeypot - Bot koruması (gizli alan, botlar doldurur) -->
+                        <div style="position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden;" aria-hidden="true">
+                            <label for="website_url">Website URL (do not fill)</label>
+                            <input type="text" name="website_url" id="website_url" tabindex="-1" autocomplete="off">
+                        </div>
                         
                         <!-- WhatsApp Channel Alert -->
                         <div class="rounded-xl p-4" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #a7f3d0;">

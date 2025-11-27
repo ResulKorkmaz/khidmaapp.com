@@ -145,13 +145,14 @@ class EmailVerification
                 ];
             }
             
-            // E-postayı doğrula
+            // E-postayı doğrula ve hesabı aktif et
             $stmt = $this->db->prepare("
                 UPDATE service_providers 
                 SET email_verified = 1, 
                     email_verified_at = NOW(),
                     verification_token = NULL,
-                    verification_token_expires = NULL
+                    verification_token_expires = NULL,
+                    status = CASE WHEN status = 'unverified' THEN 'pending' ELSE status END
                 WHERE id = ?
             ");
             $stmt->execute([$provider['id']]);

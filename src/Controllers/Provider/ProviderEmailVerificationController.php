@@ -85,29 +85,59 @@ class ProviderEmailVerificationController extends BaseProviderController
     }
     
     /**
-     * Yeniden gönderim sayfası (giriş yapmamış, token süresi dolmuş kullanıcılar için)
+     * Doğrulama bekleme sayfası (kayıt sonrası)
      */
-    public function resendPage(): void
+    public function pendingPage(): void
     {
-        $providerId = $_SESSION['verification_provider_id'] ?? null;
-        
-        if (!$providerId) {
-            $this->redirect('/provider/login');
+        // Session'da bekleyen doğrulama yoksa ana sayfaya yönlendir
+        if (!isset($_SESSION['pending_verification_provider_id'])) {
+            $this->redirect('/');
             return;
         }
         
-        // POST isteği - yeniden gönder
-        if ($this->isPost()) {
-            $result = $this->emailVerification->sendVerificationEmail($providerId);
-            
-            if ($result['success']) {
-                $_SESSION['success'] = $result['message'];
-                unset($_SESSION['verification_provider_id']);
-                $this->redirect('/provider/login');
-            } else {
-                $_SESSION['error'] = $result['message'];
-                $this->redirect('/provider/resend-verification');
-            }
+        $this->render('email_verification/pending', [
+            'email' => $_SESSION['pending_verification_email'] ?? ''
+        ]);
+    }
+    
+    /**
+     * Yeniden gönderim (giriş yapmamış kullanıcılar için)
+     */
+    public function resendGuest(): void
+    {
+        if (!$this->isPost()) {
+            $this->redirect('/');
+            return;
+        }
+        
+        $providerId = $_SESSION['pending_verification_provider_id'] ?? $_SESSION['verification_provider_id'] ?? null;
+        
+        if (!$providerId) {
+            $_SESSION['error'] = 'جلسة غير صالحة. يرجى المحاولة مرة أخرى.';
+            $this->redirect('/');
+            return;
+        }
+        
+        $result = $this->emailVerification->sendVerificationEmail($providerId);
+        
+        if ($result['success']) {
+            $_SESSION['success'] = $result['message'];
+        } else {
+            $_SESSION['error'] = $result['message'];
+        }
+        
+        $this->redirect('/provider/verify-pending');
+    }
+    
+    /**
+     * Yeniden gönderim sayfası (token süresi dolmuş kullanıcılar için)
+     */
+    public function resendPage(): void
+    {
+        $providerId = $_SESSION['verification_provider_id'] ?? $_SESSION['pending_verification_provider_id'] ?? null;
+        
+        if (!$providerId) {
+            $this->redirect('/');
             return;
         }
         

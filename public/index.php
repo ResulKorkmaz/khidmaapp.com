@@ -143,9 +143,10 @@ $routes = [
     
     // ========== PROVIDER EMAIL VERIFICATION ==========
     'GET:/provider/verify-email' => ['ProviderEmailVerificationController', 'verify'],
+    'GET:/provider/verify-pending' => ['ProviderEmailVerificationController', 'pendingPage'],
     'POST:/provider/resend-verification' => ['ProviderEmailVerificationController', 'resend', 'provider.auth'],
     'GET:/provider/resend-verification' => ['ProviderEmailVerificationController', 'resendPage'],
-    'POST:/provider/resend-verification-guest' => ['ProviderEmailVerificationController', 'resendPage'],
+    'POST:/provider/resend-verification-guest' => ['ProviderEmailVerificationController', 'resendGuest'],
     'GET:/provider/verification-status' => ['ProviderEmailVerificationController', 'status', 'provider.auth'],
     
     // ========== PROVIDER MESSAGES ==========

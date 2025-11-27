@@ -4,15 +4,25 @@
  * KhidmaApp.com - Provider Auth Controller
  * 
  * Provider giriş/çıkış/kayıt işlemleri
+ * 
+ * Güvenlik Önlemleri:
+ * - Rate limiting (IP bazlı)
+ * - E-posta doğrulaması zorunlu
+ * - Honeypot bot koruması
  */
 
 require_once __DIR__ . '/BaseProviderController.php';
 require_once __DIR__ . '/../../Helpers/EmailVerification.php';
+require_once __DIR__ . '/../../Helpers/RateLimiter.php';
 
 class ProviderAuthController extends BaseProviderController 
 {
     /**
      * Provider Login
+     * 
+     * Güvenlik:
+     * - Rate limiting: 15 dakikada max 5 deneme
+     * - E-posta doğrulanmamış hesaplar giriş yapamaz
      */
     public function login(): void
     {
@@ -22,6 +32,14 @@ class ProviderAuthController extends BaseProviderController
         
         $this->requireCsrf();
         
+        // 🔒 Rate Limiting
+        $rateLimiter = new RateLimiter($this->db);
+        if (!$rateLimiter->canAttempt('login')) {
+            $_SESSION['error'] = $rateLimiter->getErrorMessage('login');
+            $this->redirect('/');
+            return;
+        }
+        
         $identifier = trim($this->postParam('identifier', ''));
         $password = $this->postParam('password', '');
         $remember = isset($_POST['remember']);
@@ -29,6 +47,7 @@ class ProviderAuthController extends BaseProviderController
         if (empty($identifier) || empty($password)) {
             $_SESSION['error'] = 'الرجاء إدخال البريد الإلكتروني/رقم الهاتف وكلمة المرور';
             $this->redirect('/');
+            return;
         }
         
         // Find provider by email or phone
@@ -37,31 +56,49 @@ class ProviderAuthController extends BaseProviderController
         $provider = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$provider) {
+            $rateLimiter->recordAttempt('login');
             $_SESSION['error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
             $this->redirect('/');
+            return;
         }
         
         if (!password_verify($password, $provider['password_hash'])) {
+            $rateLimiter->recordAttempt('login');
             $_SESSION['error'] = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
             $this->redirect('/');
+            return;
+        }
+        
+        // 🔒 E-posta doğrulanmamışsa giriş yapılamaz
+        if (!$provider['email_verified'] || $provider['status'] === 'unverified') {
+            $_SESSION['pending_verification_email'] = $provider['email'];
+            $_SESSION['pending_verification_provider_id'] = $provider['id'];
+            $_SESSION['error'] = 'يرجى تأكيد بريدك الإلكتروني أولاً للمتابعة';
+            $this->redirect('/provider/verify-pending');
+            return;
         }
         
         if ($provider['status'] === 'suspended') {
             $_SESSION['error'] = 'حسابك معلق. يرجى الاتصال بالدعم';
             $this->redirect('/');
+            return;
         }
         
         if ($provider['status'] === 'rejected') {
             $_SESSION['error'] = 'تم رفض حسابك';
             $this->redirect('/');
+            return;
         }
+        
+        // 🔒 Başarılı giriş - rate limit sıfırla
+        $rateLimiter->clearOnSuccess('login');
         
         // Set session
         $_SESSION['provider_id'] = $provider['id'];
         $_SESSION['provider_name'] = $provider['name'];
         $_SESSION['provider_email'] = $provider['email'];
         $_SESSION['provider_service_type'] = $provider['service_type'];
-        $_SESSION['email_verified'] = (bool)$provider['email_verified'];
+        $_SESSION['email_verified'] = true;
         
         // Update last login
         $stmt = $this->db->prepare("UPDATE service_providers SET last_login_at = NOW() WHERE id = ?");
@@ -76,17 +113,16 @@ class ProviderAuthController extends BaseProviderController
         }
         
         $_SESSION['success'] = 'تم تسجيل الدخول بنجاح!';
-        
-        // E-posta doğrulanmamışsa uyarı göster
-        if (!$provider['email_verified']) {
-            $_SESSION['show_email_verification_banner'] = true;
-        }
-        
         $this->redirect('/provider/dashboard');
     }
     
     /**
      * Provider Registration
+     * 
+     * Güvenlik Önlemleri:
+     * - Rate limiting: 60 dakikada max 3 kayıt
+     * - Honeypot: Bot koruması
+     * - E-posta doğrulaması zorunlu (doğrulanmadan giriş yapılamaz)
      */
     public function register(): void
     {
@@ -95,6 +131,24 @@ class ProviderAuthController extends BaseProviderController
         }
         
         $this->requireCsrf();
+        
+        // 🔒 Rate Limiting - IP bazlı
+        $rateLimiter = new RateLimiter($this->db);
+        if (!$rateLimiter->canAttempt('registration')) {
+            $_SESSION['error'] = $rateLimiter->getErrorMessage('registration');
+            $this->redirect('/');
+            return;
+        }
+        
+        // 🔒 Honeypot - Bot koruması (gizli alan doldurulmuşsa bot)
+        $honeypot = trim($this->postParam('website_url', '')); // Gizli alan
+        if (!empty($honeypot)) {
+            // Bot tespit edildi, sessizce yönlendir
+            error_log("🤖 Bot detected from IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+            sleep(2); // Bot'u yavaşlat
+            $this->redirect('/');
+            return;
+        }
         
         // Get and sanitize input
         $name = trim($this->postParam('name', ''));
@@ -147,11 +201,21 @@ class ProviderAuthController extends BaseProviderController
             $errors[] = 'يجب الانضمام إلى قناة WhatsApp وتأكيد العضوية';
         }
         
-        // Check for existing email
-        $stmt = $this->db->prepare("SELECT id FROM service_providers WHERE email = ? LIMIT 1");
+        // Check for existing email (doğrulanmamış hesaplar da dahil)
+        $stmt = $this->db->prepare("SELECT id, email_verified FROM service_providers WHERE email = ? LIMIT 1");
         $stmt->execute([$email]);
-        if ($stmt->fetch()) {
-            $errors[] = 'البريد الإلكتروني مسجل بالفعل';
+        $existingByEmail = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($existingByEmail) {
+            if (!$existingByEmail['email_verified']) {
+                // Doğrulanmamış hesap var - yeniden doğrulama linki gönder
+                $_SESSION['pending_verification_email'] = $email;
+                $_SESSION['pending_verification_provider_id'] = $existingByEmail['id'];
+                $_SESSION['error'] = 'البريد الإلكتروني مسجل بالفعل ولكن غير مفعل. يرجى التحقق من بريدك الإلكتروني أو طلب رابط تأكيد جديد.';
+                $this->redirect('/provider/verify-pending');
+                return;
+            } else {
+                $errors[] = 'البريد الإلكتروني مسجل بالفعل';
+            }
         }
         
         // Check for existing phone
@@ -164,17 +228,21 @@ class ProviderAuthController extends BaseProviderController
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
             $this->redirect('/');
+            return;
         }
+        
+        // 🔒 Rate limit kaydı (başarılı validasyon sonrası)
+        $rateLimiter->recordAttempt('registration');
         
         // Hash password
         $password_hash = password_hash($password, PASSWORD_BCRYPT);
-        $verification_token = bin2hex(random_bytes(32));
         
         try {
+            // Hesap oluştur - status: 'unverified' (e-posta doğrulanana kadar)
             $stmt = $this->db->prepare("
                 INSERT INTO service_providers 
                 (name, email, phone, city, password_hash, service_type, status, email_verified, created_at) 
-                VALUES (?, ?, ?, ?, ?, ?, 'pending', 0, NOW())
+                VALUES (?, ?, ?, ?, ?, ?, 'unverified', 0, NOW())
             ");
             $stmt->execute([$name, $email, $phone, $city, $password_hash, $service_type]);
             
@@ -184,22 +252,17 @@ class ProviderAuthController extends BaseProviderController
             $emailVerification = new EmailVerification($this->db);
             $verificationResult = $emailVerification->sendVerificationEmail($provider_id);
             
-            // Auto-login
-            $_SESSION['provider_id'] = $provider_id;
-            $_SESSION['provider_name'] = $name;
-            $_SESSION['provider_email'] = $email;
-            $_SESSION['provider_service_type'] = $service_type;
-            $_SESSION['email_verified'] = false;
+            // ⚠️ GİRİŞ YAPMA - Doğrulama sayfasına yönlendir
+            $_SESSION['pending_verification_email'] = $email;
+            $_SESSION['pending_verification_provider_id'] = $provider_id;
             
             if ($verificationResult['success']) {
-                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! تم إرسال رابط التأكيد إلى بريدك الإلكتروني. ⚠️ تحقق أيضاً من مجلد الرسائل غير المرغوب فيها (Spam)';
-                $_SESSION['show_email_verification_banner'] = true;
+                $_SESSION['success'] = 'تم إنشاء الحساب! يرجى تأكيد بريدك الإلكتروني للمتابعة. ⚠️ تحقق أيضاً من مجلد الرسائل غير المرغوب فيها (Spam)';
             } else {
-                $_SESSION['success'] = 'تم إنشاء الحساب بنجاح! مرحباً بك';
-                $_SESSION['warning'] = 'لم نتمكن من إرسال رابط التأكيد. يرجى طلب إعادة الإرسال من لوحة التحكم.';
+                $_SESSION['warning'] = 'تم إنشاء الحساب ولكن فشل إرسال رابط التأكيد. يرجى المحاولة مرة أخرى.';
             }
             
-            $this->redirect('/provider/dashboard');
+            $this->redirect('/provider/verify-pending');
             
         } catch (PDOException $e) {
             error_log("Provider registration error: " . $e->getMessage());
