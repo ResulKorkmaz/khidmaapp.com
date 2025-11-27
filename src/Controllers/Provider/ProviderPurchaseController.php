@@ -185,7 +185,7 @@ class ProviderPurchaseController extends BaseProviderController
         
         if (!$sessionId) {
             $_SESSION['error'] = 'Geçersiz oturum';
-            $this->redirect('/provider/packages');
+            $this->redirect('/provider/leads');
         }
         
         try {
@@ -197,7 +197,7 @@ class ProviderPurchaseController extends BaseProviderController
             
             if ($session->payment_status !== 'paid') {
                 $_SESSION['error'] = 'Ödeme tamamlanmadı';
-                $this->redirect('/provider/packages');
+                $this->redirect('/provider/leads');
             }
             
             $providerId = $session->metadata->provider_id;
@@ -255,11 +255,11 @@ class ProviderPurchaseController extends BaseProviderController
         } catch (\Stripe\Exception\ApiErrorException $e) {
             error_log("Stripe retrieve error: " . $e->getMessage());
             $_SESSION['error'] = 'Ödeme doğrulanamadı';
-            $this->redirect('/provider/packages');
+            $this->redirect('/provider/leads');
         } catch (PDOException $e) {
             error_log("Purchase success error: " . $e->getMessage());
             $_SESSION['error'] = 'İşlem kaydedilemedi';
-            $this->redirect('/provider/packages');
+            $this->redirect('/provider/leads');
         }
     }
     
@@ -271,7 +271,7 @@ class ProviderPurchaseController extends BaseProviderController
         $this->requireAuth();
         
         $_SESSION['info'] = 'تم إلغاء عملية الشراء';
-        $this->redirect('/provider/packages');
+        $this->redirect('/provider/leads');
     }
     
     /**
