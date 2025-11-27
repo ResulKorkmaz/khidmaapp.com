@@ -88,21 +88,52 @@ class EmailVerification
             // Doğrulama URL'i oluştur
             $verificationUrl = APP_URL . '/provider/verify-email?token=' . $token;
             
-            // E-posta gönder
-            $htmlBody = $this->getVerificationEmailTemplate($provider['name'], $verificationUrl);
-            $subject = 'تأكيد البريد الإلكتروني - KhidmaApp';
+            // Localhost kontrolü - SMTP kullanma, sadece log'a yaz
+            $httpHost = $_SERVER['HTTP_HOST'] ?? '';
+            $isLocalhost = in_array($httpHost, ['localhost', '127.0.0.1', 'localhost:8000']);
             
-            $sent = $this->emailService->send($provider['email'], $subject, $htmlBody);
-            
-            if ($sent) {
+            if ($isLocalhost) {
+                // Localhost'ta e-posta gönderme, sadece log'a yaz
+                error_log("📧 [DEV MODE] Verification email for: {$provider['email']}");
+                error_log("📧 [DEV MODE] Verification URL: {$verificationUrl}");
                 return [
                     'success' => true, 
-                    'message' => 'تم إرسال رابط التأكيد إلى بريدك الإلكتروني'
+                    'message' => 'تم إنشاء رابط التأكيد (وضع التطوير)',
+                    'debug_url' => $verificationUrl
                 ];
-            } else {
+            }
+            
+            // E-posta gönder (production)
+            try {
+                $htmlBody = $this->getVerificationEmailTemplate($provider['name'], $verificationUrl);
+                $subject = 'تأكيد البريد الإلكتروني - KhidmaApp';
+                
+                // Timeout koruması
+                $originalTimeout = ini_get('max_execution_time');
+                set_time_limit(15);
+                
+                $sent = $this->emailService->send($provider['email'], $subject, $htmlBody);
+                
+                set_time_limit((int)$originalTimeout);
+                
+                if ($sent) {
+                    return [
+                        'success' => true, 
+                        'message' => 'تم إرسال رابط التأكيد إلى بريدك الإلكتروني'
+                    ];
+                } else {
+                    return [
+                        'success' => false, 
+                        'message' => 'فشل إرسال البريد الإلكتروني. يرجى المحاولة لاحقاً'
+                    ];
+                }
+            } catch (Exception $emailError) {
+                error_log("Email send error: " . $emailError->getMessage());
+                // E-posta gönderilemese bile kayıt başarılı
                 return [
-                    'success' => false, 
-                    'message' => 'فشل إرسال البريد الإلكتروني. يرجى المحاولة لاحقاً'
+                    'success' => true, 
+                    'message' => 'تم إنشاء الحساب. قد يستغرق وصول رابط التأكيد بضع دقائق',
+                    'email_failed' => true
                 ];
             }
             
