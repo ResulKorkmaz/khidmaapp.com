@@ -11,6 +11,7 @@
  */
 
 require_once __DIR__ . '/BaseAdminController.php';
+require_once __DIR__ . '/../../Helpers/PasswordValidator.php';
 
 class AdminUserController extends BaseAdminController 
 {
@@ -140,14 +141,18 @@ class AdminUserController extends BaseAdminController
             if (empty($email)) $errors[] = 'E-posta gerekli';
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Geçerli bir e-posta adresi girin';
             
-            // Şifre değişikliği için mevcut şifre kontrolü
+            // Şifre değişikliği için mevcut şifre kontrolü ve güçlü şifre validasyonu
             if (!empty($newPassword)) {
                 if (empty($currentPassword)) {
                     $errors[] = 'Şifre değiştirmek için mevcut şifrenizi girin';
                 } elseif (!password_verify($currentPassword, $user['password_hash'])) {
                     $errors[] = 'Mevcut şifre yanlış';
-                } elseif (strlen($newPassword) < 6) {
-                    $errors[] = 'Yeni şifre en az 6 karakter olmalı';
+                } else {
+                    // Güçlü şifre validasyonu
+                    $passwordValidator = new PasswordValidator();
+                    if (!$passwordValidator->validate($newPassword)) {
+                        $errors = array_merge($errors, $passwordValidator->getErrors());
+                    }
                 }
             }
             
@@ -275,10 +280,17 @@ class AdminUserController extends BaseAdminController
             if (empty($username)) $errors[] = 'Kullanıcı adı gerekli';
             if (empty($email)) $errors[] = 'E-posta gerekli';
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Geçerli bir e-posta adresi girin';
-            if (!empty($password) && strlen($password) < 6) $errors[] = 'Şifre en az 6 karakter olmalı';
+            
+            // Güçlü şifre validasyonu
+            if (!empty($password)) {
+                $passwordValidator = new PasswordValidator();
+                if (!$passwordValidator->validate($password)) {
+                    $errors = array_merge($errors, $passwordValidator->getErrors());
+                }
+            }
             
             if (!empty($errors)) {
-                $_SESSION['error'] = implode(', ', $errors);
+                $_SESSION['error'] = implode('<br>', $errors);
                 $this->redirect('/admin/users/edit?id=' . $userId);
             }
             
@@ -369,12 +381,19 @@ class AdminUserController extends BaseAdminController
         if (empty($username)) $errors[] = 'Kullanıcı adı gerekli';
         if (empty($email)) $errors[] = 'E-posta gerekli';
         if (empty($password)) $errors[] = 'Şifre gerekli';
-        if (strlen($password) < 6) $errors[] = 'Şifre en az 6 karakter olmalı';
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Geçerli bir e-posta adresi girin';
         if (!in_array($role, ['super_admin', 'admin', 'user'])) $errors[] = 'Geçersiz rol';
         
+        // Güçlü şifre validasyonu
+        if (!empty($password)) {
+            $passwordValidator = new PasswordValidator();
+            if (!$passwordValidator->validate($password)) {
+                $errors = array_merge($errors, $passwordValidator->getErrors());
+            }
+        }
+        
         if (!empty($errors)) {
-            $_SESSION['error'] = implode(', ', $errors);
+            $_SESSION['error'] = implode('<br>', $errors);
             $this->redirect('/admin/users/create');
         }
         
